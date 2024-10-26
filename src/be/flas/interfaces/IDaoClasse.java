@@ -1,5 +1,8 @@
 package be.flas.interfaces;
 
-public class IDaoClasse {
+public interface IDaoClasse<T> {
 
+	
+	public abstract boolean create(T obj);
+	
 }

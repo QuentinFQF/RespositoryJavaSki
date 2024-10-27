@@ -8,7 +8,7 @@ public class MainApp {
             public void run() {
                 try {
                     
-                    FormInstructor frame = new FormInstructor();
+                    FormStart frame = new FormStart();
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -1,17 +1,17 @@
 package be.flas.view;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
 import java.awt.Color;
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
-public class FormBooking extends JFrame {
+public class FormInscription extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -23,7 +23,7 @@ public class FormBooking extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					FormBooking frame = new FormBooking();
+					FormInscription frame = new FormInscription();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -35,9 +35,9 @@ public class FormBooking extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public FormBooking() {
+	public FormInscription() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 752, 547);
+		setBounds(100, 100, 753, 545);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -46,7 +46,7 @@ public class FormBooking extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 128, 128));
-		panel.setBounds(259, 89, 183, 290);
+		panel.setBounds(271, 33, 227, 443);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -63,8 +63,12 @@ public class FormBooking extends JFrame {
                 }
 			}
 		});
-		btnNewButton.setBounds(10, 259, 85, 21);
+		btnNewButton.setBounds(10, 412, 85, 21);
 		panel.add(btnNewButton);
+		
+		JLabel lblNewLabel = new JLabel("Inscription");
+		lblNewLabel.setBounds(353, 10, 47, 13);
+		contentPane.add(lblNewLabel);
 	}
 
 }

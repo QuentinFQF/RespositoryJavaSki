@@ -24,6 +24,13 @@ public abstract class Person {
 		
 		this.pseudo=pseudo;
 	}
+	public Person(String name,String firstName,LocalDate dateOfBirth,String pseudo) {
+		this.dateOfBirth=dateOfBirth;
+		this.firstName=firstName;
+		this.name=name;
+		
+		this.pseudo=pseudo;
+	}
 
 	public String getName() {
 		return name;

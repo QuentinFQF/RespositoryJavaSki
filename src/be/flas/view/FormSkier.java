@@ -8,6 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import be.flas.dao.DAOInstructor;
+import be.flas.dao.DAOSkier;
+import be.flas.model.Skier;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JButton;
@@ -15,14 +20,18 @@ import javax.swing.JCheckBox;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class FormSkier extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField Prenom;
+	private JTextField Nom;
+	private JTextField Pseudo;
+	private DAOSkier daoSkier = new DAOSkier();
+	private JDateChooser dateChooser;
 
 	/**
 	 * Launch the application.
@@ -58,17 +67,18 @@ public class FormSkier extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		textField = new JTextField();
-		textField.setBounds(191, 98, 96, 19);
-		panel.add(textField);
-		textField.setColumns(10);
+		Prenom = new JTextField();
+		Prenom.setBounds(191, 98, 96, 19);
+		panel.add(Prenom);
+		Prenom.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(191, 69, 96, 19);
-		panel.add(textField_1);
-		textField_1.setColumns(10);
+		Nom = new JTextField();
+		Nom.setBounds(191, 69, 96, 19);
+		panel.add(Nom);
+		Nom.setColumns(10);
 		
-		JDateChooser dateChooser = new JDateChooser();
+		dateChooser = new JDateChooser();
+		dateChooser.setDateFormatString("yyyy-MM-dd");
 		dateChooser.setBounds(191, 127, 96, 19);
 		panel.add(dateChooser);
 		
@@ -84,28 +94,21 @@ public class FormSkier extends JFrame {
 		lblNewLabel_2.setBounds(73, 126, 89, 26);
 		panel.add(lblNewLabel_2);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(191, 156, 96, 19);
-		panel.add(textField_2);
-		textField_2.setColumns(10);
+		Pseudo = new JTextField();
+		Pseudo.setBounds(191, 156, 96, 19);
+		panel.add(Pseudo);
+		Pseudo.setColumns(10);
 		
 		JLabel lblNewLabel_3 = new JLabel("Pseudo");
 		lblNewLabel_3.setBounds(73, 159, 45, 13);
 		panel.add(lblNewLabel_3);
 		
-		JButton btnNewButton = new JButton("Créer");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//AddInscription();
-				System.out.println("skier reussi");
-			}
-		});
-		btnNewButton.setBounds(288, 294, 85, 21);
-		panel.add(btnNewButton);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("");
-		chckbxNewCheckBox.setBounds(191, 191, 27, 21);
-		panel.add(chckbxNewCheckBox);
+		
+		
+		JCheckBox Assurance = new JCheckBox("");
+		Assurance.setBounds(191, 191, 27, 21);
+		panel.add(Assurance);
 		
 		JLabel lblNewLabel_4 = new JLabel("Assurance");
 		lblNewLabel_4.setBounds(73, 195, 45, 13);
@@ -114,7 +117,7 @@ public class FormSkier extends JFrame {
 		JButton btnNewButton_1 = new JButton("Retour");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//AddInscription();
+			
                 try {
                     
                     FormStart frame = new FormStart();
@@ -126,6 +129,40 @@ public class FormSkier extends JFrame {
 		});
 		btnNewButton_1.setBounds(10, 294, 85, 21);
 		panel.add(btnNewButton_1);
+		
+		JButton btnNewButton = new JButton("Créer");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+                String nom = Nom.getText();
+                String prenom = Prenom.getText();
+                String pseudo = Pseudo.getText();
+                LocalDate dob=dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                boolean assuranceSelected = Assurance.isSelected();
+
+
+                
+
+              
+
+                System.out.println("date stest : "+dob);
+                Skier i=new Skier(nom,prenom,dob,pseudo,assuranceSelected);
+                System.out.print(i.toString());  
+              
+                boolean success = daoSkier.create(i);
+                
+                if (success) {
+                    
+                    System.out.println("skier ajouté avec succès !");
+                } else {
+                    
+                    System.out.println("Erreur lors de l'ajout de skier.");
+                }
+     
+			}
+		});
+		btnNewButton.setBounds(288, 294, 85, 21);
+		panel.add(btnNewButton);
 		
 		JLabel lblNewLabel_4_1 = new JLabel("Inscription skier");
 		lblNewLabel_4_1.setFont(new Font("Times New Roman", Font.BOLD, 30));

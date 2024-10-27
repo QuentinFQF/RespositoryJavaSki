@@ -72,6 +72,7 @@ public class FormInstructor extends JFrame {
 		panel.setLayout(null);
 		
 		JDateChooser dateChooser = new JDateChooser();
+		dateChooser.setDateFormatString("yyyy-MM-dd");
 		dateChooser.setBounds(123, 119, 70, 21);
 		panel.add(dateChooser);
 		
@@ -82,30 +83,28 @@ public class FormInstructor extends JFrame {
 		JButton btnNewButton = new JButton("Créer");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//AddInscription();
-				// Récupérer les valeurs des champs de texte
+				
                 String nom = TxNom.getText();
                 String prenom = txPrenom.getText();
                 String pseudo = txPseudo.getText();
+                LocalDate dob=dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-                // Afficher les valeurs dans la console (ou les utiliser autrement)
+             
                 
 
-                Instructor i=new Instructor(nom,prenom,pseudo);
+                Instructor i=new Instructor(nom,prenom,dob,pseudo);
                 System.out.print(i.toString());  
-                // Ici, vous pouvez ajouter le code pour enregistrer ces données ou les traiter comme vous le souhaitez
+         
                 boolean success = daoInstructor.create(i);
                 
                 if (success) {
-                    // Afficher un message de succès
+                    
                     System.out.println("Instructeur ajouté avec succès !");
                 } else {
-                    // Afficher un message d'erreur
+                    
                     System.out.println("Erreur lors de l'ajout de l'instructeur.");
                 }
-                //FormBooking instructorFrame = new FormBooking();
-                //instructorFrame.setVisible(true);
-				//System.out.println("instr reussi");
+                
 			}
 		});
 		btnNewButton.setBounds(191, 204, 85, 21);
@@ -141,7 +140,7 @@ public class FormInstructor extends JFrame {
 		JButton btnNewButton_1 = new JButton("Retour");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//AddInscription();
+				
                 try {
                     
                     FormStart frame = new FormStart();
@@ -159,32 +158,7 @@ public class FormInstructor extends JFrame {
 		lblNewLabel_4.setBackground(new Color(255, 255, 255));
 		lblNewLabel_4.setBounds(255, 50, 286, 53);
 		contentPane.add(lblNewLabel_4);
-		/*btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Récupérer les valeurs des champs de texte
-                String nom = TxNom.getText();
-                String prenom = txPrenom.getText();
-                String pseudo = txPseudo.getText();
-
-                // Afficher les valeurs dans la console (ou les utiliser autrement)
-                
-
-                Instructor i=new Instructor(nom,prenom,pseudo);
-                System.out.print(i.toString());  
-                // Ici, vous pouvez ajouter le code pour enregistrer ces données ou les traiter comme vous le souhaitez
-                boolean success = daoInstructor.create(i);
-                
-                if (success) {
-                    // Afficher un message de succès
-                    System.out.println("Instructeur ajouté avec succès !");
-                } else {
-                    // Afficher un message d'erreur
-                    System.out.println("Erreur lors de l'ajout de l'instructeur.");
-                }
-                FormBooking instructorFrame = new FormBooking();
-                instructorFrame.setVisible(true);
-            }
-        });*/
+		
 		
 		
 		

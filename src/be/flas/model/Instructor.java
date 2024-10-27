@@ -10,13 +10,13 @@ public class Instructor extends Person {
 	private List<Lesson> lessons;
 	private List<Booking> bookings;
 
-	public Instructor(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,Accreditation acc,Lesson ls) {
+	public Instructor(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,Accreditation acc) {
 		super(name,firstName,personId,dateOfBirth,pseudo);
 		this.accreditations=new ArrayList<>();
 		this.bookings=new ArrayList<>();
 		this.lessons=new ArrayList<>();
 		AddAccreditation(acc);
-		AddLesson(ls);
+		
 	}
 	public Instructor(String name,String firstName/*LocalDate dateOfBirth,Accreditation acc,Lesson ls*/,String pseudo) {
 		super(name,firstName,pseudo/*,dateOfBirth,pseudo*/);

@@ -3,6 +3,7 @@ package be.flas.view;
 import java.awt.EventQueue;
 
 
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -150,6 +151,7 @@ public class FormSkier extends JFrame {
                 System.out.print(i.toString());  
               
                 boolean success = daoSkier.create(i);
+                boolean success2=daoSkier.testConnection();
                 
                 if (success) {
                     

@@ -16,6 +16,13 @@ public class Accreditation {
 		AddLessonType(lt);
 		
 	}
+	public Accreditation(String name) {
+		this.name=name;
+		this.instructors=new ArrayList<>();
+		//this.lessonTypes=new ArrayList<>();
+		//AddLessonType(lt);
+		
+	}
 	public List<Instructor> getInstructors() {
 		return instructors;
 	}

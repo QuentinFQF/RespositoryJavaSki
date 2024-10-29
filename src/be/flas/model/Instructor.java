@@ -18,12 +18,12 @@ public class Instructor extends Person {
 		AddAccreditation(acc);
 		
 	}
-	public Instructor(String name,String firstName,LocalDate dateOfBirth/*,Accreditation acc,Lesson ls*/,String pseudo) {
+	public Instructor(String name,String firstName,LocalDate dateOfBirth,Accreditation acc,String pseudo) {
 		super(name,firstName,dateOfBirth,pseudo);
-		//this.accreditations=new ArrayList<>();
+		this.accreditations=new ArrayList<>();
 		this.bookings=new ArrayList<>();
 		this.lessons=new ArrayList<>();
-		//AddAccreditation(acc);
+		AddAccreditation(acc);
 		//AddLesson(ls);
 	}
 	public boolean IsAccreditate() {

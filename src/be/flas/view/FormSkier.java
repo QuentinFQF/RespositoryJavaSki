@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
+import be.flas.dao.DAOAccreditation;
 import be.flas.dao.DAOInstructor;
 import be.flas.dao.DAOSkier;
 import be.flas.model.Skier;
@@ -32,6 +33,7 @@ public class FormSkier extends JFrame {
 	private JTextField Nom;
 	private JTextField Pseudo;
 	private DAOSkier daoSkier = new DAOSkier();
+	
 	private JDateChooser dateChooser;
 
 	/**

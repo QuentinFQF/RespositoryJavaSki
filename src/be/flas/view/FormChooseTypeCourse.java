@@ -5,15 +5,15 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import java.awt.Color;
 import javax.swing.JLabel;
-import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
+import java.awt.Font;
 
-public class FormStart extends JFrame {
+public class FormChooseTypeCourse extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -25,7 +25,7 @@ public class FormStart extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					FormStart frame = new FormStart();
+					FormChooseTypeCourse frame = new FormChooseTypeCourse();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -37,9 +37,9 @@ public class FormStart extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public FormStart() {
+	public FormChooseTypeCourse() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 752, 544);
+		setBounds(100, 100, 754, 550);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -48,59 +48,43 @@ public class FormStart extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 128, 128));
-		panel.setBounds(222, 111, 244, 145);
+		panel.setBounds(204, 147, 292, 181);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JButton btnNewButton = new JButton("Formulaire skier");
+		JButton btnNewButton = new JButton("Collectif");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-                try {
+               try {
                     
-                    FormSkier frame = new FormSkier();
+                    FormInscriptionCollectif frame = new FormInscriptionCollectif();
                     frame.setVisible(true);
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
 			}
 		});
-		btnNewButton.setBounds(49, 30, 150, 21);
+		btnNewButton.setBounds(109, 72, 85, 21);
 		panel.add(btnNewButton);
 		
-		JButton btnNewButton_1 = new JButton("Formulaire moniteur");
+		JButton btnNewButton_1 = new JButton("Particulier");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-                try {
+               try {
                     
-                    FormInstructor frame = new FormInstructor();
+                    FormInscriptionParticulier frame = new FormInscriptionParticulier();
                     frame.setVisible(true);
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
 			}
 		});
-		btnNewButton_1.setBounds(49, 61, 150, 21);
+		btnNewButton_1.setBounds(109, 117, 85, 21);
 		panel.add(btnNewButton_1);
 		
-		JButton btnNewButton_2 = new JButton("Formulaire inscription");
-		btnNewButton_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-                try {
-                    
-                    FormChooseTypeCourse frame = new FormChooseTypeCourse();
-                    frame.setVisible(true);
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
-			}
-		});
-		btnNewButton_2.setBounds(49, 92, 150, 21);
-		panel.add(btnNewButton_2);
-		
-		JLabel lblNewLabel = new JLabel("Accueil");
+		JLabel lblNewLabel = new JLabel("Type de cours");
 		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 30));
-		lblNewLabel.setBounds(292, 46, 106, 27);
+		lblNewLabel.setBounds(260, 64, 182, 27);
 		contentPane.add(lblNewLabel);
 	}
-
 }

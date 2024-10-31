@@ -26,6 +26,14 @@ public class Instructor extends Person {
 		AddAccreditation(acc);
 		//AddLesson(ls);
 	}
+	public Instructor(String name,String firstName,LocalDate dateOfBirth,String pseudo) {
+		super(name,firstName,dateOfBirth,pseudo);
+		this.accreditations=new ArrayList<>();
+		this.bookings=new ArrayList<>();
+		this.lessons=new ArrayList<>();
+		//AddAccreditation(acc);
+		//AddLesson(ls);
+	}
 	public boolean IsAccreditate() {
 		return false;
 	}

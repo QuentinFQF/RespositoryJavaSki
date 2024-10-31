@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import be.flas.interfaces.IDaoClasse;
 import be.flas.model.Instructor;
@@ -117,4 +121,77 @@ public class DAOInstructor implements IDaoClasse<Instructor> {
             return -1;
         }
     }
+    @Override
+    public List<Instructor> getAllInstructor() {
+        List<Instructor> instructors = new ArrayList<>();
+        String sql = "SELECT Names, FirstName,Pseudo,DateOfBirth FROM Instructor"; // Vérifiez les noms des colonnes
+
+        // Format de la date abrégé (à ajuster selon votre format exact dans Access)
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // Changer selon le format utilisé
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                LocalDate dateOfBirth = null;
+
+                // Conversion de String à LocalDate
+                String dateString = resultSet.getString("DateOfBirth");
+                if (dateString != null && !dateString.isEmpty()) {
+                    // Le parsing peut lever une exception si le format ne correspond pas
+                    try {
+                        dateOfBirth = LocalDate.parse(dateString, formatter); // Parsing en LocalDate
+                    } catch (Exception e) {
+                        System.err.println("Erreur de parsing de la date : " + dateString + " - " + e.getMessage());
+                    }
+                }
+
+                // Création de l'instructeur
+                Instructor instructor = new Instructor(
+                    resultSet.getString("Names"),
+                    resultSet.getString("FirstName"),
+                    dateOfBirth,
+                    resultSet.getString("Pseudo")
+                );
+                instructors.add(instructor);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de l'insertion de l'instructeur : " + ex.getMessage());
+        }
+        return instructors;
+    }
+    @Override
+    public List<Instructor> getInstructorsByLessonType(/*String level,*/ String category, String targetAudience) {
+        List<Instructor> instructors = new ArrayList<>();
+        String sql = "SELECT DISTINCT i.Names, i.FirstName, i.DateOfBirth, i.Pseudo " +
+                     "FROM Instructor i " +
+                     "JOIN Ins_Accreditation ins_acc ON i.InstructorId = ins_acc.InstructorId " +
+                     "JOIN Accreditation acc ON ins_acc.AccreditationId = acc.AccreditationId " +
+                     "JOIN Acc_LessonType alt ON acc.AccreditationId = alt.AccreditationId " +
+                     "JOIN LessonType lt ON alt.LessonTypeId = lt.LessonTypeId " +
+                     "WHERE lt.AgeCategory = ? AND lt.Sport = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            //statement.setString(1, level);
+            statement.setString(1, targetAudience);
+            statement.setString(2, category);
+            
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Instructor instructor = new Instructor(
+                        resultSet.getString("Names"),
+                        resultSet.getString("FirstName"),
+                        resultSet.getDate("DateOfBirth").toLocalDate(),
+                        resultSet.getString("Pseudo")
+                    );
+                    instructors.add(instructor);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des instructeurs : " + e.getMessage());
+        }
+        return instructors;
+    }
+
 }

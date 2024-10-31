@@ -1,17 +1,16 @@
 package be.flas.view;
 
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
 import java.awt.Color;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class FormInscription extends JFrame {
+public class FormChooseTypePerson extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -23,7 +22,7 @@ public class FormInscription extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					FormInscription frame = new FormInscription();
+					FormChooseTypePerson frame = new FormChooseTypePerson();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -35,9 +34,9 @@ public class FormInscription extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public FormInscription() {
+	public FormChooseTypePerson() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 753, 545);
+		setBounds(100, 100, 749, 546);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -46,29 +45,38 @@ public class FormInscription extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 128, 128));
-		panel.setBounds(271, 33, 227, 443);
+		panel.setBounds(213, 10, 269, 465);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JButton btnNewButton = new JButton("Retour");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnNewButton_1 = new JButton("Enfant");
+		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//AddInscription();
-                try {
+               try {
                     
-                    FormStart frame = new FormStart();
+                    FormLevelKid frame = new FormLevelKid();
                     frame.setVisible(true);
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
 			}
 		});
-		btnNewButton.setBounds(10, 412, 85, 21);
-		panel.add(btnNewButton);
+		btnNewButton_1.setBounds(94, 86, 85, 21);
+		panel.add(btnNewButton_1);
 		
-		JLabel lblNewLabel = new JLabel("Inscription");
-		lblNewLabel.setBounds(353, 10, 47, 13);
-		contentPane.add(lblNewLabel);
+		JButton btnNewButton = new JButton("Adult");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+               try {
+                    
+                    FormLevelAdult frame = new FormLevelAdult();
+                    frame.setVisible(true);
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
+			}
+		});
+		btnNewButton.setBounds(94, 133, 85, 21);
+		panel.add(btnNewButton);
 	}
-
 }

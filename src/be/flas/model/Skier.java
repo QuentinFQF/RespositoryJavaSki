@@ -16,6 +16,10 @@ public class Skier extends Person{
 		super(name,firstName,dateOfBirth,pseudo);
 		this.assurance=assurance;
 	}
+	public Skier(String name,String firstName,String pseudo) {
+		super(name,firstName,pseudo);
+		
+	}
 	public void AddBooking(Booking b) {
 		if(b != null && !bookings.contains(b)) {
 			bookings.add(b);

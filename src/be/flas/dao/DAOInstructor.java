@@ -193,5 +193,23 @@ public class DAOInstructor implements IDaoClasse<Instructor> {
         }
         return instructors;
     }
+    
+    @Override
+    public int getInstructorIdByName(String name){
+        String sql = "SELECT Instructorid FROM Instructor WHERE Pseudo = ?"; // Ajustez la requête selon votre schéma de table
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("InstructorId"); 
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID de l'instructeur : " + e.getMessage());
+            
+        }
+        return -1; 
+    }
+    
 
 }

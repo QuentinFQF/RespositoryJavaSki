@@ -9,12 +9,21 @@ public class Period {
 	private LocalDate endDate;
 	private boolean isVacation;
 	private List<Booking> bookings;
+	private int id;
 	
+	public Period(int id,LocalDate start,LocalDate end,boolean isVacation) {
+		this.endDate=end;
+		this.isVacation=isVacation;
+		this.startDate=start;
+		this.bookings=new ArrayList<>();
+		this.id=id;
+	}
 	public Period(LocalDate start,LocalDate end,boolean isVacation) {
 		this.endDate=end;
 		this.isVacation=isVacation;
 		this.startDate=start;
 		this.bookings=new ArrayList<>();
+		
 	}
 
 	public LocalDate getStartDate() {

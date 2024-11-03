@@ -320,12 +320,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import be.flas.connection.DatabaseConnection;
+import be.flas.dao.DAOBooking;
 import be.flas.dao.DAOInstructor;
 import be.flas.dao.DAOLesson;
 import be.flas.dao.DAOLessonType;
@@ -344,6 +347,8 @@ public class FormChooseInstructor extends JFrame {
     private DAOSkier daoSkier;
     private DAOLesson daoLesson;
     private DAOPeriod daoPeriod;
+    
+    private DAOBooking daoBooking;
     private Connection sharedConnection;
     private JComboBox<String> comboInstructor;
     private JComboBox<String> comboLessonType;
@@ -374,6 +379,7 @@ public class FormChooseInstructor extends JFrame {
         daoSkier = new DAOSkier(sharedConnection);
         daoLesson = new DAOLesson(sharedConnection);
         daoPeriod = new DAOPeriod(sharedConnection);
+        daoBooking = new DAOBooking(sharedConnection);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 757, 550);
@@ -397,9 +403,9 @@ public class FormChooseInstructor extends JFrame {
         comboLessonType.setBounds(32, 150, 410, 21);
         panel.add(comboLessonType);
 
-        comboSemaine = new JComboBox<>();  // Création du JComboBox pour les semaines
+        /*comboSemaine = new JComboBox<>();  // Création du JComboBox pour les semaines
         comboSemaine.setBounds(32, 100, 410, 21);
-        panel.add(comboSemaine);
+        panel.add(comboSemaine);*/
 
         JButton btnChoisir = new JButton("Choisir");
         btnChoisir.setBounds(189, 443, 85, 21);
@@ -430,7 +436,7 @@ public class FormChooseInstructor extends JFrame {
         fillPeriodComboBox();
         fillSkierComboBox();
         fillLessonTypeComboBox();
-        fillSemaineComboBox();  // Appeler pour remplir le JComboBox avec les semaines
+        //fillSemaineComboBox();  // Appeler pour remplir le JComboBox avec les semaines
 
         // Ajout d'un ActionListener pour comboLessonType
         comboLessonType.addActionListener(new ActionListener() {
@@ -450,13 +456,16 @@ public class FormChooseInstructor extends JFrame {
         });
 
         // ActionListener pour bouton Choisir, qui montre toutes les sélections
-        btnChoisir.addActionListener(new ActionListener() {
+        /*btnChoisir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String semaineChoisie = (String) comboPeriod.getSelectedItem();
                 String instructorChoisi = (String) comboInstructor.getSelectedItem();
                 String lessonTypeChoisi = (String) comboLessonType.getSelectedItem();
                 String skierChoisi = (String) comboSkier.getSelectedItem();
+                
+            
+              
                 if (skierChoisi != null) {
                     // Extraire le pseudo de l'affichage (par exemple, si l'affichage est "Nom Prénom (Pseudo)")
                     String pseudo = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
@@ -464,6 +473,8 @@ public class FormChooseInstructor extends JFrame {
                     System.out.println("id skier : "+ idI);
                     
                 }
+                String pseudoK = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
+                int idK=daoSkier.getSkierIdByName(pseudoK);
                 
                 String selectedTime = RadioButton1.isSelected() ? "Matin" : "Après-midi";
 
@@ -482,10 +493,13 @@ public class FormChooseInstructor extends JFrame {
                     System.out.println(idI);
                     
                 }
+                String pseudo = selectedItem.substring(selectedItem.lastIndexOf("(") + 1, selectedItem.lastIndexOf(")")).trim();
+                int idI=daoInstructor.getInstructorIdByName(pseudo);
              // Extraction des informations sélectionnées
                 String lessonTypeChoisi2 = (String) comboLessonType.getSelectedItem();
                 String[] selectedItem2 = lessonTypeChoisi.split(" - "); // Supposons que vous avez un format "niveau - catégorie - public cible - autre info"
 
+                int idL = daoLessonType.getLessonTypeIdByName(selectedItem2[0], Double.parseDouble(selectedItem2[1]),selectedItem2[2], selectedItem2[3]);
                 // Assurez-vous que le tableau contient suffisamment d'éléments avant d'accéder aux indices
                 if (selectedItem2.length >= 4) {
                     String niveau = selectedItem2[0]; // Par exemple, le niveau
@@ -496,17 +510,172 @@ public class FormChooseInstructor extends JFrame {
                     // Appelez la méthode pour récupérer l'ID du type de leçon
                     int idL = daoLessonType.getLessonTypeIdByName(niveau, Double.parseDouble(categorie), publicCible, autreInfo);
                     System.out.println("ID du type de leçon sélectionné: " + idL);
+                    System.out.println(niveau + categorie + publicCible + autreInfo);
                 } else {
                     System.err.println("Format inattendu pour le type de leçon sélectionné : " + lessonTypeChoisi);
                 }
+                if (semaineChoisie != null) {
+                    // Supposons que le format est "2024-12-08 2024-12-13 (false)"
+                    // Nous devons extraire les deux dates de début et de fin.
+                    String[] parts = semaineChoisie.split(" ");
+                    if (parts.length >= 2) {
+                        try {
+                            // Extraction des dates
+                            LocalDate startDate = LocalDate.parse(parts[0].trim());
+                            LocalDate endDate = LocalDate.parse(parts[1].trim());
+
+                            // Récupération de l'ID de la période
+                            int idP = daoPeriod.getPeriodIdBy(startDate, endDate);
+                            System.out.println("ID de la période : " + idP);
+
+                            if (idP != -1) {
+                                // L'ID a été trouvé
+                                System.out.println("L'ID de la période sélectionnée est : " + idP);
+                            } else {
+                                // L'ID n'a pas été trouvé
+                                System.err.println("Aucune période trouvée pour les dates sélectionnées.");
+                            }
+                        } catch (DateTimeParseException ex) {
+                            System.err.println("Erreur lors du parsing des dates : " + ex.getMessage());
+                        }
+                    } else {
+                        System.err.println("Format inattendu pour les dates de la période : " + semaineChoisie);
+                    }
+                } else {
+                    System.err.println("Aucune période valide sélectionnée.");
+                }
                 
 
+                daoLesson.createLesson(idI,idL, (String) selectedItem2[3]);
+                daoBooking.createBooking();
                 //daoLesson.createLesson(instructorChoisi, ALLBITS, null, null, ABORT);
                 
                 JOptionPane.showMessageDialog(null, message);
             }
         });
-    }
+    }*/
+        
+        
+        btnChoisir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String semaineChoisie = (String) comboPeriod.getSelectedItem();
+                String instructorChoisi = (String) comboInstructor.getSelectedItem();
+                String lessonTypeChoisi = (String) comboLessonType.getSelectedItem();
+                String skierChoisi = (String) comboSkier.getSelectedItem();
+
+
+                String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
+
+                // Récupération de l'ID du skieur
+                int idK = -1;
+                if (skierChoisi != null) {
+                    String pseudoK = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
+                    idK = daoSkier.getSkierIdByName(pseudoK);
+                    System.out.println("id skier : " + idK);
+                }
+
+                // Récupération de l'ID de l'instructeur
+                int idI = -1;
+                if (instructorChoisi != null) {
+                    String pseudoI = instructorChoisi.substring(instructorChoisi.lastIndexOf("(") + 1, instructorChoisi.lastIndexOf(")")).trim();
+                    idI = daoInstructor.getInstructorIdByName(pseudoI);
+                    System.out.println("ID instructeur : " + idI);
+                }
+
+                // Récupération de l'ID du type de leçon
+                int idL = -1;
+                String[] selectedItem2 = lessonTypeChoisi.split(" - ");
+                if (selectedItem2.length >= 4) {
+                    String niveau = selectedItem2[0];
+                    String categorie = selectedItem2[1];
+                    String publicCible = selectedItem2[2];
+                    String autreInfo = selectedItem2[3];
+
+                    idL = daoLessonType.getLessonTypeIdByName(niveau, Double.parseDouble(categorie), publicCible, autreInfo);
+                    System.out.println("ID du type de leçon sélectionné : " + idL);
+                } else {
+                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + lessonTypeChoisi);
+                }
+
+                // Récupération des dates de la période choisie
+                LocalDate startDate = null;
+                LocalDate endDate = null;
+                if (semaineChoisie != null) {
+                    String[] parts = semaineChoisie.split(" ");
+                    if (parts.length >= 2) {
+                        try {
+                            startDate = LocalDate.parse(parts[0].trim());
+                            endDate = LocalDate.parse(parts[1].trim());
+                        } catch (DateTimeParseException ex) {
+                            System.err.println("Erreur lors du parsing des dates : " + ex.getMessage());
+                        }
+                    } else {
+                        System.err.println("Format inattendu pour les dates de la période : " + semaineChoisie);
+                    }
+                } else {
+                    System.err.println("Aucune période valide sélectionnée.");
+                }
+
+                // Récupération de l'ID de la période
+                int idP = daoPeriod.getPeriodIdBy(startDate, endDate);
+                if (idP != -1) {
+                    System.out.println("ID de la période : " + idP);
+                } else {
+                    System.err.println("Aucune période trouvée pour les dates sélectionnées.");
+                }
+
+                // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
+                if (idI != -1 && idL != -1 && startDate != null && endDate != null && idP != -1) {
+                    // Appel à la méthode pour créer la leçon
+                	System.out.println("time : "+timeSlot);
+                    int idLesson=daoLesson.createLesson(idI, idL, selectedItem2[3],timeSlot); // Assurez-vous que la méthode createLesson existe
+
+                    //int idLesson=daoLesson.getLessonId(idI,idL, startDate, endDate);
+                	//daoLesson.createLesson(idI, idL,5,6); 
+                	System.out.println("cat ea : "+selectedItem2[3]);
+                	System.out.println("idlesson"+idLesson);
+                    // Appel à la méthode pour créer la réservation
+                    daoBooking.createBooking(idLesson,idK, idI , idP); // Assurez-vous que la méthode createBooking existe
+
+                    // Message de confirmation
+                    JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
+                } else {
+                    System.err.println("Impossible de créer la leçon ou la réservation, certains IDs sont invalides.");
+                }
+            }
+        });
+        }
+
+
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
     private void updateInstructorsForLessonType(String category, String targetAudience) {
         System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
@@ -578,7 +747,7 @@ public class FormChooseInstructor extends JFrame {
             System.err.println("Erreur lors de la mise à jour des period : " + e.getMessage());
         }
     }
-    private void fillSemaineComboBox() {
+    /*private void fillSemaineComboBox() {
         Calendar calendar = Calendar.getInstance();
         
         // Début de la saison : samedi 6 décembre 2024
@@ -606,7 +775,7 @@ public class FormChooseInstructor extends JFrame {
             calendar.add(Calendar.DAY_OF_WEEK, 2);
             weekNumber++;
         }
-    }
+    }*/
 }
 
 

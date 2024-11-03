@@ -10,6 +10,7 @@ public class Lesson {
 	private Instructor instructor;
 	private List<Booking> bookings;
 	private LessonType lessonType;
+	private int lessonId;
 	
 	public Lesson(int min,int max,Instructor ins,LessonType lt) {
 		this.minBookings=min;
@@ -64,6 +65,16 @@ public class Lesson {
 	public double getLessonPrice() {
 		return 1;
 	}
+	public int getLessonId() {
+		return minBookings;
+	}
+
+	
+
+	public void setLessonId(int lessonId) {
+		this.lessonId=lessonId;
+	}
+	
 	public void AddBooking(Booking b) {
 		if(b != null && !bookings.contains(b)) {
 			bookings.add(b);

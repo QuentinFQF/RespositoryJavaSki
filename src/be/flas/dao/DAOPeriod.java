@@ -1,6 +1,7 @@
 package be.flas.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -87,5 +88,27 @@ public class DAOPeriod implements IDaoPeriod{
         }
         return periods;
     }
+    @Override
+    public int getPeriodIdBy(LocalDate sd, LocalDate ed) {
+        String sql = "SELECT PeriodId FROM Period WHERE StartDate = ? AND EndDate = ?"; // Assurez-vous que les noms des colonnes sont corrects
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            // Convertir LocalDate en java.sql.Date pour l'utilisation dans la base de données
+            preparedStatement.setDate(1, java.sql.Date.valueOf(sd));
+            preparedStatement.setDate(2, java.sql.Date.valueOf(ed));
+            
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("PeriodId");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID de la période : " + e.getMessage());
+        }
+
+        // Retourne -1 si aucune période correspondante n'est trouvée ou en cas d'erreur
+        return -1;
+    }
+
 
 }

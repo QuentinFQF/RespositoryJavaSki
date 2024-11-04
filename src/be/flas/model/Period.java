@@ -25,6 +25,12 @@ public class Period {
 		this.bookings=new ArrayList<>();
 		
 	}
+    public Period(int id) {
+		this.id=id;
+	}
+	public Period() {
+		
+	}
 
 	public LocalDate getStartDate() {
 		return startDate;
@@ -67,6 +73,12 @@ public class Period {
 		}
 	}
 
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	@Override
 	public String toString() {
 		return "Period [startDate=" + startDate + ", endDate=" + endDate + ", isVacation=" + isVacation + "]";

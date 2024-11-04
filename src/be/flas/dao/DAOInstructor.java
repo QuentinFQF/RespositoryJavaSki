@@ -10,17 +10,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoClasse;
 import be.flas.model.Instructor;
+import be.flas.model.Skier;
 
-public class DAOInstructor implements IDaoClasse<Instructor> {
+public class DAOInstructor extends DaoGeneric<Instructor> {
 
-    private final Connection connection;
+    
 
-    // Constructeur pour initialiser avec la connexion partagée
-    public DAOInstructor(Connection connection) {
-        this.connection = connection;
+	public DAOInstructor(Connection conn){
+    	super(conn);
     }
+    @Override
+	public boolean delete(Instructor obj){
+	    return false;
+	}
+    @Override
+	public boolean update(Instructor obj){
+	    return false;
+	}
+    @Override
+	public Instructor find(int id){
+    	Instructor s = new Instructor();
+		return s;
+	}
 
     public boolean testConnection() {
         try {
@@ -121,7 +135,7 @@ public class DAOInstructor implements IDaoClasse<Instructor> {
             return -1;
         }
     }
-    @Override
+    
     public List<Instructor> getAllInstructor() {
         List<Instructor> instructors = new ArrayList<>();
         String sql = "SELECT Names, FirstName,Pseudo,DateOfBirth FROM Instructor"; // Vérifiez les noms des colonnes
@@ -161,7 +175,7 @@ public class DAOInstructor implements IDaoClasse<Instructor> {
         }
         return instructors;
     }
-    @Override
+    
     public List<Instructor> getInstructorsByLessonType(/*String level,*/ String category, String targetAudience) {
         List<Instructor> instructors = new ArrayList<>();
         String sql = "SELECT DISTINCT i.Names, i.FirstName, i.DateOfBirth, i.Pseudo " +
@@ -194,7 +208,7 @@ public class DAOInstructor implements IDaoClasse<Instructor> {
         return instructors;
     }
     
-    @Override
+   
     public int getInstructorIdByName(String name){
         String sql = "SELECT Instructorid FROM Instructor WHERE Pseudo = ?"; // Ajustez la requête selon votre schéma de table
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

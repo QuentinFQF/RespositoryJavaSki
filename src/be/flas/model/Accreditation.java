@@ -23,6 +23,9 @@ public class Accreditation {
 		//AddLessonType(lt);
 		
 	}
+	public Accreditation() {
+		
+	}
 	public List<Instructor> getInstructors() {
 		return instructors;
 	}

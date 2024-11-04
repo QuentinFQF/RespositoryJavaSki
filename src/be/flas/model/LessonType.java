@@ -10,12 +10,19 @@ public class LessonType {
 	private double price;
 	private List<Accreditation> accreditations;
 	private List<Lesson> lessons;
+	private int id;
 	public LessonType(String level,String sport,double price) {
 		this.level=level;
 		this.price=price;
 		this.sport=sport;
 		this.accreditations=new ArrayList<>();
 		this.lessons=new ArrayList<>();
+	}
+    public LessonType(int id) {
+		this.id=id;
+	}
+	public LessonType() {
+		
 	}
 	public void AddLesson(Lesson l) {
 		if(l != null && !lessons.contains(l)) {
@@ -64,6 +71,12 @@ public class LessonType {
 	}
 	public void setLessons(List<Lesson> lessons) {
 		this.lessons = lessons;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 }

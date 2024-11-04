@@ -31,6 +31,12 @@ public abstract class Person {
 		
 		this.pseudo=pseudo;
 	}
+    public Person(int id) {
+		this.PersonId=id;
+	}
+	public Person() {
+		
+	}
 
 	public String getName() {
 		return name;

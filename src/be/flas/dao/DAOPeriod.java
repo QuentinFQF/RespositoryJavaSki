@@ -10,18 +10,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoPeriod;
+import be.flas.model.Accreditation;
 import be.flas.model.Instructor;
 import be.flas.model.Period;
 
-public class DAOPeriod implements IDaoPeriod{
+public class DAOPeriod extends DaoGeneric<Period>{
 
-	private Connection connection;
-
-    public DAOPeriod(Connection connection) {
-        this.connection = connection;
+	public DAOPeriod(Connection conn){
+    	super(conn);
     }
-
+    @Override
+	public boolean delete(Period obj){
+	    return false;
+	}
+    @Override
+	public boolean update(Period obj){
+	    return false;
+	}
+    @Override
+	public Period find(int id){
+    	Period s = new Period();
+		return s;
+	}
+    @Override
+    public boolean create(Period obj){
+    	return false;
+    }
     /*public List<Period> getAllPeriods() {
         List<Period> periods = new ArrayList<>();
         String sql = "SELECT PeriodId, StartDate, EndDate, IsVacation FROM Period";
@@ -43,7 +59,7 @@ public class DAOPeriod implements IDaoPeriod{
 
         return periods;
     }*/
-    @Override
+    
     public List<Period> getAllPeriods() {
         List<Period> periods = new ArrayList<>();
         String sql = "SELECT StartDate, EndDate, IsVacation FROM Period";
@@ -88,7 +104,7 @@ public class DAOPeriod implements IDaoPeriod{
         }
         return periods;
     }
-    @Override
+    
     public int getPeriodIdBy(LocalDate sd, LocalDate ed) {
         String sql = "SELECT PeriodId FROM Period WHERE StartDate = ? AND EndDate = ?"; // Assurez-vous que les noms des colonnes sont corrects
 

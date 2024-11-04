@@ -8,21 +8,38 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoAccreditation;
 import be.flas.interfaces.IDaoLessonType;
+import be.flas.model.Accreditation;
 import be.flas.model.Instructor;
 import be.flas.model.LessonType;
 
-public class DAOLessonType implements IDaoLessonType{
+public class DAOLessonType extends DaoGeneric<LessonType>{
 
-	private Connection connection;
-
-    public DAOLessonType(Connection connection) {
-        this.connection = connection;
+	public DAOLessonType(Connection conn){
+    	super(conn);
+    }
+    @Override
+	public boolean delete(LessonType obj){
+	    return false;
+	}
+    @Override
+	public boolean update(LessonType obj){
+	    return false;
+	}
+    @Override
+	public LessonType find(int id){
+    	LessonType s = new LessonType();
+		return s;
+	}
+    @Override
+    public boolean create(LessonType obj){
+    	return false;
     }
 
     // Méthodes utilisant 'connection' ici, sans la fermer
-    @Override
+    
     public List<String> selectLessonType() {
         List<String> names = new ArrayList<>();
         String query = "SELECT Levels, Price, Sport, AgeCategory FROM LessonType";
@@ -113,7 +130,7 @@ public class DAOLessonType implements IDaoLessonType{
         }
     }*/
     
-    @Override
+   
     public int getLessonTypeIdByName(String level,double price,String sport,String age) {
         String sql = "SELECT LessonTypeid FROM LessonType WHERE Levels = ? and Price = ? and Sport = ? and AgeCategory = ?"; // Ajustez la requête selon votre schéma de table
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

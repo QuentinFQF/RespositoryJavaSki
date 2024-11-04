@@ -17,6 +17,9 @@ public class Booking {
 		this.period=period;
 		this.skier=skier;
 	}
+	public Booking() {
+		
+	}
 	public LocalDate getDateBooking() {
 		return dateBooking;
 	}

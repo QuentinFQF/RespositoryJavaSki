@@ -10,21 +10,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.connection.DatabaseConnection;
+import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoAccreditation;
 import be.flas.interfaces.IDaoClasse;
 import be.flas.model.Accreditation;
+import be.flas.model.Skier;
 
 
-public class DAOAccreditation implements IDaoAccreditation {
+public class DAOAccreditation extends DaoGeneric<Accreditation> {
 
-	private Connection connection;
-
-    public DAOAccreditation(Connection connection) {
-        this.connection = connection;
+	public DAOAccreditation(Connection conn){
+    	super(conn);
+    }
+    @Override
+	public boolean delete(Accreditation obj){
+	    return false;
+	}
+    @Override
+	public boolean update(Accreditation obj){
+	    return false;
+	}
+    @Override
+	public Accreditation find(int id){
+    	Accreditation s = new Accreditation();
+		return s;
+	}
+    @Override
+    public boolean create(Accreditation obj){
+    	return false;
     }
 
     // Méthodes utilisant 'connection' ici, sans la fermer
-    @Override
+    
     public List<String> selectNames() {
         List<String> names = new ArrayList<>();
         String query = "SELECT Names FROM Accreditation";
@@ -106,7 +123,7 @@ public class DAOAccreditation implements IDaoAccreditation {
 	        return -1; // En cas d'exception SQL, retourne -1
 	    }
 	}*/
-    @Override
+    
     public int selectId(String names) {
         String query = "SELECT AccreditationId FROM Accreditation WHERE Names=?"; // Requête SQL
 

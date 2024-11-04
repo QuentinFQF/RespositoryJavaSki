@@ -1,7 +1,7 @@
 package be.flas.dao;
 
 import be.flas.connection.DatabaseConnection;
-
+import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoClasse;
 import be.flas.interfaces.IDaoSkier;
 import be.flas.model.Skier;
@@ -13,43 +13,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOSkier implements IDaoSkier<Skier> {
+public class DAOSkier extends DaoGeneric<Skier> {
 
-	private Connection connection;
 
-    // Constructeur qui prend une connexion
-    public DAOSkier(Connection connection) {
-        this.connection = connection;
+    
+    public DAOSkier(Connection conn){
+    	super(conn);
     }
-    /*@Override
-    public boolean create(Skier skier) {
-        Connection connection = null;
-        PreparedStatement pstmt = null;
-
-        try {
-            // Obtenez l'instance de la connexion à la base de données
-            connection = DatabaseConnection.getInstance().getConnection();
-            
-            // Préparez la requête SQL d'insertion
-            String sql = "INSERT INTO Skier (Names, FirstName, Pseudo, DateOfBirth, Assurance) VALUES (?, ?, ?, ?, ?)";
-            pstmt = connection.prepareStatement(sql);
-            
-            // Remplissez les paramètres de la requête
-            pstmt.setString(1, skier.getName()); // Supposons que la classe Skier a un getter pour Names
-            pstmt.setString(2, skier.getFirstName()); // Supposons que la classe Skier a un getter pour FirstNames
-            pstmt.setString(3, skier.getPseudo()); // Supposons que la classe Skier a un getter pour Pseudo
-            pstmt.setDate(4, java.sql.Date.valueOf(skier.getDateOfBirth())); // Supposons que DateOfBirth est un LocalDate
-            pstmt.setBoolean(5, skier.isAssurance()); // Supposons que la classe Skier a un getter pour Assurance
-            
-            // Exécutez la requête
-            int rowsInserted = pstmt.executeUpdate();
-            return rowsInserted > 0; // Retourne true si au moins une ligne a été insérée
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false; // Retourne false en cas d'erreur
-        } 
-    }*/
+    @Override
+	public boolean delete(Skier obj){
+	    return false;
+	}
+    @Override
+	public boolean update(Skier obj){
+	    return false;
+	}
+    @Override
+	public Skier find(int id){
+		Skier s = new Skier();
+		return s;
+	}
+ 
     @Override
     public boolean create(Skier skier) {
         String sql = "INSERT INTO Skier (Names, FirstName, Pseudo, DateOfBirth, Assurance) VALUES (?, ?, ?, ?, ?)";
@@ -88,7 +72,7 @@ public class DAOSkier implements IDaoSkier<Skier> {
         }
     }
     
-    @Override
+   
     public List<Skier> getAllSkiers() {
         List<Skier> skiers = new ArrayList<>();
         String sql = "SELECT Names, FirstName, Pseudo FROM Skier"; // Adaptation nécessaire selon la structure de votre base de données
@@ -111,7 +95,7 @@ public class DAOSkier implements IDaoSkier<Skier> {
 
         return skiers;
     }
-    @Override
+    
     public int getSkierIdByName(String name){
         String sql = "SELECT Skierid FROM Skier WHERE Pseudo = ?"; // Ajustez la requête selon votre schéma de table
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

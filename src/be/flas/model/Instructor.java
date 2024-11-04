@@ -9,6 +9,7 @@ public class Instructor extends Person {
 	private List<Accreditation> accreditations;
 	private List<Lesson> lessons;
 	private List<Booking> bookings;
+	
 
 	public Instructor(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,Accreditation acc) {
 		super(name,firstName,personId,dateOfBirth,pseudo);
@@ -33,6 +34,13 @@ public class Instructor extends Person {
 		this.lessons=new ArrayList<>();
 		//AddAccreditation(acc);
 		//AddLesson(ls);
+	}
+	public Instructor(int id) {
+		super(id);
+		
+	}
+	public Instructor() {
+		super();
 	}
 	public boolean IsAccreditate() {
 		return false;

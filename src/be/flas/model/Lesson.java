@@ -10,15 +10,22 @@ public class Lesson {
 	private Instructor instructor;
 	private List<Booking> bookings;
 	private LessonType lessonType;
-	private int lessonId;
+	private int id;
+	private String courseType;
+	private String dayPart;
 	
-	public Lesson(int min,int max,Instructor ins,LessonType lt) {
+	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course) {
 		this.minBookings=min;
 		this.maxBookings=max;
 		this.bookings=new ArrayList<>();
 		this.instructor=ins;
 		this.lessonType=lt;
+		this.dayPart=day;
+		this.courseType=course;
 		
+	}
+    public Lesson(int id) {
+		this.id=id;
 	}
 	public Lesson() {
 		
@@ -70,11 +77,29 @@ public class Lesson {
 	public int getLessonId() {
 		return minBookings;
 	}
+	public int getId() {
+		return id;
+	}
 
 	
 
+	public String getCourseType() {
+		return courseType;
+	}
+	public void setCourseType(String courseType) {
+		this.courseType = courseType;
+	}
+	public String getDayPart() {
+		return dayPart;
+	}
+	public void setDayPart(String dayPart) {
+		this.dayPart = dayPart;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public void setLessonId(int lessonId) {
-		this.lessonId=lessonId;
+		this.id=lessonId;
 	}
 	
 	public void AddBooking(Booking b) {

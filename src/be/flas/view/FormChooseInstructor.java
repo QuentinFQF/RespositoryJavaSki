@@ -4,6 +4,7 @@ package be.flas.view;
 import java.awt.*;
 
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -21,10 +22,13 @@ import be.flas.dao.DAOLesson;
 import be.flas.dao.DAOLessonType;
 import be.flas.dao.DAOPeriod;
 import be.flas.dao.DAOSkier;
+import be.flas.model.Booking;
 import be.flas.model.Instructor;
 import be.flas.model.Lesson;
+import be.flas.model.LessonType;
 import be.flas.model.Period;
 import be.flas.model.Skier;
+
 
 
 public class FormChooseInstructor extends JFrame {
@@ -254,16 +258,48 @@ public class FormChooseInstructor extends JFrame {
                 	Lesson lesson=new Lesson();
                 	int[] minMax;
                 	minMax = lesson.getMinAndMaxBooking(selectedItem2[3], timeSlot);
-                    int idLesson=daoLesson.createLesson(idI, idL, selectedItem2[3],timeSlot,"Collectif",minMax[0],minMax[1]); // Assurez-vous que la méthode createLesson existe
+                    //int idLesson=daoLesson.createLesson(idI, idL/*, selectedItem2[3]*/,timeSlot,"Collectif",minMax[0],minMax[1]); 
 
                     
-                	System.out.println("cat ea : "+selectedItem2[3]);
-                	System.out.println("idlesson"+idLesson);
-                    // Appel à la méthode pour créer la réservation
-                    daoBooking.createBooking(idLesson,idK, idI , idP); // Assurez-vous que la méthode createBooking existe
+                	//System.out.println("cat ea : "+selectedItem2[3]);
+                	//System.out.println("idlesson"+idLesson);
+                	LocalDate dateBooking = LocalDate.now();
+                	Period p=new Period(idP);
+                	Skier s=new Skier(idK);
+                	Instructor i=new Instructor(idI);
+                	LessonType lt=new LessonType(idL);
+                	
+                	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif");
+                	
+                	
+                	
+                	//daoLesson.create(lesson2); 
+                	int idLesson=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
+                	System.out.println("id lesson : "+idLesson);
+                	
+                	if(idLesson==-1) {
+                		//create
+                		
+                		daoLesson.create(lesson2);
+                		int idLessonCreate=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
+                		
+                		Lesson l=new Lesson(idLessonCreate);
+                    	Booking b=new Booking(dateBooking,s,p,l,i);
+                        
+                    	daoBooking.create(b);
+                    	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
+                		
+                	}else {
+                		//update
+                		Lesson l=new Lesson(idLesson);
+                		daoLesson.update(l);
+                		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
+                	}
+                	
+                	
 
-                    // Message de confirmation
-                    JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
+                    
+                    
                 } else {
                     System.err.println("Impossible de créer la leçon ou la réservation, certains IDs sont invalides.");
                 }

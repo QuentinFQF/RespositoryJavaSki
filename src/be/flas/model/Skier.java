@@ -7,6 +7,7 @@ public class Skier extends Person{
 
 	private boolean assurance;
 	private List<Booking> bookings;
+
 	
 	public Skier(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,boolean assurance) {
 		super(name,firstName,personId,dateOfBirth,pseudo);
@@ -19,6 +20,13 @@ public class Skier extends Person{
 	public Skier(String name,String firstName,String pseudo) {
 		super(name,firstName,pseudo);
 		
+	}
+	public Skier(int id) {
+		super(id);
+		
+	}
+	public Skier() {
+		super();
 	}
 	public void AddBooking(Booking b) {
 		if(b != null && !bookings.contains(b)) {

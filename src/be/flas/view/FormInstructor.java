@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import be.flas.dao.DAOInstructor;
 import be.flas.dao.DAOSkier;
@@ -106,14 +107,44 @@ public class FormInstructor extends JFrame {
                 String prenom = txPrenom.getText();
                 String pseudo = txPseudo.getText();
                 
+                if (nom == null || nom.trim().isEmpty() || !nom.matches("[a-zA-Z]{1,50}")) {
+                    JOptionPane.showMessageDialog(FormInstructor.this, "Erreur : le nom doit contenir uniquement des lettres et être de 50 caractères maximum.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (prenom == null || prenom.trim().isEmpty() || !prenom.matches("[a-zA-Z]{1,50}")) {
+                    JOptionPane.showMessageDialog(FormInstructor.this, "Erreur : le prénom doit contenir uniquement des lettres et être de 50 caractères maximum.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (pseudo == null || pseudo.trim().isEmpty() || !pseudo.matches("[a-zA-Z]{1,50}")) {
+                    JOptionPane.showMessageDialog(FormInstructor.this, "Erreur : le pseudo doit contenir uniquement des lettres et être de 50 caractères maximum.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
                 // Vérifiez si la date choisie est valide
-                LocalDate dob = null;
+                /*LocalDate dob = null;
                 if (dateChooser.getDate() != null) {
                     dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 } else {
                     JOptionPane.showMessageDialog(FormInstructor.this, "Veuillez sélectionner une date de naissance valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
+                }*/
+                Date date = dateChooser.getDate();
+		        if (date == null) {
+		            System.out.println("Erreur : la date de naissance ne peut pas être vide.");
+		            JOptionPane.showMessageDialog(null, "Erreur : la date de naissance ne peut pas être vide.");
+		            return;
+		        }
+
+		        LocalDate dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		        // Vérification que la date est dans le passé
+		        if (dob.isAfter(LocalDate.now())) {
+		            System.out.println("Erreur : la date de naissance doit être dans le passé.");
+		            JOptionPane.showMessageDialog(null, "Erreur : la date de naissance doit être dans le passé.");
+		            return;
+		        }
 
                 String selectedAccreditation = (String) comboAccreditation.getSelectedItem();
                 Accreditation accreditation = new Accreditation(selectedAccreditation);

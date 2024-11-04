@@ -1,322 +1,9 @@
 
-/*package be.flas.view;
-
-import java.awt.EventQueue;
-import java.sql.Connection;
-import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOLessonType;
-import be.flas.model.Instructor;
-
-import java.awt.Color;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-public class FormChooseInstructor extends JFrame {
-
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private DAOInstructor daoInstructor;
-    private DAOLessonType daoLessonType;
-    private Connection sharedConnection;
-    private JComboBox<String> comboInstructor;
-    private JComboBox<String> comboLessonType;
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    FormChooseInstructor frame = new FormChooseInstructor();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public FormChooseInstructor() {
-        sharedConnection = DatabaseConnection.getInstance().getConnection();
-        daoInstructor = new DAOInstructor(sharedConnection);
-        daoLessonType = new DAOLessonType(sharedConnection);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 757, 550);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
-
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(255, 128, 128));
-        panel.setBounds(213, 10, 462, 474);
-        contentPane.add(panel);
-        panel.setLayout(null);
-
-        comboInstructor = new JComboBox<>();
-        comboInstructor.setBounds(149, 149, 161, 21);
-        panel.add(comboInstructor);
-
-        comboLessonType = new JComboBox<>();
-        comboLessonType.setBounds(32, 115, 410, 21);
-        panel.add(comboLessonType);
-
-        JButton btnNewButton = new JButton("Choisir");
-        btnNewButton.setBounds(189, 443, 85, 21);
-        panel.add(btnNewButton);
-
-        fillLessonTypeComboBox();
-        
-        // Ajouter un ActionListener pour détecter les changements dans comboLessonType
-        comboLessonType.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedLessonType = (String) comboLessonType.getSelectedItem();
-                String[] parts = selectedLessonType.split(" - ");
-                
-                // Vérifiez que le tableau contient suffisamment d'éléments avant d'accéder aux indices
-                if (parts.length >= 4) {
-                    String level = parts[0];
-                    String category = parts[2];
-                    String targetAudience = parts[3];
-                    
-                    updateInstructorsForLessonType(category, targetAudience);
-                    System.out.println("cat "+category);
-                    System.out.println("age "+targetAudience);
-                } else {
-                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + selectedLessonType);
-                }
-            }
-        });
-    }
-
-    // Met à jour le comboInstructor en fonction des paramètres extraits de comboLessonType
-    private void updateInstructorsForLessonType(String category, String targetAudience) {
-        System.out.println("Mise à jour des instructeurs pour le type de leçon : " + category + ", " + targetAudience);
-        try {
-            // Appel à daoInstructor pour récupérer les instructeurs par type de leçon
-            List<Instructor> instructors = daoInstructor.getInstructorsByLessonType( category, targetAudience);
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-
-            for (Instructor instructor : instructors) {
-                String displayText = instructor.getName() + " " + instructor.getFirstName();
-                model.addElement(displayText);
-            }
-
-            comboInstructor.setModel(model);
-            System.out.println("Instructeurs mis à jour : " + instructors);
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la mise à jour des instructeurs : " + e.getMessage());
-        }
-    }
-
-    // Remplir comboLessonType avec tous les LessonTypes disponibles
-    private void fillLessonTypeComboBox() {
-        System.out.println("Début du remplissage du JComboBox avec les LessonTypes.");
-        try {
-            List<String> lessonTypes = daoLessonType.selectLessonType();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(lessonTypes.toArray(new String[0]));
-            comboLessonType.setModel(model);
-            System.out.println("LessonTypes chargés : " + lessonTypes);
-        } catch (Exception e) {
-            System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
-        }
-    }
-}*/
-//------------------------------------
-/*
 package be.flas.view;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.util.Calendar;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOLessonType;
-import be.flas.model.Instructor;
 
-public class FormChooseInstructor extends JFrame {
-
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private DAOInstructor daoInstructor;
-    private DAOLessonType daoLessonType;
-    private Connection sharedConnection;
-    private JComboBox<String> comboInstructor;
-    private JComboBox<String> comboLessonType;
-    private JComboBox<String> comboSemaine; 
-    private ButtonGroup buttonGroup;
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    FormChooseInstructor frame = new FormChooseInstructor();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public FormChooseInstructor() {
-        sharedConnection = DatabaseConnection.getInstance().getConnection();
-        daoInstructor = new DAOInstructor(sharedConnection);
-        daoLessonType = new DAOLessonType(sharedConnection);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 757, 550);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
-
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(255, 128, 128));
-        panel.setBounds(213, 10, 462, 474);
-        contentPane.add(panel);
-        panel.setLayout(null);
-
-        comboInstructor = new JComboBox<>();
-        comboInstructor.setBounds(149, 200, 161, 21);
-        panel.add(comboInstructor);
-
-        comboLessonType = new JComboBox<>();
-        comboLessonType.setBounds(32, 150, 410, 21);
-        panel.add(comboLessonType);
-
-        comboSemaine = new JComboBox<>();  // Création du JComboBox pour les semaines
-        comboSemaine.setBounds(32, 100, 410, 21);
-        panel.add(comboSemaine);
-
-        JButton btnChoisir = new JButton("Choisir");
-        btnChoisir.setBounds(189, 443, 85, 21);
-        panel.add(btnChoisir);
-        
-        JRadioButton RadioButton1 = new JRadioButton("Matin");
-        RadioButton1.setBounds(145, 291, 103, 21);
-        panel.add(RadioButton1);
-        
-        JRadioButton RadioButton2 = new JRadioButton("Après-midi");
-        RadioButton2.setBounds(145, 322, 103, 21);
-        panel.add(RadioButton2);
-        
-        buttonGroup = new ButtonGroup();
-        buttonGroup.add(RadioButton1);
-        buttonGroup.add(RadioButton2);
-
-        fillLessonTypeComboBox();
-        fillSemaineComboBox();  // Appeler pour remplir le JComboBox avec les semaines
-
-        // Ajout d'un ActionListener pour comboLessonType
-        comboLessonType.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedLessonType = (String) comboLessonType.getSelectedItem();
-                String[] parts = selectedLessonType.split(" - ");
-
-                if (parts.length >= 3) {
-                    String extractedCategory = parts[2];
-                    String extractedTargetAudience = parts[3];
-                    updateInstructorsForLessonType(extractedCategory, extractedTargetAudience);
-                } else {
-                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + selectedLessonType);
-                }
-            }
-        });
-
-        // ActionListener pour bouton Choisir, qui montre la semaine choisie
-        btnChoisir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String semaineChoisie = (String) comboSemaine.getSelectedItem();
-                JOptionPane.showMessageDialog(null, "Vous avez choisi : " + semaineChoisie);
-            }
-        });
-    }
-
-    private void updateInstructorsForLessonType(String category, String targetAudience) {
-        System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
-        try {
-            List<Instructor> instructors = daoInstructor.getInstructorsByLessonType(category, targetAudience);
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-
-            for (Instructor instructor : instructors) {
-                String displayText = instructor.getName() + " " + instructor.getFirstName();
-                model.addElement(displayText);
-            }
-
-            comboInstructor.setModel(model);
-            System.out.println("Instructeurs mis à jour : " + instructors);
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la mise à jour des instructeurs : " + e.getMessage());
-        }
-    }
-
-    private void fillLessonTypeComboBox() {
-        System.out.println("Début du remplissage du JComboBox avec les LessonTypes.");
-        try {
-            List<String> lessonTypes = daoLessonType.selectLessonType();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(lessonTypes.toArray(new String[0]));
-            comboLessonType.setModel(model);
-            System.out.println("LessonTypes chargés : " + lessonTypes);
-        } catch (Exception e) {
-            System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
-        }
-    }
-
-    
-    private void fillSemaineComboBox() {
-        Calendar calendar = Calendar.getInstance();
-        
-        // Début de la saison : samedi 6 décembre 2024
-        calendar.set(2024, Calendar.DECEMBER, 8);
-
-        // Fin de la saison : samedi 3 mai 2025
-        Calendar endSeason = Calendar.getInstance();
-        endSeason.set(2025, Calendar.MAY, 3);
-
-        int weekNumber = 1;  // Numérotation des semaines
-
-        // Remplissage du JComboBox pour chaque semaine entre le début et la fin de la saison
-        while (!calendar.after(endSeason)) {
-            // Début de la semaine (samedi)
-            String debutSemaine = String.format("%1$td/%1$tm/%1$tY", calendar);
-
-            // Fin de la semaine (vendredi suivant)
-            calendar.add(Calendar.DAY_OF_WEEK, 5);
-            String finSemaine = String.format("%1$td/%1$tm/%1$tY", calendar);
-
-            // Ajouter la semaine au JComboBox
-            comboSemaine.addItem("Semaine " + weekNumber + ": " + debutSemaine + " - " + finSemaine);
-
-            // Avancer au samedi suivant pour la prochaine semaine
-            calendar.add(Calendar.DAY_OF_WEEK, 2);
-            weekNumber++;
-        }
-    }
-}*/
-
-package be.flas.view;
-
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -335,8 +22,10 @@ import be.flas.dao.DAOLessonType;
 import be.flas.dao.DAOPeriod;
 import be.flas.dao.DAOSkier;
 import be.flas.model.Instructor;
+import be.flas.model.Lesson;
 import be.flas.model.Period;
 import be.flas.model.Skier;
+
 
 public class FormChooseInstructor extends JFrame {
 
@@ -455,105 +144,7 @@ public class FormChooseInstructor extends JFrame {
             }
         });
 
-        // ActionListener pour bouton Choisir, qui montre toutes les sélections
-        /*btnChoisir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String semaineChoisie = (String) comboPeriod.getSelectedItem();
-                String instructorChoisi = (String) comboInstructor.getSelectedItem();
-                String lessonTypeChoisi = (String) comboLessonType.getSelectedItem();
-                String skierChoisi = (String) comboSkier.getSelectedItem();
-                
-            
-              
-                if (skierChoisi != null) {
-                    // Extraire le pseudo de l'affichage (par exemple, si l'affichage est "Nom Prénom (Pseudo)")
-                    String pseudo = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
-                    int idI=daoSkier.getSkierIdByName(pseudo);
-                    System.out.println("id skier : "+ idI);
-                    
-                }
-                String pseudoK = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
-                int idK=daoSkier.getSkierIdByName(pseudoK);
-                
-                String selectedTime = RadioButton1.isSelected() ? "Matin" : "Après-midi";
-
-                // Afficher toutes les sélections
-                String message = String.format("Vous avez choisi :\nSemaine: %s\nInstructeur: %s\nType de leçon: %s\nMoment de la journée: %s skier : %s",
-                                                semaineChoisie, instructorChoisi, lessonTypeChoisi, selectedTime,skierChoisi);
-                
-                
-                
-             // Exemple d'utilisation lorsque vous avez besoin de récupérer l'ID
-                String selectedItem = (String) comboInstructor.getSelectedItem();
-                if (selectedItem != null) {
-                    // Extraire le pseudo de l'affichage (par exemple, si l'affichage est "Nom Prénom (Pseudo)")
-                    String pseudo = selectedItem.substring(selectedItem.lastIndexOf("(") + 1, selectedItem.lastIndexOf(")")).trim();
-                    int idI=daoInstructor.getInstructorIdByName(pseudo);
-                    System.out.println(idI);
-                    
-                }
-                String pseudo = selectedItem.substring(selectedItem.lastIndexOf("(") + 1, selectedItem.lastIndexOf(")")).trim();
-                int idI=daoInstructor.getInstructorIdByName(pseudo);
-             // Extraction des informations sélectionnées
-                String lessonTypeChoisi2 = (String) comboLessonType.getSelectedItem();
-                String[] selectedItem2 = lessonTypeChoisi.split(" - "); // Supposons que vous avez un format "niveau - catégorie - public cible - autre info"
-
-                int idL = daoLessonType.getLessonTypeIdByName(selectedItem2[0], Double.parseDouble(selectedItem2[1]),selectedItem2[2], selectedItem2[3]);
-                // Assurez-vous que le tableau contient suffisamment d'éléments avant d'accéder aux indices
-                if (selectedItem2.length >= 4) {
-                    String niveau = selectedItem2[0]; // Par exemple, le niveau
-                    String categorie = selectedItem2[1]; // Catégorie
-                    String publicCible = selectedItem2[2]; // Public cible
-                    String autreInfo = selectedItem2[3]; // Autres informations
-
-                    // Appelez la méthode pour récupérer l'ID du type de leçon
-                    int idL = daoLessonType.getLessonTypeIdByName(niveau, Double.parseDouble(categorie), publicCible, autreInfo);
-                    System.out.println("ID du type de leçon sélectionné: " + idL);
-                    System.out.println(niveau + categorie + publicCible + autreInfo);
-                } else {
-                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + lessonTypeChoisi);
-                }
-                if (semaineChoisie != null) {
-                    // Supposons que le format est "2024-12-08 2024-12-13 (false)"
-                    // Nous devons extraire les deux dates de début et de fin.
-                    String[] parts = semaineChoisie.split(" ");
-                    if (parts.length >= 2) {
-                        try {
-                            // Extraction des dates
-                            LocalDate startDate = LocalDate.parse(parts[0].trim());
-                            LocalDate endDate = LocalDate.parse(parts[1].trim());
-
-                            // Récupération de l'ID de la période
-                            int idP = daoPeriod.getPeriodIdBy(startDate, endDate);
-                            System.out.println("ID de la période : " + idP);
-
-                            if (idP != -1) {
-                                // L'ID a été trouvé
-                                System.out.println("L'ID de la période sélectionnée est : " + idP);
-                            } else {
-                                // L'ID n'a pas été trouvé
-                                System.err.println("Aucune période trouvée pour les dates sélectionnées.");
-                            }
-                        } catch (DateTimeParseException ex) {
-                            System.err.println("Erreur lors du parsing des dates : " + ex.getMessage());
-                        }
-                    } else {
-                        System.err.println("Format inattendu pour les dates de la période : " + semaineChoisie);
-                    }
-                } else {
-                    System.err.println("Aucune période valide sélectionnée.");
-                }
-                
-
-                daoLesson.createLesson(idI,idL, (String) selectedItem2[3]);
-                daoBooking.createBooking();
-                //daoLesson.createLesson(instructorChoisi, ALLBITS, null, null, ABORT);
-                
-                JOptionPane.showMessageDialog(null, message);
-            }
-        });
-    }*/
+        
         
         
         btnChoisir.addActionListener(new ActionListener() {
@@ -565,7 +156,38 @@ public class FormChooseInstructor extends JFrame {
                 String skierChoisi = (String) comboSkier.getSelectedItem();
 
 
-                String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
+                //String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
+             // Vérification de la validité des sélections
+                if (semaineChoisie == null || semaineChoisie.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner une période valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (instructorChoisi == null || instructorChoisi.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un instructeur.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (lessonTypeChoisi == null || lessonTypeChoisi.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un type de leçon.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (skierChoisi == null || skierChoisi.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un skieur.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Vérification de la sélection des boutons radio pour le créneau horaire
+                String timeSlot = null;
+                if (RadioButton1.isSelected()) {
+                    timeSlot = "Matin";
+                } else if (RadioButton2.isSelected()) {
+                    timeSlot = "Après-midi";
+                } else {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 // Récupération de l'ID du skieur
                 int idK = -1;
@@ -629,10 +251,12 @@ public class FormChooseInstructor extends JFrame {
                 if (idI != -1 && idL != -1 && startDate != null && endDate != null && idP != -1) {
                     // Appel à la méthode pour créer la leçon
                 	System.out.println("time : "+timeSlot);
-                    int idLesson=daoLesson.createLesson(idI, idL, selectedItem2[3],timeSlot); // Assurez-vous que la méthode createLesson existe
+                	Lesson lesson=new Lesson();
+                	int[] minMax;
+                	minMax = lesson.getMinAndMaxBooking(selectedItem2[3], timeSlot);
+                    int idLesson=daoLesson.createLesson(idI, idL, selectedItem2[3],timeSlot,"Collectif",minMax[0],minMax[1]); // Assurez-vous que la méthode createLesson existe
 
-                    //int idLesson=daoLesson.getLessonId(idI,idL, startDate, endDate);
-                	//daoLesson.createLesson(idI, idL,5,6); 
+                    
                 	System.out.println("cat ea : "+selectedItem2[3]);
                 	System.out.println("idlesson"+idLesson);
                     // Appel à la méthode pour créer la réservation
@@ -645,37 +269,9 @@ public class FormChooseInstructor extends JFrame {
                 }
             }
         });
-        }
+    }
+        
 
-
-        
-        
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
     private void updateInstructorsForLessonType(String category, String targetAudience) {
         System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
@@ -747,35 +343,7 @@ public class FormChooseInstructor extends JFrame {
             System.err.println("Erreur lors de la mise à jour des period : " + e.getMessage());
         }
     }
-    /*private void fillSemaineComboBox() {
-        Calendar calendar = Calendar.getInstance();
-        
-        // Début de la saison : samedi 6 décembre 2024
-        calendar.set(2024, Calendar.DECEMBER, 6);
-
-        // Fin de la saison : samedi 3 mai 2025
-        Calendar endSeason = Calendar.getInstance();
-        endSeason.set(2025, Calendar.MAY, 3);
-
-        int weekNumber = 1;  // Numérotation des semaines
-
-        // Remplissage du JComboBox pour chaque semaine entre le début et la fin de la saison
-        while (!calendar.after(endSeason)) {
-            // Début de la semaine (samedi)
-            String debutSemaine = String.format("%1$td/%1$tm/%1$tY", calendar);
-
-            // Fin de la semaine (vendredi suivant)
-            calendar.add(Calendar.DAY_OF_WEEK, 5);
-            String finSemaine = String.format("%1$td/%1$tm/%1$tY", calendar);
-
-            // Ajouter la semaine au JComboBox
-            comboSemaine.addItem("Semaine " + weekNumber + ": " + debutSemaine + " - " + finSemaine);
-
-            // Avancer au samedi suivant pour la prochaine semaine
-            calendar.add(Calendar.DAY_OF_WEEK, 2);
-            weekNumber++;
-        }
-    }*/
+    
 }
 
 

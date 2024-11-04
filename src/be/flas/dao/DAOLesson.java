@@ -1,6 +1,7 @@
 package be.flas.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,12 +21,14 @@ public class DAOLesson implements IDaoLesson{
 	}
 
 	@Override
-	public int createLesson(int instructorId, int lessonTypeId, String lessonType, String timeSlot) {
-	    int minBooking;
+	public int createLesson(int instructorId, int lessonTypeId, String lessonType, String timeSlot,String courseType,int minBooking,int maxBooking) {
+	    /*int minBooking;
 	    int maxBooking;
 
-	    // Déterminez les valeurs min/max en fonction du type de leçon
-	    if ("Enfant".equalsIgnoreCase(lessonType)) {
+	    if ("1 heure".equalsIgnoreCase(timeSlot) || "2 heures".equalsIgnoreCase(timeSlot)) {
+	        minBooking = 1;
+	        maxBooking = 4;
+	    }else if ("Enfant".equalsIgnoreCase(lessonType)) {
 	        minBooking = 5;
 	        maxBooking = 8;
 	    } else if ("Adulte".equalsIgnoreCase(lessonType)) {
@@ -34,9 +37,22 @@ public class DAOLesson implements IDaoLesson{
 	    } else {
 	        System.err.println("Type de leçon non reconnu : " + lessonType);
 	        return -1; // Retourne -1 si le type de leçon est invalide
+	    }*/
+		/*int[] minMax;
+		
+	    try {
+	        minMax = getMinAndMaxBooking(lessonType, timeSlot); // Appel à la méthode de vérification
+	    } catch (IllegalArgumentException e) {
+	        System.err.println(e.getMessage());
+	        return -1; // Retourne -1 en cas d'erreur de validation
 	    }
 
-	    String sqlInsertLesson = "INSERT INTO Lesson (InstructorId, LessonTypeId, MinBookings, MaxBookings, DayPart) VALUES (?, ?, ?, ?, ?)";
+	    int minBooking = minMax[0];
+	    int maxBooking = minMax[1];*/
+	    
+	    
+
+	    String sqlInsertLesson = "INSERT INTO Lesson (InstructorId, LessonTypeId, MinBookings, MaxBookings, DayPart,CourseType) VALUES (?, ?, ?, ?, ?,?)";
 	    String sqlUpdateNumberSkier = "UPDATE Lesson SET NumberSkier = NumberSkier + 1 WHERE LessonId = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertLesson, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,6 +61,7 @@ public class DAOLesson implements IDaoLesson{
 	        pstmt.setInt(3, minBooking);
 	        pstmt.setInt(4, maxBooking);
 	        pstmt.setString(5, timeSlot); // Ajoute le créneau horaire
+	        pstmt.setString(6,courseType );
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {

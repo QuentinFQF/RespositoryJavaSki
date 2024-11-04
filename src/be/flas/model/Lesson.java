@@ -20,7 +20,9 @@ public class Lesson {
 		this.lessonType=lt;
 		
 	}
-	
+	public Lesson() {
+		
+	}
 	public int getMinBookings() {
 		return minBookings;
 	}
@@ -87,5 +89,30 @@ public class Lesson {
 	public String toString() {
 		return "Lesson [minBookings=" + minBookings + ", maxBookings=" + maxBookings + "]";
 	}
+	
+	
+
+	    
+    public int[] getMinAndMaxBooking(String lessonType, String timeSlot) {
+        int minBooking;
+        int maxBooking;
+
+        if ("1 heure".equalsIgnoreCase(timeSlot) || "2 heures".equalsIgnoreCase(timeSlot)) {
+            minBooking = 1;
+            maxBooking = 4;
+        } else if ("Enfant".equalsIgnoreCase(lessonType)) {
+            minBooking = 5;
+            maxBooking = 8;
+        } else if ("Adulte".equalsIgnoreCase(lessonType)) {
+            minBooking = 6;
+            maxBooking = 10;
+        } else {
+            throw new IllegalArgumentException("Type de leçon ou créneau horaire non reconnu : " + lessonType + ", " + timeSlot);
+        }
+
+        return new int[]{minBooking, maxBooking};
+    }
+	
+
 	
 }

@@ -87,7 +87,7 @@ public class FormStart extends JFrame {
 			public void actionPerformed(ActionEvent e) {
                 try {
                     
-                    FormChooseTypeCourse frame = new FormChooseTypeCourse();
+                    FormChooseInstructor frame = new FormChooseInstructor();
                     frame.setVisible(true);
                 } catch (Exception ee) {
                     ee.printStackTrace();

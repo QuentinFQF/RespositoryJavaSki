@@ -13,8 +13,15 @@ public class Lesson {
 	private int id;
 	private String courseType;
 	private String dayPart;
+	private int tarifId;
 	
-	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course) {
+	public int getTarifId() {
+		return tarifId;
+	}
+	public void setTarifId(int tarifId) {
+		this.tarifId = tarifId;
+	}
+	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId) {
 		this.minBookings=min;
 		this.maxBookings=max;
 		this.bookings=new ArrayList<>();
@@ -22,6 +29,7 @@ public class Lesson {
 		this.lessonType=lt;
 		this.dayPart=day;
 		this.courseType=course;
+		this.tarifId=tId;
 		
 	}
     public Lesson(int id) {

@@ -34,7 +34,7 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	    
 	    
 	   
-	    String sqlInsertLesson = "INSERT INTO Lesson (InstructorId, LessonTypeId, MinBookings, MaxBookings, DayPart,CourseType) VALUES (?, ?, ?, ?, ?,?)";
+	    String sqlInsertLesson = "INSERT INTO Lesson (InstructorId, LessonTypeId, MinBookings, MaxBookings, DayPart,CourseType,TariffId) VALUES (?, ?, ?, ?, ?,?,?)";
 	    String sqlUpdateNumberSkier = "UPDATE Lesson SET NumberSkier = NumberSkier + 1 WHERE LessonId = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertLesson, Statement.RETURN_GENERATED_KEYS)) {
@@ -44,6 +44,13 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	        pstmt.setInt(4, l.getMaxBookings());
 	        pstmt.setString(5, l.getDayPart()); // Ajoute le créneau horaire
 	        pstmt.setString(6,l.getCourseType());
+	        if (l.getCourseType().equals("Collectif")) {
+                pstmt.setNull(7, java.sql.Types.INTEGER);  // Mettre NULL pour tarif_id si leçon collective
+            }else {
+                // Récupérez l'ID de tarif particulier ici si nécessaire pour les leçons particulières.
+                 // Cette méthode doit être définie pour retourner l'ID correct.
+                pstmt.setInt(7, l.getTarifId());
+            }
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
@@ -66,7 +73,10 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	        System.err.println("Erreur lors de la création de la leçon : " + e.getMessage());
 	    }
 	    return false; // Retourne -1 en cas d'échec
+    	
 	}
+    
+    
 
 	
 	//public int createLesson(int instructorId, int lessonTypeId/*, String lessonType*/, String timeSlot,String courseType,int minBooking,int maxBooking) {

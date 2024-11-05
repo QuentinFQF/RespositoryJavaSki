@@ -157,10 +157,13 @@ public class FormInscriptionParticulier extends JFrame {
 
                 //String timeSlot = RadioButton1.isSelected() ? "1 heure" : "2 heures";
                 String timeSlot = null;
+                int nbrHours=0;
                 if (RadioButton1.isSelected()) {
                     timeSlot = "1 heure";
+                    nbrHours=1;
                 } else if (RadioButton2.isSelected()) {
                     timeSlot = "2 heures";
+                    nbrHours=2;
                 } else {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner une durée pour la leçon (1 heure ou 2 heures).", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -289,15 +292,19 @@ public class FormInscriptionParticulier extends JFrame {
                 	Instructor i=new Instructor(idI);
                 	LessonType lt=new LessonType(idL);
                 	
-                	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Particulier");
+                	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Particulier",nbrHours);
                 	int idLesson=daoLesson.getLessonId(idI,idL,timeSlot,"Particulier",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
                 	
-                	if(idLesson==-1) {
+                	daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
+                	System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
+                	if(daoLesson.isLessonComplete(idLesson)==true) {
+                		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
+                	}else if(idLesson==-1 && daoInstructor.isInstructorAvailable(idI, idP, timeSlot)==true) {
                 		//create
                 		
                 		daoLesson.create(lesson2);
-                		int idLessonCreate=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
+                		int idLessonCreate=daoLesson.getLessonId(idI,idL,timeSlot,"Particulier",minMax[0],minMax[1]);
                 		
                 		Lesson l=new Lesson(idLessonCreate);
                     	Booking b=new Booking(dateBooking,s,p,l,i);
@@ -306,10 +313,13 @@ public class FormInscriptionParticulier extends JFrame {
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
                 		
                 	}else {
-                		//update
+                		
+            			//update
                 		Lesson l=new Lesson(idLesson);
                 		daoLesson.update(l);
                 		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
+                		
+                		
                 	}
                 	
                 	

@@ -269,7 +269,7 @@ public class FormChooseInstructor extends JFrame {
                 	Instructor i=new Instructor(idI);
                 	LessonType lt=new LessonType(idL);
                 	
-                	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif");
+                	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0);
                 	
                 	
                 	

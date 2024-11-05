@@ -192,6 +192,26 @@ public class DAOLesson extends DaoGeneric<Lesson>{
         }
         return false; // Retourne false en cas d'échec
     }
+    
+    public boolean isLessonComplete(int lessonId) {
+        String sql = "SELECT NumberSkier, MaxBookings FROM Lesson WHERE LessonId = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, lessonId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int numberSkier = rs.getInt("NumberSkier");
+                    int maxBookings = rs.getInt("MaxBookings");
+
+                    return numberSkier >= maxBookings; // Retourne true si la leçon est complète, sinon false
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de l'état de la leçon : " + e.getMessage());
+        }
+        return false; // Retourne false en cas d'échec ou si la leçon n'existe pas
+    }
+
 
 
 

@@ -225,5 +225,30 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         return -1; 
     }
     
+    public boolean isInstructorAvailable(int instructorId, int periodId, String timeSlot) {
+        String sql = "SELECT Lesson.LessonId " +
+                     "FROM Lesson " +
+                     "JOIN Booking ON Lesson.LessonId = Booking.LessonId " +
+                     "JOIN Period ON Booking.PeriodId = Period.PeriodId " +
+                     "WHERE Lesson.InstructorId = ? " +
+                     "AND Period.PeriodId = ? " +
+                     "AND Lesson.DayPart = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, instructorId);
+            pstmt.setInt(2, periodId);
+            pstmt.setString(3, timeSlot);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Si un résultat est trouvé, le moniteur est déjà assigné
+                return !rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de la disponibilité du moniteur : " + e.getMessage());
+        }
+        return false; // Retourne false si l'instructeur n'est pas disponible ou si la requête échoue
+    }
+
+    
 
 }

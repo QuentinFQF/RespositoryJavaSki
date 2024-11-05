@@ -273,11 +273,15 @@ public class FormChooseInstructor extends JFrame {
                 	
                 	
                 	
-                	//daoLesson.create(lesson2); 
+                 
                 	int idLesson=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
                 	
-                	if(idLesson==-1) {
+                	daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
+                	System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
+                	if(daoLesson.isLessonComplete(idLesson)==true) {
+                		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
+                	}else if(idLesson==-1 && daoInstructor.isInstructorAvailable(idI, idP, timeSlot)==true) {
                 		//create
                 		
                 		daoLesson.create(lesson2);
@@ -290,11 +294,15 @@ public class FormChooseInstructor extends JFrame {
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
                 		
                 	}else {
-                		//update
+                		
+            			//update
                 		Lesson l=new Lesson(idLesson);
                 		daoLesson.update(l);
                 		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
+                		
+                		
                 	}
+                	
                 	
                 	
 

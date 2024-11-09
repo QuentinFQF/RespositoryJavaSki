@@ -184,10 +184,15 @@ public class FormChooseInstructor extends JFrame {
 
                 // Vérification de la sélection des boutons radio pour le créneau horaire
                 String timeSlot = null;
+                int[] tabTime = new int[2]; 
                 if (RadioButton1.isSelected()) {
                     timeSlot = "Matin";
+                    tabTime[0]=9;
+                    tabTime[1]=12;
                 } else if (RadioButton2.isSelected()) {
                     timeSlot = "Après-midi";
+                    tabTime[0]=14;
+                    tabTime[1]=17;
                 } else {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -292,7 +297,7 @@ public class FormChooseInstructor extends JFrame {
                         
                     	daoBooking.create(b);
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
-                		
+                		//ajouter attribut time dans lesson et les passer a l'objet et dans la requete 
                 	}else {
                 		
             			//update

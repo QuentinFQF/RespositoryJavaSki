@@ -1,7 +1,11 @@
 package be.flas.model;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
+
+import be.flas.connection.DatabaseConnection;
+import be.flas.dao.DAOSkier;
 
 public class Skier extends Person{
 
@@ -56,5 +60,18 @@ public class Skier extends Person{
 	public void setBookings(List<Booking> bookings) {
 		this.bookings = bookings;
 	}
+	
+	
+	// Nouvelle méthode statique pour sauvegarder un skieur
+    public static boolean save(Skier skier) {
+        try {
+            Connection connection = DatabaseConnection.getInstance().getConnection();
+            DAOSkier daoSkier = new DAOSkier(connection);
+            return daoSkier.create(skier);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 	
 }

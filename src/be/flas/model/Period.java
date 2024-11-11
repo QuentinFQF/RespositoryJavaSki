@@ -1,8 +1,13 @@
 package be.flas.model;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import be.flas.connection.DatabaseConnection;
+import be.flas.dao.DAOPeriod;
+import be.flas.dao.DAOSkier;
 
 public class Period {
 	private LocalDate startDate;
@@ -84,6 +89,20 @@ public class Period {
 		return "Period [startDate=" + startDate + ", endDate=" + endDate + ", isVacation=" + isVacation + "]";
 	}
 	
+	
+	public static List<Period> getAll() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOPeriod daoPeriod = new DAOPeriod(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoPeriod.getAllPeriods();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
 	
 
 }

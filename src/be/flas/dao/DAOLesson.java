@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoLesson;
 import be.flas.model.Accreditation;
+import be.flas.model.Instructor;
 import be.flas.model.Lesson;
+import be.flas.model.LessonType;
 import be.flas.model.Skier;
 
 public class DAOLesson extends DaoGeneric<Lesson>{
@@ -24,11 +26,72 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	    return false;
 	}
     
+    
     @Override
-	public Lesson find(int id){
-    	Lesson s = new Lesson();
-		return s;
-	}
+    public Lesson find(int id) {
+        Lesson lesson = null;
+
+        // Requête SQL pour récupérer une leçon, avec son instructeur et son type de leçon
+        String sql = "SELECT l.LessonId, l.InstructorId, l.LessonTypeId, l.MinBookings, l.MaxBookings, " +
+                     "l.NumberSkier, l.DayPart, l.CourseType, l.TariffId, l.StartTime, l.EndTime, " +
+                     "i.Names AS InstructorNames, i.FirstName AS InstructorFirstName, i.DateOfBirth AS InstructorDateOfBirth, i.Pseudo AS InstructorPseudo, " +
+                     "lt.Levels AS LessonTypeLevels, lt.Price AS LessonTypePrice, lt.AgeCategory, lt.Sport " +
+                     "FROM Lesson l " +
+                     "JOIN Instructor i ON l.InstructorId = i.InstructorId " +
+                     "JOIN LessonType lt ON l.LessonTypeId = lt.LessonTypeId " +
+                     "WHERE l.LessonId = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id); // Définir le paramètre ID
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Création de l'objet `Instructor`
+                    Instructor instructor = new Instructor(
+                        rs.getString("InstructorNames"),
+                        rs.getString("InstructorFirstName"),
+                        rs.getInt("InstructorId"),
+                        rs.getDate("InstructorDateOfBirth").toLocalDate(),
+                        rs.getString("InstructorPseudo"),
+                        null
+                    );
+
+                    // Création de l'objet `LessonType`
+                    LessonType lessonType = new LessonType(
+                        rs.getInt("LessonTypeId"),
+                        rs.getString("LessonTypeLevels"),
+                        rs.getString("Sport"),
+                        rs.getDouble("LessonTypePrice"),
+                        rs.getString("AgeCategory")
+                    );
+
+                    // Utiliser le constructeur de `Lesson` fourni
+                    lesson = new Lesson(
+                        rs.getInt("MinBookings"),
+                        rs.getInt("MaxBookings"),
+                        instructor,
+                        lessonType,
+                        rs.getString("DayPart"),
+                        rs.getString("CourseType"),
+                        rs.getInt("TariffId")
+                    );
+
+                    // Définir les propriétés supplémentaires si nécessaire
+                    lesson.setLessonId(rs.getInt("LessonId"));
+                    lesson.setNumberSkier(rs.getInt("NumberSkier"));
+                    lesson.setStart(rs.getInt("StartTime"));
+                    lesson.setEnd(rs.getInt("EndTime"));
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la recherche de la leçon avec ID " + id + " : " + ex.getMessage());
+        }
+
+        return lesson;
+    }
+
+
+
     @Override
     public boolean create(Lesson l) {
 	    
@@ -203,10 +266,29 @@ public class DAOLesson extends DaoGeneric<Lesson>{
         return false; // Retourne false en cas d'échec
     }
     
-    public boolean isLessonComplete(int lessonId) {
+    public boolean isLessonComplete(int id) {
         String sql = "SELECT NumberSkier, MaxBookings FROM Lesson WHERE LessonId = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, lessonId);
+            pstmt.setInt(1,id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int numberSkier = rs.getInt("NumberSkier");
+                    int maxBookings = rs.getInt("MaxBookings");
+
+                    return numberSkier >= maxBookings; // Retourne true si la leçon est complète, sinon false
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de l'état de la leçon : " + e.getMessage());
+        }
+        return false; // Retourne false en cas d'échec ou si la leçon n'existe pas
+    }
+    
+    public boolean isLessonComplete2(int id) {
+        String sql = "SELECT NumberSkier, MaxBookings FROM Lesson WHERE LessonId = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {

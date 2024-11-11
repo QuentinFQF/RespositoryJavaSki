@@ -28,15 +28,73 @@ public class DAOLessonType extends DaoGeneric<LessonType>{
 	public boolean update(LessonType obj){
 	    return false;
 	}
+    
     @Override
-	public LessonType find(int id){
-    	LessonType s = new LessonType();
-		return s;
-	}
+    public LessonType find(int id) {
+        LessonType lessonType = null;
+
+        // Requête SQL pour récupérer un type de leçon
+        String sql = "SELECT LessonTypeId, Levels, Price, Sport, AgeCategory " +
+                     "FROM LessonType " +
+                     "WHERE LessonTypeId = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id); // Définir le paramètre ID
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Création de l'objet `LessonType`
+                    lessonType = new LessonType(
+                        rs.getInt("LessonTypeId"),
+                        rs.getString("Levels"),
+                        rs.getString("Sport"),
+                        rs.getDouble("Price"),
+                        rs.getString("AgeCategory")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la recherche du type de leçon avec ID " + id + " : " + ex.getMessage());
+        }
+
+        return lessonType;
+    }
+
     @Override
     public boolean create(LessonType obj){
     	return false;
     }
+    public List<LessonType> selectLessonTypes() {
+        List<LessonType> lessonTypes = new ArrayList<>();
+        String query = "SELECT LessonTypeId, Levels, Price, Sport, AgeCategory FROM LessonType";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query);
+             ResultSet res = pstmt.executeQuery()) {
+
+            while (res.next()) {
+                // Récupérer les valeurs des colonnes
+                int lessonTypeId = res.getInt("LessonTypeId");
+                String levels = res.getString("Levels");
+                double price = res.getDouble("Price");
+                String sport = res.getString("Sport");
+                String ageCategory = res.getString("AgeCategory");
+
+                // Créer une instance de LessonType
+                LessonType lessonType = new LessonType(lessonTypeId, levels,sport, price,ageCategory);
+                lessonType.setSport(sport);
+                lessonType.setAgeCategory(ageCategory);
+
+                // Ajouter à la liste
+                lessonTypes.add(lessonType);
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des LessonTypes : " + ex.getMessage());
+        }
+
+        return lessonTypes;
+    }
+
 
     // Méthodes utilisant 'connection' ici, sans la fermer
     

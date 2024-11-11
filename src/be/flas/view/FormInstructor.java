@@ -154,16 +154,19 @@ public class FormInstructor extends JFrame {
                 System.out.println(instructor.toString());
                 
                 //boolean success = daoInstructor.create(instructor);
-                int success = daoInstructor.insertInstructor(instructor);
-                int id=daoAccreditation.selectId(selectedAccreditation);
-                boolean success2=daoInstructor.insertAcc_Instructor(success,id);
+                //int success = daoInstructor.insertInstructor(instructor);
+                int success = instructor.save();
+                //int id=daoAccreditation.selectId(selectedAccreditation);
+                int id=Accreditation.selectId(selectedAccreditation);
+                //boolean success2=daoInstructor.insertAcc_Instructor(success,id);
+                boolean success2=instructor.saveAccIns(success,id);
                 //daoInstructor.testConnection();
                 //System.out.println("id acc :"+id);
-                /*if (success) {
-                    System.out.println("Connexion réussie !");
+                if (success2) {
+                	JOptionPane.showMessageDialog(null, "ins et acc réussi !");
                 } else {
-                    System.out.println("Échec de la connexion.");
-                }*/
+                	JOptionPane.showMessageDialog(null, "echec ins et acc");
+                }
             }
         });
         btnNewButton.setBounds(191, 204, 85, 21);

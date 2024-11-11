@@ -2,6 +2,7 @@ package be.flas.model;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.connection.DatabaseConnection;
@@ -23,6 +24,10 @@ public class Skier extends Person{
 	}
 	public Skier(String name,String firstName,String pseudo) {
 		super(name,firstName,pseudo);
+		
+	}
+	public Skier(int id,String name,String firstName,String pseudo) {
+		super(name,firstName,id,pseudo);
 		
 	}
 	public Skier(int id) {
@@ -63,7 +68,7 @@ public class Skier extends Person{
 	
 	
 	// Nouvelle méthode statique pour sauvegarder un skieur
-    public static boolean save(Skier skier) {
+    /*public static boolean save(Skier skier) {
         try {
             Connection connection = DatabaseConnection.getInstance().getConnection();
             DAOSkier daoSkier = new DAOSkier(connection);
@@ -72,6 +77,72 @@ public class Skier extends Person{
             e.printStackTrace();
             return false;
         }
-    }
+    }*/
+	public boolean save() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoSkier.create(this);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	public static List<Skier> getAll() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoSkier.getAllSkiers();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
+	public static Skier getSkierByPseudo(String pseudo) {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoSkier.getSkierByPseudo(pseudo);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	public boolean delete() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoSkier.delete(this);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	public boolean update() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoSkier.update(this);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 	
 }

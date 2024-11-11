@@ -208,13 +208,34 @@ public class FormSkier extends JFrame {
 		        Skier i = new Skier(nom, prenom, dob, pseudo, assuranceSelected);
 		        System.out.print(i.toString());
 
-		        boolean success = daoSkier.create(i);
+		        //boolean success = daoSkier.create(i);
+		     // Appel de la méthode d'instance save()
+		        boolean success = i.save();
 
 		        if (success) {
 		            System.out.println("Skieur ajouté avec succès !");
+		            JOptionPane.showMessageDialog(null, "Skieur ajouté avec succès !");
 		        } else {
 		            System.out.println("Erreur lors de l'ajout du skieur.");
+		            JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du skieur.");
 		        }
+
+		        
+		        /*boolean success = Skier.save(i);
+
+		        if (success) {
+		            System.out.println("Skieur ajouté avec succès !");
+		            JOptionPane.showMessageDialog(null, "Skieur ajouté avec succès !");
+		        } else {
+		            System.out.println("Erreur lors de l'ajout du skieur.");
+		            JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du skieur.");
+		        }*/
+
+		        /*if (success) {
+		            System.out.println("Skieur ajouté avec succès !");
+		        } else {
+		            System.out.println("Erreur lors de l'ajout du skieur.");
+		        }*/
 		    }
 		});
 		btnNewButton.setBounds(288, 294, 85, 21);

@@ -11,7 +11,10 @@ import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -51,6 +54,10 @@ public class FormChooseInstructor extends JFrame {
     private ButtonGroup buttonGroup; // Sélecteur de semaine
     private JComboBox comboBox;
     private JComboBox comboBox_1;
+    private Map<String, Integer> lessonTypeIdMap = new HashMap<>();
+    private Map<String, Integer> skierIdMap = new HashMap<>();
+    private Map<String, Integer> instructorIdMap = new HashMap<>();
+    private Map<String, Integer> periodIdMap = new HashMap<>();
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -136,15 +143,18 @@ public class FormChooseInstructor extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedLessonType = (String) comboLessonType.getSelectedItem();
+                Integer selectedLessonTypeId = getSelectedLessonTypeId();
                 String[] parts = selectedLessonType.split(" - ");
 
-                if (parts.length >= 3) {
+                System.out.println(selectedLessonTypeId);
+                /*if (parts.length >= 3) {
                     String extractedCategory = parts[2];
                     String extractedTargetAudience = parts[3];
                     updateInstructorsForLessonType(extractedCategory, extractedTargetAudience);
                 } else {
                     System.err.println("Format inattendu pour le type de leçon sélectionné : " + selectedLessonType);
-                }
+                }*/
+                updateInstructorsForLessonType(selectedLessonTypeId);
             }
         });
 
@@ -158,26 +168,35 @@ public class FormChooseInstructor extends JFrame {
                 String instructorChoisi = (String) comboInstructor.getSelectedItem();
                 String lessonTypeChoisi = (String) comboLessonType.getSelectedItem();
                 String skierChoisi = (String) comboSkier.getSelectedItem();
+                
+                Integer selectedSkierId = getSelectedSkierId();
+                Integer selectedLessonTypeId = getSelectedLessonTypeId();
+                Integer selectedInstructorId = getSelectedInstructorId();
+                Integer selectedPeriodId = getSelectedPeriodId();
 
+                System.out.println("skier id "+selectedSkierId);
+                System.out.println("lessontype id "+selectedLessonTypeId);
+                System.out.println("ins id "+selectedInstructorId);
+                System.out.println("period id "+selectedPeriodId);
 
                 //String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
              // Vérification de la validité des sélections
-                if (semaineChoisie == null || semaineChoisie.trim().isEmpty()) {
+                if (selectedPeriodId == null ) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner une période valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (instructorChoisi == null || instructorChoisi.trim().isEmpty()) {
+                if (selectedInstructorId == null) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un instructeur.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (lessonTypeChoisi == null || lessonTypeChoisi.trim().isEmpty()) {
+                if (selectedLessonTypeId == null) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un type de leçon.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (skierChoisi == null || skierChoisi.trim().isEmpty()) {
+                if (selectedSkierId == null) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un skieur.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -197,37 +216,7 @@ public class FormChooseInstructor extends JFrame {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                // Récupération de l'ID du skieur
-                int idK = -1;
-                if (skierChoisi != null) {
-                    String pseudoK = skierChoisi.substring(skierChoisi.lastIndexOf("(") + 1, skierChoisi.lastIndexOf(")")).trim();
-                    idK = daoSkier.getSkierIdByName(pseudoK);
-                    System.out.println("id skier : " + idK);
-                }
-
-                // Récupération de l'ID de l'instructeur
-                int idI = -1;
-                if (instructorChoisi != null) {
-                    String pseudoI = instructorChoisi.substring(instructorChoisi.lastIndexOf("(") + 1, instructorChoisi.lastIndexOf(")")).trim();
-                    idI = daoInstructor.getInstructorIdByName(pseudoI);
-                    System.out.println("ID instructeur : " + idI);
-                }
-
-                // Récupération de l'ID du type de leçon
-                int idL = -1;
-                String[] selectedItem2 = lessonTypeChoisi.split(" - ");
-                if (selectedItem2.length >= 4) {
-                    String niveau = selectedItem2[0];
-                    String categorie = selectedItem2[1];
-                    String publicCible = selectedItem2[2];
-                    String autreInfo = selectedItem2[3];
-
-                    idL = daoLessonType.getLessonTypeIdByName(niveau, Double.parseDouble(categorie), publicCible, autreInfo);
-                    System.out.println("ID du type de leçon sélectionné : " + idL);
-                } else {
-                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + lessonTypeChoisi);
-                }
+                System.out.println("timesslot "+timeSlot);
 
                 // Récupération des dates de la période choisie
                 LocalDate startDate = null;
@@ -248,70 +237,66 @@ public class FormChooseInstructor extends JFrame {
                     System.err.println("Aucune période valide sélectionnée.");
                 }
 
-                // Récupération de l'ID de la période
-                int idP = daoPeriod.getPeriodIdBy(startDate, endDate);
-                if (idP != -1) {
-                    System.out.println("ID de la période : " + idP);
-                } else {
-                    System.err.println("Aucune période trouvée pour les dates sélectionnées.");
-                }
+               
 
                 // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
-                if (idI != -1 && idL != -1 && startDate != null && endDate != null && idP != -1) {
+                if (selectedSkierId != -1 && selectedLessonTypeId != -1 && startDate != null && endDate != null && selectedPeriodId != -1) {
                     // Appel à la méthode pour créer la leçon
-                	System.out.println("time : "+timeSlot);
+                	//System.out.println("time : "+timeSlot);
                 	Lesson lesson=new Lesson();
+                	//Lesson lesson=Lesson.getLesson(selectedLessonTypeId);
+                	LessonType lessonType=LessonType.getLesson(selectedLessonTypeId);
                 	int[] minMax;
-                	minMax = lesson.getMinAndMaxBooking(selectedItem2[3], timeSlot);
-                    //int idLesson=daoLesson.createLesson(idI, idL/*, selectedItem2[3]*/,timeSlot,"Collectif",minMax[0],minMax[1]); 
-
-                    
-                	//System.out.println("cat ea : "+selectedItem2[3]);
-                	//System.out.println("idlesson"+idLesson);
+                	minMax = lesson.getMinAndMaxBooking(lessonType.getAgeCategory(), timeSlot);
+                	System.out.println(minMax[0]+ " "+minMax[1]);
+                	System.out.println(lessonType.getAgeCategory());
+                  
                 	LocalDate dateBooking = LocalDate.now();
-                	Period p=new Period(idP);
-                	Skier s=new Skier(idK);
-                	Instructor i=new Instructor(idI);
-                	LessonType lt=new LessonType(idL);
+                	Period p=new Period(selectedPeriodId);
+                	Skier s=new Skier(selectedSkierId);
+                	Instructor i=new Instructor(selectedInstructorId);
+                	LessonType lt=new LessonType(selectedLessonTypeId);
                 	
                 	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0);
                 	
                 	
                 	
                  
-                	int idLesson=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
+                	//int idLesson=daoLesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
+                	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
-                	
-                	daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
-                	System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
-                	if(daoLesson.isLessonComplete(idLesson)==true) {
+                	//Instructor i=new Instructor(selectedInstructorId);
+                	System.out.println(i.isAvailable(selectedPeriodId, timeSlot));
+                	Lesson ll=Lesson.getLesson(idLesson);
+                	//daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
+                	//System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
+                	if(Lesson.isComplete(idLesson)==true/*daoLesson.isLessonComplete2(idLesson)==true*/) {
                 		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
-                	}else if(idLesson==-1 && daoInstructor.isInstructorAvailable(idI, idP, timeSlot)==true) {
+                	}else if(idLesson==-1 && i.isAvailable(selectedPeriodId, timeSlot)==true) {
                 		//create
-                		
-                		daoLesson.create(lesson2);
-                		int idLessonCreate=daoLesson.getLessonId(idI,idL,timeSlot,"Collectif",minMax[0],minMax[1]);
+                		lesson2.save();
+                		//daoLesson.create(lesson2);
+                		int idLessonCreate=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
+                		System.out.println(idLessonCreate);
                 		
                 		Lesson l=new Lesson(idLessonCreate);
                     	Booking b=new Booking(dateBooking,s,p,l,i);
                         
-                    	daoBooking.create(b);
+                    	//daoBooking.create(b);
+                    	b.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
-                		//ajouter attribut time dans lesson et les passer a l'objet et dans la requete 
+                		
                 	}else {
                 		
             			//update
                 		Lesson l=new Lesson(idLesson);
-                		daoLesson.update(l);
+                		l.update();
+                		//daoLesson.update(l);
                 		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
                 		
                 		
                 	}
                 	
-                	
-                	
-
-                    
                     
                 } else {
                     System.err.println("Impossible de créer la leçon ou la réservation, certains IDs sont invalides.");
@@ -322,10 +307,11 @@ public class FormChooseInstructor extends JFrame {
         
 
 
-    private void updateInstructorsForLessonType(String category, String targetAudience) {
-        System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
+    private void updateInstructorsForLessonType(int id) {
+        //System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
         try {
-            List<Instructor> instructors = daoInstructor.getInstructorsByLessonType(category, targetAudience);
+            //List<Instructor> instructors = daoInstructor.getInstructorsByLessonType(category, targetAudience);
+        	List<Instructor> instructors = Instructor.getAllInstructorsWithAAndLTWithId(id);
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Instructor instructor : instructors) {
@@ -333,6 +319,7 @@ public class FormChooseInstructor extends JFrame {
                 String displayText = instructor.getName() + " " + instructor.getFirstName() + " (" + instructor.getPseudo() + ")";
 
                 model.addElement(displayText);
+                instructorIdMap.put(displayText, instructor.getPersonId());
             }
 
             comboInstructor.setModel(model);
@@ -341,22 +328,46 @@ public class FormChooseInstructor extends JFrame {
             System.err.println("Erreur lors de la mise à jour des instructeurs : " + e.getMessage());
         }
     }
+    public Integer getSelectedInstructorId() {
+        String selectedItem = (String) comboInstructor.getSelectedItem();
+        if (selectedItem != null && instructorIdMap.containsKey(selectedItem)) {
+            return instructorIdMap.get(selectedItem);
+        }
+        return null; 
+    }
 
     private void fillLessonTypeComboBox() {
         System.out.println("Début du remplissage du JComboBox avec les LessonTypes.");
         try {
-            List<String> lessonTypes = daoLessonType.selectLessonType();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(lessonTypes.toArray(new String[0]));
+            //List<String> lessonTypes = daoLessonType.selectLessonType();
+        	List<LessonType> lessonTypes = LessonType.getAll();
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            for (LessonType lessonType : lessonTypes) {
+                //String displayText = instructor.getName() + " " + instructor.getFirstName();
+                String displayText = lessonType.getLevel() + " " + lessonType.getPrice() + " " + lessonType.getSport() + " "+lessonType.getAgeCategory() ;
+
+                model.addElement(displayText);
+                lessonTypeIdMap.put(displayText, lessonType.getId());
+            }
             comboLessonType.setModel(model);
+           
             System.out.println("LessonTypes chargés : " + lessonTypes);
         } catch (Exception e) {
             System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
         }
     }
+    public Integer getSelectedLessonTypeId() {
+        String selectedItem = (String) comboLessonType.getSelectedItem();
+        if (selectedItem != null && lessonTypeIdMap.containsKey(selectedItem)) {
+            return lessonTypeIdMap.get(selectedItem);
+        }
+        return null; 
+    }
     private void fillSkierComboBox() {
     	System.out.println("skier chargé ");
         try {
-            List<Skier> skiers = daoSkier.getAllSkiers();
+            //List<Skier> skiers = daoSkier.getAllSkiers();
+        	List<Skier> skiers = Skier.getAll();
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Skier skier : skiers) {
@@ -364,6 +375,7 @@ public class FormChooseInstructor extends JFrame {
                 String displayText = skier.getName() + " " + skier.getFirstName() + " (" + skier.getPseudo() + ")";
 
                 model.addElement(displayText);
+                skierIdMap.put(displayText, skier.getPersonId());
             }
 
             comboSkier.setModel(model);
@@ -372,11 +384,19 @@ public class FormChooseInstructor extends JFrame {
             System.err.println("Erreur lors de la mise à jour des instructeurs : " + e.getMessage());
         }
     }
+    public Integer getSelectedSkierId() {
+        String selectedItem = (String) comboSkier.getSelectedItem();
+        if (selectedItem != null && skierIdMap.containsKey(selectedItem)) {
+            return skierIdMap.get(selectedItem);
+        }
+        return null; 
+    }
 
     private void fillPeriodComboBox() {
     	System.out.println("period chargé ");
         try {
-            List<Period> periods = daoPeriod.getAllPeriods();
+            //List<Period> periods = daoPeriod.getAllPeriods();
+        	List<Period> periods = Period.getAll();
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Period period : periods) {
@@ -384,6 +404,7 @@ public class FormChooseInstructor extends JFrame {
                 String displayText = period.getStartDate() + " " + period.getEndDate() + " (" + period.isVacation() + ")";
 
                 model.addElement(displayText);
+                periodIdMap.put(displayText, period.getId());
             }
 
             comboPeriod.setModel(model);
@@ -391,6 +412,13 @@ public class FormChooseInstructor extends JFrame {
         } catch (Exception e) {
             System.err.println("Erreur lors de la mise à jour des period : " + e.getMessage());
         }
+    }
+    public Integer getSelectedPeriodId() {
+        String selectedItem = (String) comboPeriod.getSelectedItem();
+        if (selectedItem != null && periodIdMap.containsKey(selectedItem)) {
+            return periodIdMap.get(selectedItem);
+        }
+        return null; 
     }
     
 }

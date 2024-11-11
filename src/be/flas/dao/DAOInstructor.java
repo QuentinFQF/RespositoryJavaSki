@@ -8,11 +8,16 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoClasse;
+import be.flas.model.Accreditation;
 import be.flas.model.Instructor;
+import be.flas.model.LessonType;
 import be.flas.model.Skier;
 
 public class DAOInstructor extends DaoGeneric<Instructor> {
@@ -22,14 +27,80 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
 	public DAOInstructor(Connection conn){
     	super(conn);
     }
-    @Override
-	public boolean delete(Instructor obj){
-	    return false;
+	@Override
+	public boolean delete(Instructor obj) {
+	    // Requêtes pour supprimer les enregistrements associés
+	    String deleteBookingsSql = "DELETE FROM Booking WHERE InstructorId = ?";
+	    String deleteLessonsSql = "DELETE FROM Lesson WHERE InstructorId = ?";
+	    String deleteInsAccSql = "DELETE FROM Ins_Accreditation WHERE InstructorId = ?";
+	    String deleteInstructorSql = "DELETE FROM Instructor WHERE InstructorId = ?";
+
+	    try {
+	        // Commencez une transaction
+	        connection.setAutoCommit(false);
+
+	        // Supprimer les réservations associées
+	        try (PreparedStatement pstmtBookings = connection.prepareStatement(deleteBookingsSql)) {
+	            pstmtBookings.setInt(1, obj.getPersonId());
+	            pstmtBookings.executeUpdate();
+	        }
+
+	        // Supprimer les leçons associées à l'instructeur
+	        try (PreparedStatement pstmtLessons = connection.prepareStatement(deleteLessonsSql)) {
+	            pstmtLessons.setInt(1, obj.getPersonId());
+	            pstmtLessons.executeUpdate();
+	        }
+
+	        // Supprimer les enregistrements dans Ins_Acc
+	        try (PreparedStatement pstmtInsAcc = connection.prepareStatement(deleteInsAccSql)) {
+	            pstmtInsAcc.setInt(1, obj.getPersonId());
+	            pstmtInsAcc.executeUpdate();
+	        }
+
+	        // Supprimer l'instructeur lui-même
+	        try (PreparedStatement pstmtInstructor = connection.prepareStatement(deleteInstructorSql)) {
+	            pstmtInstructor.setInt(1, obj.getPersonId());
+	            int affectedRows = pstmtInstructor.executeUpdate();
+
+	            // Valider la transaction si tout s'est bien passé
+	            connection.commit();
+	            
+	            return affectedRows > 0;  // Retourner true si l'instructeur a été supprimé avec succès
+	        }
+	        
+	    } catch (SQLException e) {
+	        System.err.println("Erreur lors de la suppression de l'instructeur et de ses données associées : " + e.getMessage());
+	        try {
+	            connection.rollback(); // Annule la transaction en cas d'erreur
+	        } catch (SQLException rollbackEx) {
+	            System.err.println("Erreur lors du rollback : " + rollbackEx.getMessage());
+	        }
+	    } finally {
+	        try {
+	            connection.setAutoCommit(true); // Réactiver l'auto-commit
+	        } catch (SQLException ex) {
+	            System.err.println("Erreur lors de la réactivation de l'auto-commit : " + ex.getMessage());
+	        }
+	    }
+
+	    return false;  // Retourner false en cas d'échec
 	}
+
     @Override
-	public boolean update(Instructor obj){
-	    return false;
-	}
+    public boolean update(Instructor i) {
+        String sql = "UPDATE Instructor SET Pseudo=?, FirstName=?, Names=?, DateOfBirth=? WHERE InstructorId=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, i.getPseudo());
+            stmt.setString(2, i.getFirstName());
+            stmt.setString(3, i.getName());
+            stmt.setInt(5, i.getPersonId());
+            stmt.setDate(4, java.sql.Date.valueOf(i.getDateOfBirth()));
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     @Override
 	public Instructor find(int id){
     	Instructor s = new Instructor();
@@ -225,7 +296,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         return -1; 
     }
     
-    public boolean isInstructorAvailable(int instructorId, int periodId, String timeSlot) {
+    public boolean isInstructorAvailable(/*int instructorId*/Instructor i, int periodId, String timeSlot) {
         String sql = "SELECT Lesson.LessonId " +
                      "FROM Lesson " +
                      "JOIN Booking ON Lesson.LessonId = Booking.LessonId " +
@@ -235,7 +306,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
                      "AND Lesson.DayPart = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, instructorId);
+            pstmt.setInt(1, i.getPersonId());
             pstmt.setInt(2, periodId);
             pstmt.setString(3, timeSlot);
 
@@ -248,6 +319,315 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         }
         return false; // Retourne false si l'instructeur n'est pas disponible ou si la requête échoue
     }
+    
+    
+    
+    /*public List<Instructor> getAllInstructorsWithAccreditationsAndLessonTypes() {
+        List<Instructor> instructors = new ArrayList<>();
+        
+        // Requête SQL pour récupérer les instructeurs, accréditations et types de leçons associés
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory, " +
+                     "lt.LessonTypeId, lt.Levels, lt.Price " +
+                     "FROM Instructor i " +
+                     "JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                     "JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "JOIN Acc_LessonType alt ON a.AccreditationId = alt.AccreditationId " +
+                     "JOIN LessonType lt ON alt.LessonTypeId = lt.LessonTypeId";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            // Map pour éviter de créer des instructeurs en double
+            Map<Integer, Instructor> instructorMap = new HashMap<>();
+
+            // Parcours des résultats de la requête SQL
+            while (rs.next()) {
+                int instructorId = rs.getInt("InstructorId");
+
+                // Si l'instructeur n'est pas encore dans la map, on l'ajoute
+                if (!instructorMap.containsKey(instructorId)) {
+                    Instructor instructor = new Instructor(
+                            rs.getString("Names"),
+                            rs.getString("FirstName"),
+                            instructorId,
+                            rs.getDate("DateOfBirth").toLocalDate(),
+                            rs.getString("Pseudo"),
+                            null// On initialisera plus tard les accréditations
+                    );
+                    instructorMap.put(instructorId, instructor);
+                }
+
+                // Récupérer l'instructeur existant
+                Instructor instructor = instructorMap.get(instructorId);
+
+                // Créer l'accréditation pour cet instructeur
+                Accreditation accreditation = new Accreditation(
+                        rs.getInt("AccreditationId"),
+                        
+                        rs.getString("AccreditationName"),
+                        null,
+                        rs.getString("SportType"),
+                        rs.getString("AgeCategory")
+                     
+                );
+
+                // Créer le LessonType pour l'accréditation
+                LessonType lessonType = new LessonType(
+                        rs.getInt("LessonTypeId"),
+                        rs.getString("Levels"),
+                        rs.getDouble("Price")
+                );
+
+                // Associer le LessonType à l'accréditation
+                accreditation.AddLessonType(lessonType);
+
+                // Ajouter l'accréditation à l'instructeur
+                instructor.AddAccreditation(accreditation);
+            }
+
+            // Retourner la liste des instructeurs avec leurs accréditations et leçons associées
+            return new ArrayList<>(instructorMap.values());
+
+        } catch (SQLException ex) {
+            // Gérer les erreurs de la base de données
+            System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }*/
+    public List<Instructor> getAllInstructorsWithAccreditationsAndLessonTypes() {
+        List<Instructor> instructors = new ArrayList<>();
+        
+        // Requête SQL pour récupérer les instructeurs, accréditations et types de leçons associés
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory, " +
+                     "lt.LessonTypeId, lt.Levels, lt.Price " +
+                     "FROM Instructor i " +
+                     "JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                     "JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "JOIN Acc_LessonType alt ON a.AccreditationId = alt.AccreditationId " +
+                     "JOIN LessonType lt ON alt.LessonTypeId = lt.LessonTypeId";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            // Map pour éviter de créer des instructeurs et accréditations en double
+            Map<Integer, Instructor> instructorMap = new HashMap<>();
+            Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+            while (rs.next()) {
+                int instructorId = rs.getInt("InstructorId");
+                int accreditationId = rs.getInt("AccreditationId");
+                int lessonTypeId = rs.getInt("LessonTypeId");
+
+                // Récupérer ou créer l'instructeur
+                Instructor instructor;
+                if (!instructorMap.containsKey(instructorId)) {
+                    // Créer la première accréditation
+                    Accreditation firstAccreditation = new Accreditation(
+                            accreditationId,
+                            rs.getString("AccreditationName"),
+                            null, // Le premier LessonType sera ajouté
+                            rs.getString("SportType"),
+                            rs.getString("AgeCategory")
+                    );
+
+                    // Créer le premier LessonType et l'ajouter à l'accréditation
+                    LessonType firstLessonType = new LessonType(
+                            lessonTypeId,
+                            rs.getString("Levels"),
+                            rs.getDouble("Price")
+                    );
+                    firstAccreditation.AddLessonType(firstLessonType);
+
+                    // Initialiser l'instructeur avec la première accréditation
+                    instructor = new Instructor(
+                            rs.getString("Names"),
+                            rs.getString("FirstName"),
+                            instructorId,
+                            rs.getDate("DateOfBirth").toLocalDate(),
+                            rs.getString("Pseudo"),
+                            firstAccreditation // On passe la première accréditation
+                    );
+                    instructorMap.put(instructorId, instructor);
+
+                    // Ajouter la première accréditation dans la map
+                    accreditationMap.put(accreditationId, firstAccreditation);
+                } else {
+                    instructor = instructorMap.get(instructorId);
+                }
+
+                // Vérifier si l'accréditation existe déjà
+                Accreditation accreditation;
+                if (accreditationMap.containsKey(accreditationId)) {
+                    accreditation = accreditationMap.get(accreditationId);
+                } else {
+                    // Créer une nouvelle accréditation si elle n'existe pas encore
+                    accreditation = new Accreditation(
+                            accreditationId,
+                            rs.getString("AccreditationName"),
+                            null, // Le `LessonType` sera ajouté après
+                            rs.getString("SportType"),
+                            rs.getString("AgeCategory")
+                    );
+                    instructor.AddAccreditation(accreditation);
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                // Ajouter le `LessonType` à l'accréditation
+                LessonType lessonType = new LessonType(
+                        lessonTypeId,
+                        rs.getString("Levels"),
+                        rs.getDouble("Price")
+                );
+                if (!accreditation.getLessonTypes().contains(lessonType)) {
+                    accreditation.AddLessonType(lessonType);
+                }
+            }
+
+            return new ArrayList<>(instructorMap.values());
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+    
+    
+    public List<Instructor> getInstructorsWithAccreditationsAndLessonTypesByLessonTypeId(int lessonTypeId) {
+        List<Instructor> instructors = new ArrayList<>();
+        
+        // Requête SQL pour récupérer les instructeurs, accréditations et types de leçons associés,
+        // filtrée par le LessonTypeId
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory, " +
+                     "lt.LessonTypeId, lt.Levels, lt.Price " +
+                     "FROM Instructor i " +
+                     "JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                     "JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "JOIN Acc_LessonType alt ON a.AccreditationId = alt.AccreditationId " +
+                     "JOIN LessonType lt ON alt.LessonTypeId = lt.LessonTypeId " +
+                     "WHERE lt.LessonTypeId = ?"; // Utilisation du paramètre pour filtrer par LessonTypeId
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, lessonTypeId); // Paramètre pour filtrer par LessonTypeId
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                // Map pour éviter de créer des instructeurs et accréditations en double
+                Map<Integer, Instructor> instructorMap = new HashMap<>();
+                Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+                while (rs.next()) {
+                    int instructorId = rs.getInt("InstructorId");
+                    int accreditationId = rs.getInt("AccreditationId");
+                    int currentLessonTypeId = rs.getInt("LessonTypeId");
+
+                    // Récupérer ou créer l'instructeur
+                    Instructor instructor;
+                    if (!instructorMap.containsKey(instructorId)) {
+                        // Créer la première accréditation
+                        Accreditation firstAccreditation = new Accreditation(
+                                accreditationId,
+                                rs.getString("AccreditationName"),
+                                null, // Le premier LessonType sera ajouté
+                                rs.getString("SportType"),
+                                rs.getString("AgeCategory")
+                        );
+
+                        // Créer le premier LessonType et l'ajouter à l'accréditation
+                        LessonType firstLessonType = new LessonType(
+                                currentLessonTypeId,
+                                rs.getString("Levels"),
+                                rs.getDouble("Price")
+                        );
+                        firstAccreditation.AddLessonType(firstLessonType);
+
+                        // Initialiser l'instructeur avec la première accréditation
+                        instructor = new Instructor(
+                                rs.getString("Names"),
+                                rs.getString("FirstName"),
+                                instructorId,
+                                rs.getDate("DateOfBirth").toLocalDate(),
+                                rs.getString("Pseudo"),
+                                firstAccreditation // On passe la première accréditation
+                        );
+                        instructorMap.put(instructorId, instructor);
+
+                        // Ajouter la première accréditation dans la map
+                        accreditationMap.put(accreditationId, firstAccreditation);
+                    } else {
+                        instructor = instructorMap.get(instructorId);
+                    }
+
+                    // Vérifier si l'accréditation existe déjà
+                    Accreditation accreditation;
+                    if (accreditationMap.containsKey(accreditationId)) {
+                        accreditation = accreditationMap.get(accreditationId);
+                    } else {
+                        // Créer une nouvelle accréditation si elle n'existe pas encore
+                        accreditation = new Accreditation(
+                                accreditationId,
+                                rs.getString("AccreditationName"),
+                                null, // Le `LessonType` sera ajouté après
+                                rs.getString("SportType"),
+                                rs.getString("AgeCategory")
+                        );
+                        instructor.AddAccreditation(accreditation);
+                        accreditationMap.put(accreditationId, accreditation);
+                    }
+
+                    // Ajouter le `LessonType` à l'accréditation
+                    LessonType lessonType = new LessonType(
+                            currentLessonTypeId,
+                            rs.getString("Levels"),
+                            rs.getDouble("Price")
+                    );
+                    if (!accreditation.getLessonTypes().contains(lessonType)) {
+                        accreditation.AddLessonType(lessonType);
+                    }
+                }
+
+                return new ArrayList<>(instructorMap.values());
+
+            } catch (SQLException ex) {
+                System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
+                return Collections.emptyList();
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur de préparation de la requête SQL : " + ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    
+    public Instructor getInstructorByPseudo(String pseudo) {
+        String sql = "SELECT InstructorId, Names, FirstName, Pseudo, DateOfBirth FROM Instructor WHERE Pseudo = ?"; 
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, pseudo);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+            	Instructor instructor = new Instructor();
+            	instructor.setPersonId(resultSet.getInt("InstructorId"));
+            	instructor.setName(resultSet.getString("Names"));
+            	instructor.setFirstName(resultSet.getString("FirstName"));
+            	instructor.setPseudo(resultSet.getString("Pseudo"));
+            	instructor.setDateOfBirth(resultSet.getDate("DateOfBirth").toLocalDate());
+                
+                return instructor;
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération du skieur : " + e.getMessage());
+        }
+        return null; // Retourne null si aucun résultat n'est trouvé ou en cas d'erreur
+    }
+
+    
+    
+    
+
+
+
 
     
 

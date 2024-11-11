@@ -1,7 +1,13 @@
 package be.flas.model;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
+import be.flas.connection.DatabaseConnection;
+import be.flas.dao.DAOLesson;
+import be.flas.dao.DAOLessonType;
+import be.flas.dao.DAOSkier;
 
 public class LessonType {
 
@@ -11,10 +17,29 @@ public class LessonType {
 	private List<Accreditation> accreditations;
 	private List<Lesson> lessons;
 	private int id;
+	private String ageCategory;
+	
+	public LessonType(int id,String level,String sport,double price,String age) {
+		this.level=level;
+		this.price=price;
+		this.sport=sport;
+		this.ageCategory=age;
+		this.id=id;
+		this.accreditations=new ArrayList<>();
+		this.lessons=new ArrayList<>();
+	}
+	
 	public LessonType(String level,String sport,double price) {
 		this.level=level;
 		this.price=price;
 		this.sport=sport;
+		this.accreditations=new ArrayList<>();
+		this.lessons=new ArrayList<>();
+	}
+    public LessonType(int id,String level,double price) {
+		this.id=id;
+		this.level=level;
+		this.price=price;
 		this.accreditations=new ArrayList<>();
 		this.lessons=new ArrayList<>();
 	}
@@ -38,6 +63,15 @@ public class LessonType {
 			throw new IllegalArgumentException("Invalid LessonType: cannot be null or already present.");
 		}
 	}
+	
+	public String getAgeCategory() {
+		return ageCategory;
+	}
+
+	public void setAgeCategory(String ageCategori) {
+		this.ageCategory = ageCategori;
+	}
+
 	public String getLevel() {
 		return level;
 	}
@@ -77,6 +111,36 @@ public class LessonType {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	
+	
+	public static List<LessonType> getAll() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLessonType daoLessonType = new DAOLessonType(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLessonType.selectLessonTypes();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
+	
+	public static LessonType getLesson(int id){
+		try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLessonType daoLessonType  = new DAOLessonType (connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLessonType.find(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 	
 }

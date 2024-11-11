@@ -30,10 +30,35 @@ public class DAOPeriod extends DaoGeneric<Period>{
 	    return false;
 	}
     @Override
-	public Period find(int id){
-    	Period s = new Period();
-		return s;
-	}
+    public Period find(int id) {
+        Period period = null;
+
+        // Requête SQL pour récupérer une période
+        String sql = "SELECT PeriodId, StartDate, EndDate, IsVacation " +
+                     "FROM Period " +
+                     "WHERE PeriodId = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id); // Définir le paramètre ID
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Création de l'objet `Period`
+                    period = new Period(
+                        rs.getInt("PeriodId"),
+                        rs.getDate("StartDate").toLocalDate(), // Conversion de Date SQL à LocalDate
+                        rs.getDate("EndDate").toLocalDate(),   // Conversion de Date SQL à LocalDate
+                        rs.getBoolean("IsVacation")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la recherche de la période avec ID " + id + " : " + ex.getMessage());
+        }
+
+        return period;
+    }
+
     @Override
     public boolean create(Period obj){
     	return false;
@@ -62,7 +87,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
     
     public List<Period> getAllPeriods() {
         List<Period> periods = new ArrayList<>();
-        String sql = "SELECT StartDate, EndDate, IsVacation FROM Period";
+        String sql = "SELECT PeriodId,StartDate, EndDate, IsVacation FROM Period";
 
         // Format de la date à ajuster selon le format de votre base de données
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
@@ -74,6 +99,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
                 LocalDate startDate = null;
                 LocalDate endDate = null;
                 boolean isVacation = resultSet.getBoolean("IsVacation");
+                int id=resultSet.getInt("PeriodId");
 
                 // Parsing des dates
                 String startDateString = resultSet.getString("StartDate");
@@ -96,7 +122,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
                 }
 
                 // Création de l'objet Period
-                Period period = new Period(startDate, endDate, isVacation);
+                Period period = new Period(id,startDate, endDate, isVacation);
                 periods.add(period);
             }
         } catch (SQLException ex) {

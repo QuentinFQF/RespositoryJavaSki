@@ -2,6 +2,7 @@ package be.flas.view;
 
 import java.awt.*;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -296,11 +297,11 @@ public class FormInscriptionParticulier extends JFrame {
                 	int idLesson=daoLesson.getLessonId(idI,idL,timeSlot,"Particulier",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
                 	
-                	daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
-                	System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
-                	if(daoLesson.isLessonComplete(idLesson)==true) {
+                	//daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
+                	//System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
+                	if(i!=null/*daoLesson.isLessonComplete(idLesson)==true*/) {
                 		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
-                	}else if(idLesson==-1 && daoInstructor.isInstructorAvailable(idI, idP, timeSlot)==true) {
+                	}else if(idLesson==-1 /*&& daoInstructor.isInstructorAvailable(idI, idP, timeSlot)==true*/) {
                 		//create
                 		
                 		daoLesson.create(lesson2);

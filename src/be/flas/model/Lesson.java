@@ -1,7 +1,13 @@
 package be.flas.model;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
+import be.flas.connection.DatabaseConnection;
+import be.flas.dao.DAOInstructor;
+import be.flas.dao.DAOLesson;
+import be.flas.dao.DAOSkier;
 
 public class Lesson {
 
@@ -14,12 +20,29 @@ public class Lesson {
 	private String courseType;
 	private String dayPart;
 	private int tarifId;
+	private int start;
+	private int end;
+	private int numberSkier;
+	
 	
 	public int getTarifId() {
 		return tarifId;
 	}
 	public void setTarifId(int tarifId) {
 		this.tarifId = tarifId;
+	}
+	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int s,int e) {
+		this.minBookings=min;
+		this.maxBookings=max;
+		this.bookings=new ArrayList<>();
+		this.instructor=ins;
+		this.lessonType=lt;
+		this.dayPart=day;
+		this.courseType=course;
+		this.tarifId=tId;
+		this.start=s;
+		this.end=e;
+		
 	}
 	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId) {
 		this.minBookings=min;
@@ -126,7 +149,25 @@ public class Lesson {
 	
 
 	    
-    public int[] getMinAndMaxBooking(String lessonType, String timeSlot) {
+    public int getStart() {
+		return start;
+	}
+	public void setStart(int start) {
+		this.start = start;
+	}
+	public int getEnd() {
+		return end;
+	}
+	public void setEnd(int end) {
+		this.end = end;
+	}
+	public int getNumberSkier() {
+		return numberSkier;
+	}
+	public void setNumberSkier(int numberSkier) {
+		this.numberSkier = numberSkier;
+	}
+	public int[] getMinAndMaxBooking(String lessonType, String timeSlot) {
         int minBooking;
         int maxBooking;
 
@@ -145,6 +186,72 @@ public class Lesson {
 
         return new int[]{minBooking, maxBooking};
     }
+	
+	public static Lesson getLesson(int id){
+		try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLesson daoLesson  = new DAOLesson (connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLesson.find(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	public static int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings){
+		try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLesson daoLesson  = new DAOLesson (connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLesson.getLessonId(instructorId,lessonTypeId,dayPart,courseType,minBookings,maxBookings);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return -1;
+	    }
+	}
+	public static boolean isComplete(int id){
+		try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLesson daoLesson  = new DAOLesson (connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLesson.isLessonComplete(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	public boolean save() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLesson daoLesson = new DAOLesson(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLesson.create(this);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	public boolean update() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOLesson daoLesson = new DAOLesson(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoLesson.update(this);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 	
 
 	

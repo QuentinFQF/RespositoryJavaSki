@@ -10,6 +10,13 @@ public abstract class Person {
 	private LocalDate dateOfBirth;
 	private String pseudo;
 	
+	public Person(String name,String firstName,int personId,String pseudo) {
+		
+		this.firstName=firstName;
+		this.name=name;
+		this.PersonId=personId;
+		this.pseudo=pseudo;
+	}
 	public Person(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo) {
 		this.dateOfBirth=dateOfBirth;
 		this.firstName=firstName;

@@ -7,13 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoAccreditation;
 import be.flas.interfaces.IDaoClasse;
 import be.flas.model.Accreditation;
+import be.flas.model.LessonType;
 import be.flas.model.Skier;
 
 
@@ -159,6 +162,76 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
             return false;
         }
     }
+    
+    
+    
+    public List<Accreditation> selectAccreditationsNotIns(int instructorId) {
+        List<Accreditation> accreditations = new ArrayList<>();
+        
+        // Requête SQL pour récupérer les accréditations non associées à l'instructeur donné
+        String query = """
+            SELECT 
+                a.AccreditationId, a.Names, a.AgeCategory, a.SportType,
+                lt.LessonTypeId, lt.Levels, lt.Price
+            FROM Accreditation a
+            LEFT JOIN Acc_LessonType alt ON a.AccreditationId = alt.AccreditationId
+            LEFT JOIN LessonType lt ON alt.LessonTypeId = lt.LessonTypeId
+            WHERE a.AccreditationId NOT IN (
+                SELECT ia.AccreditationId
+                FROM Ins_Accreditation ia
+                WHERE ia.InstructorId = ?
+            )
+            ORDER BY a.AccreditationId;
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            // Affectation du paramètre de l'ID de l'instructeur
+            pstmt.setInt(1, instructorId);
+
+            try (ResultSet res = pstmt.executeQuery()) {
+                Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+                while (res.next()) {
+                    int accreditationId = res.getInt("AccreditationId");
+                    String accreditationName = res.getString("Names");
+                    String ageCategory = res.getString("AgeCategory");
+                    String sportType = res.getString("SportType");
+                    
+                    int lessonTypeId = res.getInt("LessonTypeId");
+                    String levels = res.getString("Levels");
+                    double price = res.getDouble("Price");
+
+                    // Vérifier si l'accréditation existe déjà dans la map
+                    Accreditation accreditation = accreditationMap.getOrDefault(
+                            accreditationId, 
+                            new Accreditation(accreditationId, accreditationName,null, sportType, ageCategory)
+                    );
+
+                    // Ajouter le type de leçon à l'accréditation
+                    if (lessonTypeId != 0) {
+                        LessonType lessonType = new LessonType(lessonTypeId, levels, price);
+                        accreditation.AddLessonType(lessonType);
+                    }
+
+                    // Mettre à jour la map
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                // Ajouter les accréditations collectées à la liste finale
+                accreditations.addAll(accreditationMap.values());
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des accréditations : " + ex.getMessage());
+        }
+
+        return accreditations;
+    }
+   
+
+
+
+
 
 
 

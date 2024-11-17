@@ -19,6 +19,7 @@ import com.toedter.calendar.JDateChooser;
 import be.flas.connection.DatabaseConnection;
 import be.flas.dao.DAOInstructor;
 import be.flas.dao.DAOLessonType;
+import be.flas.model.LessonType;
 
 import javax.swing.JComboBox;
 import com.toedter.calendar.JMonthChooser;
@@ -125,19 +126,19 @@ public class FormInscriptionCollectif extends JFrame {
 		JLabel lblNewLabel = new JLabel("Inscription");
 		lblNewLabel.setBounds(353, 10, 47, 13);
 		contentPane.add(lblNewLabel);
-		fillAccreditationComboBox();
+		//fillAccreditationComboBox();
 		
 		
 	}
-	private void fillAccreditationComboBox() {
+	/*private void fillAccreditationComboBox() {
         System.out.println("Début du remplissage du JComboBox avec les lessontype.");
         try {
-            List<String> accreditationNames = daoLessonType.selectLessonType();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(accreditationNames.toArray(new String[0]));
+            List<LessonType> accreditationNames = daoLessonType.selectLessonType();
+            DefaultComboBoxModel<LessonType> model = new DefaultComboBoxModel<>(accreditationNames.toArray();
             comboLessonType.setModel(model);
             System.out.println("Accréditations chargées : " + accreditationNames);
         } catch (Exception e) {
             System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
         }
-    }
+    }*/
 }

@@ -94,7 +94,8 @@ public class Booking {
 	        // Création de l'instance DAO pour l'enregistrement
 	        DAOBooking daoBooking = new DAOBooking(connection);
 	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
-	        return daoBooking.create(this);
+	        //return daoBooking.create(this);
+	        return daoBooking.createWithLesson(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return false;

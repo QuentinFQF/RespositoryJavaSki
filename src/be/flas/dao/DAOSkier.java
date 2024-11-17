@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,7 +119,7 @@ public class DAOSkier extends DaoGeneric<Skier> {
  
     @Override
     public boolean create(Skier skier) {
-        String sql = "INSERT INTO Skier (Names, FirstName, Pseudo, DateOfBirth, Assurance) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Skier (Names, FirstName, Pseudo, DateOfBirth) VALUES (?, ?, ?, ?)";
 
         // Utilisation de try-with-resources pour garantir la fermeture des ressources
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -128,7 +129,7 @@ public class DAOSkier extends DaoGeneric<Skier> {
             pstmt.setString(2, skier.getFirstName()); // Getter pour le prénom
             pstmt.setString(3, skier.getPseudo()); // Getter pour le pseudo
             pstmt.setDate(4, java.sql.Date.valueOf(skier.getDateOfBirth())); // Getter pour la date de naissance (LocalDate)
-            pstmt.setBoolean(5, skier.isAssurance()); // Getter pour l'assurance
+            //pstmt.setBoolean(5, skier.isAssurance()); // Getter pour l'assurance
 
             // Exécution de la requête
             int rowsInserted = pstmt.executeUpdate();
@@ -153,6 +154,8 @@ public class DAOSkier extends DaoGeneric<Skier> {
             return false;
         }
     }
+
+
     
    
     public List<Skier> getAllSkiers() {

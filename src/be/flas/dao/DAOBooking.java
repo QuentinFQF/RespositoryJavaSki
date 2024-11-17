@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,94 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	public DAOBooking(Connection conn){
     	super(conn);
     }
+	public boolean createWithLesson(Booking booking) {
+	    // Récupérer les informations nécessaires depuis l'objet Booking
+	    Lesson lesson = booking.getLesson();
+
+	    // Étape 1 : Créer la leçon et récupérer l'ID généré
+	    int lessonId = createLesson(lesson);
+
+	    // Vérifier si l'insertion de la leçon a échoué
+	    if (lessonId == -1) {
+	        System.err.println("Erreur lors de la création de la leçon.");
+	        return false;
+	    }
+
+	    // Associer l'ID de la leçon créée à l'objet Lesson
+	    lesson.setLessonId(lessonId);
+
+	    // Étape 2 : Créer le booking avec la leçon nouvellement créée
+	    return createBooking(booking);
+	}
+
+	// Méthode pour créer la leçon dans la base de données
+	private int createLesson(Lesson lesson) {
+	    String sql = """
+	        INSERT INTO Lesson (LessonTypeId, MinBookings, MaxBookings, DayPart, CourseType, TariffId, NumberSkier,StartTime,EndTime) 
+	        VALUES (?, ?, ?, ?, ?, ?, ?,?,?)
+	    """;
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	        pstmt.setInt(1, lesson.getLessonType().getId());
+	        pstmt.setInt(2, lesson.getMinBookings());
+	        pstmt.setInt(3, lesson.getMaxBookings());
+	        pstmt.setString(4, lesson.getDayPart());
+	        pstmt.setString(5, lesson.getCourseType());
+	        pstmt.setInt(8, lesson.getStart());
+	        pstmt.setInt(9, lesson.getEnd());
+
+	        // Si la leçon est de type "Collectif", on ne met pas de tarif
+	        if (lesson.getCourseType().equalsIgnoreCase("Collectif")) {
+	            pstmt.setNull(6, java.sql.Types.INTEGER);
+	        } else {
+	            pstmt.setInt(6, lesson.getTarifId());
+	        }
+
+	        // Initialiser NumberSkier à 1
+	        pstmt.setInt(7, 1);
+
+	        // Exécution de la requête
+	        int rowsInserted = pstmt.executeUpdate();
+	        if (rowsInserted > 0) {
+	            // Récupérer l'ID généré de la leçon
+	            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    return generatedKeys.getInt(1); // Retourne l'ID de la leçon
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Erreur lors de la création de la leçon : " + e.getMessage());
+	    }
+	    return -1; // Retourne -1 en cas d'échec
+	}
+
+
+	// Méthode pour créer la réservation dans la base de données
+	private boolean createBooking(Booking booking) {
+	    String sql = """
+	        INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,InstructorId) 
+	        VALUES (?, ?, ?, ?,?)
+	    """;
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	        pstmt.setDate(1, java.sql.Date.valueOf(booking.getDateBooking()));
+	        pstmt.setInt(2, booking.getLesson().getId());
+	        pstmt.setInt(3, booking.getSkier().getPersonId());
+	        pstmt.setInt(4, booking.getPeriod().getId());
+	        pstmt.setInt(5, booking.getInstructor().getPersonId());
+
+	        int rowsInserted = pstmt.executeUpdate();
+	        if (rowsInserted > 0) {
+	            System.out.println("Réservation créée avec succès pour la leçon ID : " + booking.getLesson().getLessonId());
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Erreur lors de la création de la réservation : " + e.getMessage());
+	    }
+	    return false;
+	}
+
    
     @Override
 	public boolean update(Booking obj){
@@ -37,14 +126,14 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	    // Obtenir la date du jour
 	    //LocalDate dateBooking = LocalDate.now();
 	    
-	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, InstructorId, PeriodId) VALUES (?, ?, ?, ?, ?)";
+	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId) VALUES (?, ?, ?, ?)";
 	    
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertBooking)) {
 	        pstmt.setDate(1, java.sql.Date.valueOf(b.getDateBooking())); // Convertit LocalDate en java.sql.Date
 	        pstmt.setInt(2, b.getLesson().getId());
 	        pstmt.setInt(3, b.getSkier().getPersonId());
-	        pstmt.setInt(4, b.getInstructor().getPersonId());
-	        pstmt.setInt(5, b.getPeriod().getId());
+	        //pstmt.setInt(4, b.getInstructor().getPersonId());
+	        pstmt.setInt(4, b.getPeriod().getId());
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
@@ -57,66 +146,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	    return false; // Échec de la création de la réservation
 	}
 	
-	/*public boolean createBooking(int lessonId, int skierId, int instructorId, int periodId) {
-	    // Obtenir la date du jour
-	    LocalDate dateBooking = LocalDate.now();
-	    
-	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, InstructorId, PeriodId) VALUES (?, ?, ?, ?, ?)";
-	    
-	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertBooking)) {
-	        pstmt.setDate(1, java.sql.Date.valueOf(dateBooking)); // Convertit LocalDate en java.sql.Date
-	        pstmt.setInt(2, lessonId);
-	        pstmt.setInt(3, skierId);
-	        pstmt.setInt(4, instructorId);
-	        pstmt.setInt(5, periodId);
-
-	        int rowsInserted = pstmt.executeUpdate();
-	        if (rowsInserted > 0) {
-	            System.out.println("Réservation créée avec succès pour la leçon ID : " + lessonId);
-	            return true; // Réservation créée avec succès
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Erreur lors de la création de la réservation : " + e.getMessage());
-	    }
-	    return false; // Échec de la création de la réservation
-	}*/
-    
-    /*public List<Booking> getAllBookings() {
-        List<Booking> bookings = new ArrayList<>();
-        String sql = """
-            SELECT 
-                b.BookingId, b.DateBooking,
-                s.SkierId, s.Names AS SkierName, s.FirstNames AS SkierFirstName,
-                i.InstructorId, i.Names AS InstructorName, i.FirstNames AS InstructorFirstName,
-                l.LessonId, l.LessonType,
-                p.DayPart
-            FROM 
-                Booking b
-            JOIN Skier s ON b.SkierId = s.SkierId
-            JOIN Instructor i ON b.InstructorId = i.InstructorId
-            JOIN Lesson l ON b.LessonId = l.LessonId
-            JOIN Period p ON b.PeriodId = p.PeriodId
-            """;
-
-        try (PreparedStatement pstmt = connection.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                LocalDate dateBooking = rs.getDate("DateBooking").toLocalDate();
-                Skier skier = new Skier(rs.getInt("SkierId"), rs.getString("Names"), rs.getString("FirstName"),rs.getString("Pseudo"));
-                Instructor instructor = new Instructor(rs.getString("Names"), rs.getString("FirstName"),rs.getInt("InstructorId"),rs.getString("Pseudo"));
-                Lesson lesson = new Lesson(rs.getInt("LessonId"), rs.getString("LessonType"));
-                Period period = new Period(rs.getString("DayPart"));
-
-                Booking booking = new Booking(dateBooking, skier, period, lesson, instructor);
-                bookings.add(booking);
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des réservations : " + e.getMessage());
-        }
-
-        return bookings;
-    }*/
+	
     
     public List<Booking> getBookingsBySkierOrInstructorId(String skierP,String insP) {
         List<Booking> bookings = new ArrayList<>();

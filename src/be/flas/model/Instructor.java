@@ -33,6 +33,7 @@ public class Instructor extends Person {
 		AddAccreditation(acc);
 		
 	}
+	//dans formins
 	public Instructor(String name,String firstName,LocalDate dateOfBirth,Accreditation acc,String pseudo) {
 		super(name,firstName,dateOfBirth,pseudo);
 		this.accreditations=new ArrayList<>();
@@ -55,6 +56,9 @@ public class Instructor extends Person {
 	}
 	public Instructor() {
 		super();
+		this.accreditations=new ArrayList<>();
+		this.bookings=new ArrayList<>();
+		this.lessons=new ArrayList<>();
 	}
 	public boolean IsAccreditate() {
 		return false;
@@ -106,17 +110,18 @@ public class Instructor extends Person {
 	}
 	
 	
-	public int save() {
+	public boolean save() {
 	    try {
 	        // Récupération de la connexion
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
 	        // Création de l'instance DAO pour l'enregistrement
 	        DAOInstructor daoInstructor  = new DAOInstructor (connection);
 	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
-	        return daoInstructor.insertInstructor(this);
+	        //return daoInstructor.insertInstructor(this);
+	        return daoInstructor.create(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return -1;
+	        return false;
 	    }
 	}
 	

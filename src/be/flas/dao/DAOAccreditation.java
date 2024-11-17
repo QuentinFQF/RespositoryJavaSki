@@ -45,9 +45,9 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
 
     // Méthodes utilisant 'connection' ici, sans la fermer
     
-    public List<String> selectNames() {
-        List<String> names = new ArrayList<>();
-        String query = "SELECT Names FROM Accreditation";
+    /*public List<Accreditation> selectNames() {
+        List<Accreditation> names = new ArrayList<>();
+        String query = "SELECT AccreditationId,Names FROM Accreditation";
 
         try (PreparedStatement pstmt = connection.prepareStatement(query);
              ResultSet res = pstmt.executeQuery()) {
@@ -60,7 +60,80 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
             System.err.println("Erreur lors de la récupération des noms : " + ex.getMessage());
         }
         return names;
+    }*/
+    /*public List<Accreditation> selectNames() {
+        List<Accreditation> accreditations = new ArrayList<>();
+        String query = "SELECT AccreditationId, Names FROM Accreditation";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query);
+             ResultSet res = pstmt.executeQuery()) {
+
+            while (res.next()) {
+                int id = res.getInt("AccreditationId");
+                String name = res.getString("Names");
+
+                // Création d'un objet Accreditation
+                Accreditation accreditation = new Accreditation(id, name);
+                accreditations.add(accreditation);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des accréditations : " + ex.getMessage());
+        }
+        return accreditations;
+    }*/
+    public List<Accreditation> getAll() {
+        List<Accreditation> accreditations = new ArrayList<>();
+        // Requête SQL pour récupérer les accréditations avec les données associées de LessonType
+        String query = "SELECT a.AccreditationId, a.Names, l.LessonTypeId, l.Levels, l.Price, l.Sport, l.AgeCategory " +
+                       "FROM Accreditation a " +
+                       "LEFT JOIN LessonType l ON a.AccreditationId = l.AccreditationId";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query);
+             ResultSet res = pstmt.executeQuery()) {
+
+            // Map pour éviter de dupliquer les accréditations
+            Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+            while (res.next()) {
+                int accreditationId = res.getInt("AccreditationId");
+                String accreditationName = res.getString("Names");
+
+                // Récupérer l'accréditation existante dans le map ou la créer
+                Accreditation accreditation = accreditationMap.get(accreditationId);
+                if (accreditation == null) {
+                    accreditation = new Accreditation(accreditationId, accreditationName);
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                // Vérifier s'il y a des données sur le LessonType (s'il existe)
+                int lessonTypeId = res.getInt("LessonTypeId");
+                if (lessonTypeId != 0) {
+                    String levels = res.getString("Levels");
+                    double price = res.getDouble("Price");
+                    String sport = res.getString("Sport");
+                    String ageCategory = res.getString("AgeCategory");
+
+                    // Créer un objet LessonType avec les informations
+                    LessonType lessonType = new LessonType(lessonTypeId, levels, sport, price, ageCategory, accreditation);
+
+                    // Ajouter le LessonType à l'accréditation correspondante
+                    accreditation.AddLessonType(lessonType);
+                }
+            }
+
+            // Ajouter toutes les accréditations au résultat final
+            accreditations.addAll(accreditationMap.values());
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des accréditations : " + ex.getMessage());
+        }
+
+        return accreditations;
     }
+
+
+
+
 	/*@Override
 	public List<String> selectNames() {
         List<String> names = new ArrayList<>();

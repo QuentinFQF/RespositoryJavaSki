@@ -31,6 +31,22 @@ public class Lesson {
 	public void setTarifId(int tarifId) {
 		this.tarifId = tarifId;
 	}
+	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int id,int s,int e) {
+		this.minBookings=min;
+		this.maxBookings=max;
+		this.bookings=new ArrayList<>();
+		this.instructor=ins;
+		this.lessonType=lt;
+		this.dayPart=day;
+		this.courseType=course;
+		this.tarifId=tId;
+		
+		this.id=id;
+		this.start=s;
+		this.end=e;
+	
+		
+	}
 	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int s,int e) {
 		this.minBookings=min;
 		this.maxBookings=max;
@@ -186,6 +202,34 @@ public class Lesson {
 
         return new int[]{minBooking, maxBooking};
     }
+	public int[] getStartAndEndTime(String timeSlot) {
+	    int startHour;
+	    int endHour;
+
+	    // Déterminer les heures de début et de fin selon le créneau horaire
+	    if ("Matin".equalsIgnoreCase(timeSlot)) {
+	        startHour = 9;
+	        endHour = 12;
+	    } else if ("Après-midi".equalsIgnoreCase(timeSlot) || "Apres-midi".equalsIgnoreCase(timeSlot)) {
+	        startHour = 14;
+	        endHour = 17;
+	    } else {
+	        throw new IllegalArgumentException("Créneau horaire non reconnu : " + timeSlot);
+	    }
+
+	    // Retourner un tableau avec les valeurs de startHour et endHour
+	    return new int[]{startHour, endHour};
+	}
+	public int getDurationInHours(String timeSlot) {
+	    if ("1 heure".equalsIgnoreCase(timeSlot)) {
+	        return 1;
+	    } else if ("2 heures".equalsIgnoreCase(timeSlot)) {
+	        return 2;
+	    } else {
+	        throw new IllegalArgumentException("Créneau horaire non reconnu : " + timeSlot);
+	    }
+	}
+
 	
 	public static Lesson getLesson(int id){
 		try {

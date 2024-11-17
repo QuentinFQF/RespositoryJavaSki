@@ -35,7 +35,7 @@ public class FormInstructor extends JFrame {
     private JTextField TxNom;
     private JTextField txPrenom;
     private JTextField txPseudo;
-    private JComboBox<String> comboAccreditation;
+    private JComboBox<Accreditation> comboAccreditation;
     
     private Connection sharedConnection;
     private DAOInstructor daoInstructor;
@@ -81,7 +81,7 @@ public class FormInstructor extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 128, 128));
-        panel.setBounds(255, 149, 286, 235);
+        panel.setBounds(255, 149, 333, 235);
         contentPane.add(panel);
         panel.setLayout(null);
 
@@ -95,7 +95,7 @@ public class FormInstructor extends JFrame {
         panel.add(lblNewLabel_3);
 
         comboAccreditation = new JComboBox<>();
-        comboAccreditation.setBounds(123, 30, 153, 21);
+        comboAccreditation.setBounds(123, 30, 200, 21);
         panel.add(comboAccreditation);
 
         fillAccreditationComboBox();
@@ -145,31 +145,40 @@ public class FormInstructor extends JFrame {
 		            JOptionPane.showMessageDialog(null, "Erreur : la date de naissance doit être dans le passé.");
 		            return;
 		        }
+		        
 
-                String selectedAccreditation = (String) comboAccreditation.getSelectedItem();
-                Accreditation accreditation = new Accreditation(selectedAccreditation);
+                //String selectedAccreditation = (String) comboAccreditation.getSelectedItem();
+                Accreditation selected = (Accreditation) comboAccreditation.getSelectedItem();
+                if (selected == null) 
+                { 
+                	JOptionPane.showMessageDialog(FormInstructor.this, "Veuillez sélectionner une accréditation.", "Erreur", JOptionPane.ERROR_MESSAGE); 
+                	return; 
+                }
+                System.out.println(selected.getId());
+
+                Accreditation accreditation = new Accreditation(selected.getId());
                 Instructor instructor = new Instructor(nom, prenom, dob, accreditation, pseudo);
 
-                System.out.println("Accréditation sélectionnée: " + selectedAccreditation);
+                System.out.println("Accréditation sélectionnée: " + selected);
                 System.out.println(instructor.toString());
                 
                 //boolean success = daoInstructor.create(instructor);
                 //int success = daoInstructor.insertInstructor(instructor);
-                int success = instructor.save();
+                boolean success = instructor.save();
                 //int id=daoAccreditation.selectId(selectedAccreditation);
-                int id=Accreditation.selectId(selectedAccreditation);
+                //int id=Accreditation.selectId(selectedAccreditation);
                 //boolean success2=daoInstructor.insertAcc_Instructor(success,id);
-                boolean success2=instructor.saveAccIns(success,id);
+                //boolean success2=instructor.saveAccIns(success,id);
                 //daoInstructor.testConnection();
                 //System.out.println("id acc :"+id);
-                if (success2) {
+                if (success) {
                 	JOptionPane.showMessageDialog(null, "ins et acc réussi !");
                 } else {
                 	JOptionPane.showMessageDialog(null, "echec ins et acc");
                 }
             }
         });
-        btnNewButton.setBounds(191, 204, 85, 21);
+        btnNewButton.setBounds(238, 204, 85, 21);
         panel.add(btnNewButton);
 
         txPseudo = new JTextField();
@@ -220,7 +229,7 @@ public class FormInstructor extends JFrame {
         contentPane.add(lblNewLabel_4);
     }
 
-    private void fillAccreditationComboBox() {
+    /*private void fillAccreditationComboBox() {
         System.out.println("Début du remplissage du JComboBox avec les accréditations.");
         try {
             List<String> accreditationNames = daoAccreditation.selectNames();
@@ -230,7 +239,38 @@ public class FormInstructor extends JFrame {
         } catch (Exception e) {
             System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
         }
+    }*/
+    private void fillAccreditationComboBox() {
+        System.out.println("Début du remplissage du JComboBox avec les accréditations.");
+        try {
+            // Récupérer la liste des accréditations depuis la DAO
+            List<Accreditation> accreditations = Accreditation.getAll();
+
+            // Créer un modèle pour le JComboBox
+            DefaultComboBoxModel<Accreditation> model = new DefaultComboBoxModel<>();
+
+            // Ajouter chaque accréditation au modèle
+            for (Accreditation accreditation : accreditations) {
+                model.addElement(accreditation);
+            }
+
+            // Mettre à jour le JComboBox avec le nouveau modèle
+            comboAccreditation.setModel(model);
+            
+            System.out.println("Accréditations chargées avec succès : " + accreditations);
+        } catch (Exception e) {
+            System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
+            JOptionPane.showMessageDialog(this, 
+                "Erreur lors du chargement des accréditations : " + e.getMessage(), 
+                "Erreur", 
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
+
+    
+
+    
+
 
     @Override
     public void dispose() {

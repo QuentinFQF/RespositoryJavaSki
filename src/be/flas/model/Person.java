@@ -9,7 +9,14 @@ public abstract class Person {
 	private int PersonId;
 	private LocalDate dateOfBirth;
 	private String pseudo;
-	
+	//utiliser dans skierForm
+	public Person(String name,String firstName,String pseudo,LocalDate dateOfBirth) {
+		this.dateOfBirth=dateOfBirth;
+		this.firstName=firstName;
+		this.name=name;
+		
+		this.pseudo=pseudo;
+	}
 	public Person(String name,String firstName,int personId,String pseudo) {
 		
 		this.firstName=firstName;

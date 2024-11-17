@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoAccreditation;
@@ -29,7 +31,7 @@ public class DAOLessonType extends DaoGeneric<LessonType>{
 	    return false;
 	}
     
-    @Override
+    /*@Override
     public LessonType find(int id) {
         LessonType lessonType = null;
 
@@ -58,12 +60,59 @@ public class DAOLessonType extends DaoGeneric<LessonType>{
         }
 
         return lessonType;
+    }*/
+    @Override
+    public LessonType find(int id) {
+        LessonType lessonType = null;
+
+        // Requête SQL pour récupérer un type de leçon avec les informations d'accréditation
+        String sql = """
+            SELECT lt.LessonTypeId, lt.Levels, lt.Price,
+                   a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory
+            FROM LessonType lt
+            LEFT JOIN Accreditation a ON lt.AccreditationId = a.AccreditationId
+            WHERE lt.LessonTypeId = ?
+        """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id); // Définir le paramètre ID
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Création de l'objet `Accreditation`
+                    Accreditation accreditation = new Accreditation(
+                        rs.getInt("AccreditationId"),
+                        rs.getString("AccreditationName"),
+                        rs.getString("SportType"),
+                        rs.getString("AgeCategory")
+                    );
+
+                    // Création de l'objet `LessonType`
+                    lessonType = new LessonType(
+                        rs.getInt("LessonTypeId"),
+                        rs.getString("Levels"),
+                        rs.getDouble("Price"),
+                   
+                        accreditation // Liaison de l'accréditation avec le LessonType
+                    );
+                    
+                    // Ajouter le LessonType à la liste de LessonTypes de l'accréditation
+                    accreditation.AddLessonType(lessonType);
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la recherche du type de leçon avec ID " + id + " : " + ex.getMessage());
+        }
+
+        return lessonType;
     }
+
 
     @Override
     public boolean create(LessonType obj){
     	return false;
     }
+    /*
     public List<LessonType> selectLessonTypes() {
         List<LessonType> lessonTypes = new ArrayList<>();
         String query = "SELECT LessonTypeId, Levels, Price, Sport, AgeCategory FROM LessonType";
@@ -93,7 +142,7 @@ public class DAOLessonType extends DaoGeneric<LessonType>{
         }
 
         return lessonTypes;
-    }
+    }*/
 
 
     // Méthodes utilisant 'connection' ici, sans la fermer
@@ -120,6 +169,57 @@ public class DAOLessonType extends DaoGeneric<LessonType>{
         }
         return names;
     }
+    public List<LessonType> selectLessonTypes() {
+        List<LessonType> lessonTypes = new ArrayList<>();
+        Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+        // Requête SQL avec jointure pour obtenir les informations d'accréditation et de LessonType
+        String query = """
+            SELECT lt.LessonTypeId, lt.Levels, lt.Price,
+                   a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory
+            FROM LessonType lt
+            LEFT JOIN Accreditation a ON lt.AccreditationId = a.AccreditationId
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query);
+             ResultSet res = pstmt.executeQuery()) {
+
+            while (res.next()) {
+                // Récupération des données de la table Accreditation
+                int accreditationId = res.getInt("AccreditationId");
+                String accreditationName = res.getString("AccreditationName");
+                String sportType = res.getString("SportType");
+                String ageCategory = res.getString("AgeCategory");
+
+                // Recherche ou création d'un objet Accreditation dans le Map
+                Accreditation accreditation = accreditationMap.get(accreditationId);
+                if (accreditation == null) {
+                    accreditation = new Accreditation(accreditationId, accreditationName, sportType, ageCategory);
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                // Récupération des données de la table LessonType
+                int lessonTypeId = res.getInt("LessonTypeId");
+                String levels = res.getString("Levels");
+                double price = res.getDouble("Price");
+
+                // Création de l'objet LessonType
+                LessonType lessonType = new LessonType(lessonTypeId, levels, price ,accreditation);
+
+                // Ajout du LessonType à la liste des leçons et à l'accréditation correspondante
+                lessonTypes.add(lessonType);
+                accreditation.AddLessonType(lessonType); // Ajoute le LessonType à la liste interne de l'accréditation
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des types de leçon : " + ex.getMessage());
+        }
+
+        // Retourne la liste de LessonType
+        return lessonTypes;
+    }
+
+
     /*public List<String> selectLessonType() {
         List<String> lessonTypes = new ArrayList<>();
         String query = "SELECT Levels, Price, Sport, AgeCategory FROM LessonType";

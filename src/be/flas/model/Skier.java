@@ -13,7 +13,11 @@ public class Skier extends Person{
 	private boolean assurance;
 	private List<Booking> bookings;
 
-	
+	//utiliser dans formSkier
+	public Skier(String name,String firstName,LocalDate dateOfBirth,String pseudo) {
+		super(name,firstName,pseudo,dateOfBirth);
+		
+	}
 	public Skier(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,boolean assurance) {
 		super(name,firstName,personId,dateOfBirth,pseudo);
 		this.assurance=assurance;
@@ -67,17 +71,6 @@ public class Skier extends Person{
 	}
 	
 	
-	// Nouvelle méthode statique pour sauvegarder un skieur
-    /*public static boolean save(Skier skier) {
-        try {
-            Connection connection = DatabaseConnection.getInstance().getConnection();
-            DAOSkier daoSkier = new DAOSkier(connection);
-            return daoSkier.create(skier);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }*/
 	public boolean save() {
 	    try {
 	        // Récupération de la connexion

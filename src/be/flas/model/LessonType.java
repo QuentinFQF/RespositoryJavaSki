@@ -15,10 +15,11 @@ public class LessonType {
 	private String sport;
 	private double price;
 	private List<Accreditation> accreditations;
+	private Accreditation accreditation;
 	private List<Lesson> lessons;
 	private int id;
 	private String ageCategory;
-	
+	// a supprimer
 	public LessonType(int id,String level,String sport,double price,String age) {
 		this.level=level;
 		this.price=price;
@@ -26,6 +27,23 @@ public class LessonType {
 		this.ageCategory=age;
 		this.id=id;
 		this.accreditations=new ArrayList<>();
+		this.lessons=new ArrayList<>();
+	}
+	//utiliser dasn getAll
+	public LessonType(int id,String level,double price,Accreditation a) {
+		this.level=level;
+		this.price=price;
+		this.id=id;
+		this.accreditation=a;
+		this.lessons=new ArrayList<>();
+	}
+	public LessonType(int id,String level,String sport,double price,String age,Accreditation a) {
+		this.level=level;
+		this.price=price;
+		this.sport=sport;
+		this.ageCategory=age;
+		this.id=id;
+		this.accreditation=a;
 		this.lessons=new ArrayList<>();
 	}
 	
@@ -64,6 +82,12 @@ public class LessonType {
 		}
 	}
 	
+	public Accreditation getAccreditation() {
+		return accreditation;
+	}
+	public void setAccreditation(Accreditation accreditation) {
+		this.accreditation = accreditation;
+	}
 	public String getAgeCategory() {
 		return ageCategory;
 	}

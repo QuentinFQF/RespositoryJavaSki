@@ -5,6 +5,7 @@ import java.awt.*;
 
 
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -103,9 +104,7 @@ public class FormChooseInstructor extends JFrame {
         comboLessonType.setBounds(32, 150, 410, 21);
         panel.add(comboLessonType);
 
-        /*comboSemaine = new JComboBox<>();  // Création du JComboBox pour les semaines
-        comboSemaine.setBounds(32, 100, 410, 21);
-        panel.add(comboSemaine);*/
+      
 
         JButton btnChoisir = new JButton("Choisir");
         btnChoisir.setBounds(189, 443, 85, 21);
@@ -147,13 +146,7 @@ public class FormChooseInstructor extends JFrame {
                 String[] parts = selectedLessonType.split(" - ");
 
                 System.out.println(selectedLessonTypeId);
-                /*if (parts.length >= 3) {
-                    String extractedCategory = parts[2];
-                    String extractedTargetAudience = parts[3];
-                    updateInstructorsForLessonType(extractedCategory, extractedTargetAudience);
-                } else {
-                    System.err.println("Format inattendu pour le type de leçon sélectionné : " + selectedLessonType);
-                }*/
+                
                 updateInstructorsForLessonType(selectedLessonTypeId);
             }
         });
@@ -241,15 +234,18 @@ public class FormChooseInstructor extends JFrame {
 
                 // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
                 if (selectedSkierId != -1 && selectedLessonTypeId != -1 && startDate != null && endDate != null && selectedPeriodId != -1) {
-                    // Appel à la méthode pour créer la leçon
-                	//System.out.println("time : "+timeSlot);
+                    
                 	Lesson lesson=new Lesson();
-                	//Lesson lesson=Lesson.getLesson(selectedLessonTypeId);
+                
                 	LessonType lessonType=LessonType.getLesson(selectedLessonTypeId);
                 	int[] minMax;
-                	minMax = lesson.getMinAndMaxBooking(lessonType.getAgeCategory(), timeSlot);
+                	System.out.println("age lt : "+lessonType.getAccreditation().getAgeCategory());
+                	
+                	minMax = lesson.getMinAndMaxBooking(lessonType.getAccreditation().getAgeCategory(), timeSlot);
+                	int[] timeRange = lesson.getStartAndEndTime(timeSlot);
+                	System.out.println("time : "+timeRange[0]+timeRange[1]);
                 	System.out.println(minMax[0]+ " "+minMax[1]);
-                	System.out.println(lessonType.getAgeCategory());
+                	System.out.println(lessonType.getAccreditation().getAgeCategory());
                   
                 	LocalDate dateBooking = LocalDate.now();
                 	Period p=new Period(selectedPeriodId);
@@ -259,31 +255,36 @@ public class FormChooseInstructor extends JFrame {
                 	
                 	Lesson lesson2=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0);
                 	
-                	
+                	System.out.println("min "+lesson2.getMinBookings());
+                	System.out.println("max "+lesson2.getMaxBookings());
                 	
                  
-                	//int idLesson=daoLesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
+                	
                 	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
-                	//Instructor i=new Instructor(selectedInstructorId);
+                	
                 	System.out.println(i.isAvailable(selectedPeriodId, timeSlot));
-                	Lesson ll=Lesson.getLesson(idLesson);
-                	//daoInstructor.isInstructorAvailable(idI, idP, timeSlot);
-                	//System.out.println("est dispo : "+ daoInstructor.isInstructorAvailable(idI, idP, timeSlot));
-                	if(Lesson.isComplete(idLesson)==true/*daoLesson.isLessonComplete2(idLesson)==true*/) {
+                	//Lesson ll=Lesson.getLesson(idLesson);
+                	
+                	
+                	boolean isAvailable = i.isAvailable(selectedPeriodId, timeSlot);
+                	if (isAvailable) {
+                	    System.out.println("L'instructeur est disponible pour ce créneau.");
+                	} else {
+                	    System.out.println("L'instructeur est déjà assigné pour ce créneau.");
+                	}
+                	
+                	
+                	if(Lesson.isComplete(idLesson)==true) {
                 		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
                 	}else if(idLesson==-1 && i.isAvailable(selectedPeriodId, timeSlot)==true) {
                 		//create
-                		lesson2.save();
-                		//daoLesson.create(lesson2);
-                		int idLessonCreate=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
-                		System.out.println(idLessonCreate);
                 		
-                		Lesson l=new Lesson(idLessonCreate);
-                    	Booking b=new Booking(dateBooking,s,p,l,i);
-                        
-                    	//daoBooking.create(b);
-                    	b.save();
+                		
+                		Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
+                		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
+                	
+                		booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
                 		
                 	}else {
@@ -291,7 +292,7 @@ public class FormChooseInstructor extends JFrame {
             			//update
                 		Lesson l=new Lesson(idLesson);
                 		l.update();
-                		//daoLesson.update(l);
+                	
                 		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
                 		
                 		
@@ -344,7 +345,7 @@ public class FormChooseInstructor extends JFrame {
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
             for (LessonType lessonType : lessonTypes) {
                 //String displayText = instructor.getName() + " " + instructor.getFirstName();
-                String displayText = lessonType.getLevel() + " " + lessonType.getPrice() + " " + lessonType.getSport() + " "+lessonType.getAgeCategory() ;
+                String displayText = lessonType.getLevel() + " " + lessonType.getPrice() + " " + lessonType.getAccreditation().getSport() + " "+lessonType.getAccreditation().getAgeCategory() ;
 
                 model.addElement(displayText);
                 lessonTypeIdMap.put(displayText, lessonType.getId());
@@ -366,12 +367,12 @@ public class FormChooseInstructor extends JFrame {
     private void fillSkierComboBox() {
     	System.out.println("skier chargé ");
         try {
-            //List<Skier> skiers = daoSkier.getAllSkiers();
+         
         	List<Skier> skiers = Skier.getAll();
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Skier skier : skiers) {
-                //String displayText = instructor.getName() + " " + instructor.getFirstName();
+            
                 String displayText = skier.getName() + " " + skier.getFirstName() + " (" + skier.getPseudo() + ")";
 
                 model.addElement(displayText);
@@ -395,12 +396,12 @@ public class FormChooseInstructor extends JFrame {
     private void fillPeriodComboBox() {
     	System.out.println("period chargé ");
         try {
-            //List<Period> periods = daoPeriod.getAllPeriods();
+           
         	List<Period> periods = Period.getAll();
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Period period : periods) {
-                //String displayText = instructor.getName() + " " + instructor.getFirstName();
+             
                 String displayText = period.getStartDate() + " " + period.getEndDate() + " (" + period.isVacation() + ")";
 
                 model.addElement(displayText);
@@ -422,6 +423,7 @@ public class FormChooseInstructor extends JFrame {
     }
     
 }
+
 
 
 

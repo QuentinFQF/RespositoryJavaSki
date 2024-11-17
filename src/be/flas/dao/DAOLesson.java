@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoLesson;
 import be.flas.model.Accreditation;
+import be.flas.model.Booking;
 import be.flas.model.Instructor;
 import be.flas.model.Lesson;
 import be.flas.model.LessonType;
@@ -97,22 +98,22 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	    
 	    
 	   
-	    String sqlInsertLesson = "INSERT INTO Lesson (InstructorId, LessonTypeId, MinBookings, MaxBookings, DayPart,CourseType,TariffId) VALUES (?, ?, ?, ?, ?,?,?)";
+	    String sqlInsertLesson = "INSERT INTO Lesson (LessonTypeId, MinBookings, MaxBookings, DayPart,CourseType,TariffId) VALUES (?, ?, ?, ?,?,?)";
 	    String sqlUpdateNumberSkier = "UPDATE Lesson SET NumberSkier = NumberSkier + 1 WHERE LessonId = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertLesson, Statement.RETURN_GENERATED_KEYS)) {
-	        pstmt.setInt(1, l.getInstructor().getPersonId());
-	        pstmt.setInt(2, l.getLessonType().getId());
-	        pstmt.setInt(3, l.getMinBookings());
-	        pstmt.setInt(4, l.getMaxBookings());
-	        pstmt.setString(5, l.getDayPart()); // Ajoute le créneau horaire
-	        pstmt.setString(6,l.getCourseType());
+	        //pstmt.setInt(1, l.getInstructor().getPersonId());
+	        pstmt.setInt(1, l.getLessonType().getId());
+	        pstmt.setInt(2, l.getMinBookings());
+	        pstmt.setInt(3, l.getMaxBookings());
+	        pstmt.setString(4, l.getDayPart()); // Ajoute le créneau horaire
+	        pstmt.setString(5,l.getCourseType());
 	        if (l.getCourseType().equals("Collectif")) {
-                pstmt.setNull(7, java.sql.Types.INTEGER);  // Mettre NULL pour tarif_id si leçon collective
+                pstmt.setNull(6, java.sql.Types.INTEGER);  // Mettre NULL pour tarif_id si leçon collective
             }else {
                 // Récupérez l'ID de tarif particulier ici si nécessaire pour les leçons particulières.
                  // Cette méthode doit être définie pour retourner l'ID correct.
-                pstmt.setInt(7, l.getTarifId());
+                pstmt.setInt(6, l.getTarifId());
             }
 
 	        int rowsInserted = pstmt.executeUpdate();
@@ -138,6 +139,7 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	    return false; // Retourne -1 en cas d'échec
     	
 	}
+
     
     
 
@@ -232,7 +234,7 @@ public class DAOLesson extends DaoGeneric<Lesson>{
 	    }
 	    return -1; // Retourne -1 si aucune leçon n'est trouvée
 	}*/
-    public int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings) {
+    /*public int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings) {
         String sql = "SELECT LessonId FROM Lesson WHERE InstructorId = ? AND LessonTypeId = ? AND DayPart = ? AND CourseType = ? AND MinBookings = ? AND MaxBookings = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, instructorId);
@@ -251,7 +253,40 @@ public class DAOLesson extends DaoGeneric<Lesson>{
             System.err.println("Erreur lors de la récupération de l'ID de la leçon : " + e.getMessage());
         }
         return -1; // Retourne -1 si aucun résultat n'est trouvé ou en cas d'erreur
+    }*/
+    public int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings) {
+        String sql = """
+            SELECT l.LessonId 
+            FROM Lesson l
+            JOIN Booking b ON l.LessonId = b.LessonId
+            WHERE b.InstructorId = ? 
+            AND l.LessonTypeId = ? 
+            AND l.DayPart = ? 
+            AND l.CourseType = ? 
+            AND l.MinBookings = ? 
+            AND l.MaxBookings = ?
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, instructorId);
+            pstmt.setInt(2, lessonTypeId);
+            pstmt.setString(3, dayPart);
+            pstmt.setString(4, courseType);
+            pstmt.setInt(5, minBookings);
+            pstmt.setInt(6, maxBookings);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("LessonId");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID de la leçon : " + e.getMessage());
+        }
+        return -1; // Retourne -1 si aucun résultat n'est trouvé ou en cas d'erreur
     }
+
+
     
     @Override
     public boolean update(Lesson l) {

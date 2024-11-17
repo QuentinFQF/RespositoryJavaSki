@@ -31,7 +31,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
 	public boolean delete(Instructor obj) {
 	    // Requêtes pour supprimer les enregistrements associés
 	    String deleteBookingsSql = "DELETE FROM Booking WHERE InstructorId = ?";
-	    String deleteLessonsSql = "DELETE FROM Lesson WHERE InstructorId = ?";
+	    //String deleteLessonsSql = "DELETE FROM Lesson WHERE InstructorId = ?";
 	    String deleteInsAccSql = "DELETE FROM Ins_Accreditation WHERE InstructorId = ?";
 	    String deleteInstructorSql = "DELETE FROM Instructor WHERE InstructorId = ?";
 
@@ -45,11 +45,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
 	            pstmtBookings.executeUpdate();
 	        }
 
-	        // Supprimer les leçons associées à l'instructeur
-	        try (PreparedStatement pstmtLessons = connection.prepareStatement(deleteLessonsSql)) {
-	            pstmtLessons.setInt(1, obj.getPersonId());
-	            pstmtLessons.executeUpdate();
-	        }
+	        
 
 	        // Supprimer les enregistrements dans Ins_Acc
 	        try (PreparedStatement pstmtInsAcc = connection.prepareStatement(deleteInsAccSql)) {
@@ -122,7 +118,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         }
     }
 
-    @Override
+    /*@Override
     public boolean create(Instructor ins) {
         PreparedStatement pstmt = null;
         try {
@@ -150,7 +146,84 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
                 e.printStackTrace();
             }
         }
+    }*/
+    
+    /*@Override
+    public boolean create(Instructor instructor) {
+        String sqlInstructor = "INSERT INTO Instructor ( Names, FirstName, Pseudo, DateOfBirth) VALUES ( ?, ?, ?, ?)";
+        String sqlInsAccreditation = "INSERT INTO Ins_Accreditation (InstructorId, AccreditationId) VALUES (?, ?)";
+
+        try (PreparedStatement pstmtInstructor = connection.prepareStatement(sqlInstructor, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement pstmtInsAccreditation = connection.prepareStatement(sqlInsAccreditation)) {
+
+            // Insérer dans Instructor
+            //pstmtInstructor.setInt(1, instructor.getInstructorId());
+            pstmtInstructor.setString(1, instructor.getName());
+            pstmtInstructor.setString(2, instructor.getFirstName());
+            pstmtInstructor.setString(3, instructor.getPseudo());
+            pstmtInstructor.setDate(4, java.sql.Date.valueOf(instructor.getDateOfBirth()));
+            int rowsInsertedInstructor = pstmtInstructor.executeUpdate();
+
+            // Obtenir l'InstructorId généré
+            ResultSet rs = pstmtInstructor.getGeneratedKeys();
+            if (rs.next() && rowsInsertedInstructor > 0) {
+                int instructorId = rs.getInt(1);
+
+                // Insérer dans Ins_Accreditation
+                pstmtInsAccreditation.setInt(1, instructorId);
+                pstmtInsAccreditation.setInt(2, instructor.getAccreditations().get(0));
+                int rowsInsertedAccreditation = pstmtInsAccreditation.executeUpdate();
+                return rowsInsertedAccreditation > 0;
+            } else {
+                return false; // Retourne false si l'InstructorId n'a pas été généré ou si l'insertion a échoué
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    	
+    }*/
+    @Override
+    public boolean create(Instructor instructor) {
+        String sqlInstructor = "INSERT INTO Instructor ( Names, FirstName, Pseudo, DateOfBirth) VALUES ( ?, ?, ?, ?)";
+        String sqlInsAccreditation = "INSERT INTO Ins_Accreditation (InstructorId, AccreditationId) VALUES (?, ?)";
+
+        try (PreparedStatement pstmtInstructor = connection.prepareStatement(sqlInstructor, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement pstmtInsAccreditation = connection.prepareStatement(sqlInsAccreditation)) {
+
+            // Insérer dans Instructor
+            pstmtInstructor.setString(1, instructor.getName());
+            pstmtInstructor.setString(2, instructor.getFirstName());
+            pstmtInstructor.setString(3, instructor.getPseudo());
+            pstmtInstructor.setDate(4, java.sql.Date.valueOf(instructor.getDateOfBirth()));
+            int rowsInsertedInstructor = pstmtInstructor.executeUpdate();
+
+            // Obtenir l'InstructorId généré
+            ResultSet rs = pstmtInstructor.getGeneratedKeys();
+            if (rs.next() && rowsInsertedInstructor > 0) {
+                int instructorId = rs.getInt(1);
+
+                // Récupérer la première accréditation de la liste
+                Accreditation accreditation = instructor.getAccreditations().get(0);
+                int accreditationId = accreditation.getId();
+
+                // Insérer dans Ins_Accreditation
+                pstmtInsAccreditation.setInt(1, instructorId);
+                pstmtInsAccreditation.setInt(2, accreditationId);
+                int rowsInsertedAccreditation = pstmtInsAccreditation.executeUpdate();
+                return rowsInsertedAccreditation > 0;
+            } else {
+                return false; // Retourne false si l'InstructorId n'a pas été généré ou si l'insertion a échoué
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
+
 
     public boolean insertAcc_Instructor(int instructorId, int accreditationId) {
         PreparedStatement pstmt = null;
@@ -296,7 +369,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         return -1; 
     }
     
-    public boolean isInstructorAvailable(/*int instructorId*/Instructor i, int periodId, String timeSlot) {
+    /*public boolean isInstructorAvailable(Instructor i, int periodId, String timeSlot) {
         String sql = "SELECT Lesson.LessonId " +
                      "FROM Lesson " +
                      "JOIN Booking ON Lesson.LessonId = Booking.LessonId " +
@@ -318,7 +391,35 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             System.err.println("Erreur lors de la vérification de la disponibilité du moniteur : " + e.getMessage());
         }
         return false; // Retourne false si l'instructeur n'est pas disponible ou si la requête échoue
+    }*/
+    public boolean isInstructorAvailable(Instructor instructor, int periodId, String timeSlot) {
+        String sql = """
+            SELECT b.BookingId 
+            FROM Booking b
+            JOIN Lesson l ON b.LessonId = l.LessonId
+            JOIN Period p ON b.PeriodId = p.PeriodId
+            WHERE b.InstructorId = ? 
+            AND p.PeriodId = ? 
+            AND l.DayPart = ?
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            // Paramètres de la requête
+            pstmt.setInt(1, instructor.getPersonId()); // Utilise l'ID de l'instructeur depuis l'objet Instructor
+            pstmt.setInt(2, periodId);                // ID de la période
+            pstmt.setString(3, timeSlot);             // Créneau horaire
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Si un résultat est trouvé, le moniteur est déjà assigné à ce créneau
+                return !rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de la disponibilité du moniteur : " + e.getMessage());
+        }
+
+        return false; // Retourne false si l'instructeur n'est pas disponible ou si une erreur survient
     }
+
     
     
     
@@ -600,7 +701,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
     }
 
     
-    public Instructor getInstructorByPseudo(String pseudo) {
+    /*public Instructor getInstructorByPseudo(String pseudo) {
         String sql = "SELECT InstructorId, Names, FirstName, Pseudo, DateOfBirth FROM Instructor WHERE Pseudo = ?"; 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, pseudo);
@@ -620,7 +721,130 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             System.err.println("Erreur lors de la récupération du skieur : " + e.getMessage());
         }
         return null; // Retourne null si aucun résultat n'est trouvé ou en cas d'erreur
+    }*/
+    
+    /*public Instructor getInstructorByPseudo(String pseudo) {
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, " +
+                     "l.LessonTypeId, l.Levels, l.Price, l.Sport, l.AgeCategory " +
+                     "FROM Instructor i " +
+                     "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                     "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "LEFT JOIN LessonType l ON a.AccreditationId = l.AccreditationId " +
+                     "WHERE i.Pseudo = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, pseudo);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+            Instructor instructor = null;
+
+            while (resultSet.next()) {
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(resultSet.getInt("InstructorId"));
+                    instructor.setName(resultSet.getString("Names"));
+                    instructor.setFirstName(resultSet.getString("FirstName"));
+                    instructor.setPseudo(resultSet.getString("Pseudo"));
+                    instructor.setDateOfBirth(resultSet.getDate("DateOfBirth").toLocalDate());
+                }
+
+                int accreditationId = resultSet.getInt("AccreditationId");
+                if (accreditationId != 0) { // Vérifie si l'AccreditationId n'est pas nul
+                    String accreditationName = resultSet.getString("AccreditationName");
+
+                    Accreditation accreditation = accreditationMap.get(accreditationId);
+                    if (accreditation == null) {
+                        accreditation = new Accreditation(accreditationId, accreditationName);
+                        accreditationMap.put(accreditationId, accreditation);
+                    }
+
+                    int lessonTypeId = resultSet.getInt("LessonTypeId");
+                    if (lessonTypeId != 0) { // Vérifie si le LessonTypeId n'est pas nul
+                        String levels = resultSet.getString("Levels");
+                        double price = resultSet.getDouble("Price");
+                        String sport = resultSet.getString("Sport");
+                        String ageCategory = resultSet.getString("AgeCategory");
+
+                        LessonType lessonType = new LessonType(lessonTypeId, levels,sport,price, ageCategory, accreditation);
+                        accreditation.AddLessonType(lessonType);
+                    }
+
+                    instructor.AddAccreditation(accreditation);
+                }
+            }
+
+            return instructor;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'instructeur : " + e.getMessage());
+        }
+        return null; // Retourne null si aucun résultat n'est trouvé ou en cas d'erreur
+    }*/
+    public Instructor getInstructorByPseudo(String pseudo) {
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, " +
+                     "l.LessonTypeId, l.Levels, l.Price, l.Sport, l.AgeCategory " +
+                     "FROM Instructor i " +
+                     "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                     "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "LEFT JOIN LessonType l ON a.AccreditationId = l.AccreditationId " +
+                     "WHERE i.Pseudo = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, pseudo);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+            Instructor instructor = null;
+
+            while (resultSet.next()) {
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(resultSet.getInt("InstructorId"));
+                    instructor.setName(resultSet.getString("Names"));
+                    instructor.setFirstName(resultSet.getString("FirstName"));
+                    instructor.setPseudo(resultSet.getString("Pseudo"));
+                    instructor.setDateOfBirth(resultSet.getDate("DateOfBirth").toLocalDate());
+                }
+
+                int accreditationId = resultSet.getInt("AccreditationId");
+                if (accreditationId != 0) { // Vérifie si l'AccreditationId n'est pas nul
+                    String accreditationName = resultSet.getString("AccreditationName");
+
+                    Accreditation accreditation = accreditationMap.get(accreditationId);
+                    if (accreditation == null) {
+                        accreditation = new Accreditation(accreditationId, accreditationName);
+                        accreditationMap.put(accreditationId, accreditation);
+                    }
+
+                    int lessonTypeId = resultSet.getInt("LessonTypeId");
+                    if (lessonTypeId != 0) { // Vérifie si le LessonTypeId n'est pas nul
+                        String levels = resultSet.getString("Levels");
+                        double price = resultSet.getDouble("Price");
+                        String sport = resultSet.getString("Sport");
+                        String ageCategory = resultSet.getString("AgeCategory");
+
+                        LessonType lessonType = new LessonType(lessonTypeId, levels, sport,  price,ageCategory, accreditation);
+                        if (!accreditation.getLessonTypes().contains(lessonType)) {
+                            accreditation.AddLessonType(lessonType);
+                        }
+                    }
+
+                    if (!instructor.getAccreditations().contains(accreditation)) {
+                        instructor.AddAccreditation(accreditation);
+                    }
+                }
+            }
+
+            return instructor;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'instructeur : " + e.getMessage());
+        }
+        return null; // Retourne null si aucun résultat n'est trouvé ou en cas d'erreur
     }
+
+
 
     
     

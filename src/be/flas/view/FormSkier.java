@@ -205,7 +205,7 @@ public class FormSkier extends JFrame {
 
 
 		        // Créer un objet Skier et l'ajouter à la base de données
-		        Skier i = new Skier(nom, prenom, dob, pseudo, assuranceSelected);
+		        Skier i = new Skier(nom, prenom, dob, pseudo/*, assuranceSelected*/);
 		        System.out.print(i.toString());
 
 		        //boolean success = daoSkier.create(i);

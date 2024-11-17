@@ -23,6 +23,18 @@ public class Accreditation {
 	public void setId(int id) {
 		this.id = id;
 	}
+	//utiliser dans selectlessontype
+	public Accreditation(int id,String name,String sport,String ageCategory) {
+		this.name=name;
+		this.ageCategory=ageCategory;
+		this.sport=sport;
+		this.id=id;
+		this.instructors=new ArrayList<>();
+		this.lessonTypes=new ArrayList<>();
+		
+		
+		
+	}
 	public Accreditation(int id,String name,LessonType lt,String sport,String ageCategory) {
 		this.name=name;
 		this.ageCategory=ageCategory;
@@ -47,6 +59,22 @@ public class Accreditation {
 		this.name=name;
 		this.instructors=new ArrayList<>();
 		//this.lessonTypes=new ArrayList<>();
+		//AddLessonType(lt);
+		
+	}
+	//pour chooseinstruetro
+	public Accreditation(int id,String name) {
+		this.name=name;
+		this.id=id;
+		this.instructors=new ArrayList<>();
+		this.lessonTypes=new ArrayList<>();
+		//AddLessonType(lt);
+		
+	}
+	public Accreditation(int id) {
+		this.id=id;
+		this.instructors=new ArrayList<>();
+		this.lessonTypes=new ArrayList<>();
 		//AddLessonType(lt);
 		
 	}
@@ -87,7 +115,7 @@ public class Accreditation {
 	}
 	@Override
 	public String toString() {
-		return "Accreditation [name=" + name + "]";
+		return name;
 	}
 	
 	
@@ -126,6 +154,19 @@ public class Accreditation {
 	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
 	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
 	        return daoAccreditation.selectAccreditationsNotIns(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
+	public static List<Accreditation> getAll() {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoAccreditation.getAll();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return new ArrayList<>();

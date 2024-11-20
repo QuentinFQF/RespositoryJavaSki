@@ -63,6 +63,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	        if (lesson.getCourseType().equalsIgnoreCase("Collectif")) {
 	            pstmt.setNull(6, java.sql.Types.INTEGER);
 	        } else {
+	        	System.out.println("ici c'est âris");
 	            pstmt.setInt(6, lesson.getTarifId());
 	        }
 

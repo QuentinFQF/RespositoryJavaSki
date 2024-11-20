@@ -425,6 +425,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -479,7 +480,7 @@ public class FormInscriptionParticulier extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    FormChooseInstructor frame = new FormChooseInstructor();
+                	FormInscriptionParticulier frame = new FormInscriptionParticulier();
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -547,7 +548,8 @@ public class FormInscriptionParticulier extends JFrame {
         comboPeriod.setBounds(32, 32, 329, 21);
         panel.add(comboPeriod);
 
-        fillPeriodComboBox();
+        //fillPeriodComboBox();
+        fillPeriodComboBoxWithSpecificDates();
         fillSkierComboBox();
         fillLessonTypeComboBox();
         //fillSemaineComboBox();  // Appeler pour remplir le JComboBox avec les semaines
@@ -572,24 +574,21 @@ public class FormInscriptionParticulier extends JFrame {
         btnChoisir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String semaineChoisie = (String) comboPeriod.getSelectedItem();
-                String instructorChoisi = (String) comboInstructor.getSelectedItem();
-                String lessonTypeChoisi = (String) comboLessonType.getSelectedItem();
-                String skierChoisi = (String) comboSkier.getSelectedItem();
+                
                 
                 Integer selectedSkierId = getSelectedSkierId();
                 Integer selectedLessonTypeId = getSelectedLessonTypeId();
                 Integer selectedInstructorId = getSelectedInstructorId();
                 Integer selectedPeriodId = getSelectedPeriodId();
+                String dateChoose = (String) comboPeriod.getSelectedItem();
 
                 System.out.println("skier id "+selectedSkierId);
                 System.out.println("lessontype id "+selectedLessonTypeId);
                 System.out.println("ins id "+selectedInstructorId);
                 System.out.println("period id "+selectedPeriodId);
+                System.out.println("date choisie "+dateChoose);
 
-                //String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
-             // Vérification de la validité des sélections
-                if (selectedPeriodId == null ) {
+                if (dateChoose == null ) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner une période valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -609,7 +608,7 @@ public class FormInscriptionParticulier extends JFrame {
                     return;
                 }
 
-                // Vérification de la sélection des boutons radio pour le créneau horaire
+              
                 String timeSlot = null;
                 int[] tabTime = new int[2]; 
                 if (RadioButton1.isSelected()) {
@@ -626,29 +625,12 @@ public class FormInscriptionParticulier extends JFrame {
                 }
                 System.out.println("timesslot "+timeSlot);
 
-                // Récupération des dates de la période choisie
-                LocalDate startDate = null;
-                LocalDate endDate = null;
-                if (semaineChoisie != null) {
-                    String[] parts = semaineChoisie.split(" ");
-                    if (parts.length >= 2) {
-                        try {
-                            startDate = LocalDate.parse(parts[0].trim());
-                            endDate = LocalDate.parse(parts[1].trim());
-                        } catch (DateTimeParseException ex) {
-                            System.err.println("Erreur lors du parsing des dates : " + ex.getMessage());
-                        }
-                    } else {
-                        System.err.println("Format inattendu pour les dates de la période : " + semaineChoisie);
-                    }
-                } else {
-                    System.err.println("Aucune période valide sélectionnée.");
-                }
+                
 
                
 
                 // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
-                if (selectedSkierId != -1 && selectedLessonTypeId != -1 && startDate != null && endDate != null && selectedPeriodId != -1) {
+                if (selectedSkierId != -1 && selectedLessonTypeId != -1 && dateChoose != null) {
                     
                 	Lesson lesson=new Lesson();
                 
@@ -657,13 +639,13 @@ public class FormInscriptionParticulier extends JFrame {
                 	System.out.println("age lt : "+lessonType.getAccreditation().getAgeCategory());
                 	
                 	minMax = lesson.getMinAndMaxBooking(lessonType.getAccreditation().getAgeCategory(), timeSlot);
-                	int[] timeRange = lesson.getStartAndEndTime(timeSlot);
-                	System.out.println("time : "+timeRange[0]+timeRange[1]);
+                	//int[] timeRange = lesson.getStartAndEndTime(timeSlot);
+                	//System.out.println("time : "+timeRange[0]+timeRange[1]);
                 	System.out.println(minMax[0]+ " "+minMax[1]);
                 	System.out.println(lessonType.getAccreditation().getAgeCategory());
                   
                 	LocalDate dateBooking = LocalDate.now();
-                	Period p=new Period(selectedPeriodId);
+                	Period p=new Period(22);
                 	Skier s=new Skier(selectedSkierId);
                 	Instructor i=new Instructor(selectedInstructorId);
                 	LessonType lt=new LessonType(selectedLessonTypeId);
@@ -675,32 +657,25 @@ public class FormInscriptionParticulier extends JFrame {
                 	
                  
                 	
-                	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
+                	
+                	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Particulier",minMax[0],minMax[1]);
                 	System.out.println("id lesson : "+idLesson);
                 	
-                	System.out.println(i.isAvailable(selectedPeriodId, timeSlot));
-                	//Lesson ll=Lesson.getLesson(idLesson);
-                	
-                	
-                	boolean isAvailable = i.isAvailable(selectedPeriodId, timeSlot);
-                	if (isAvailable) {
-                	    System.out.println("L'instructeur est disponible pour ce créneau.");
-                	} else {
-                	    System.out.println("L'instructeur est déjà assigné pour ce créneau.");
-                	}
-                	
-                	
-                	if(Lesson.isComplete(idLesson)==true) {
-                		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
-                	}else if(idLesson==-1 && i.isAvailable(selectedPeriodId, timeSlot)==true) {
-                		//create
+                	if(idLesson == -1) {
                 		
-                		
-                		Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
+                		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+                		// Convertir la chaîne en LocalDate en utilisant le formatter
+                		LocalDate parsedDate = LocalDate.parse(dateChoose, formatter);
+
+                		int tarifId=lesson.getDurationInHours(timeSlot);
+                		// Vous pouvez maintenant utiliser parsedDate dans la création de votre Lesson
+                		Lesson lesson3 = new Lesson(minMax[0], minMax[1], i, lt, timeSlot, "Particulier", tarifId, idLesson, tabTime[0], tabTime[1], parsedDate);
+
+                		// Créer la réservation
                 		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
-                	
                 		booking.save();
-                    	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
+                		JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
                 		
                 	}else {
                 		
@@ -808,27 +783,7 @@ public class FormInscriptionParticulier extends JFrame {
         return null; 
     }
 
-    private void fillPeriodComboBox() {
-    	System.out.println("period chargé ");
-        try {
-           
-        	List<Period> periods = Period.getAll();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-
-            for (Period period : periods) {
-             
-                String displayText = period.getStartDate() + " " + period.getEndDate() + " (" + period.isVacation() + ")";
-
-                model.addElement(displayText);
-                periodIdMap.put(displayText, period.getId());
-            }
-
-            comboPeriod.setModel(model);
-            System.out.println("period mis à jour : " +periods);
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la mise à jour des period : " + e.getMessage());
-        }
-    }
+   
     public Integer getSelectedPeriodId() {
         String selectedItem = (String) comboPeriod.getSelectedItem();
         if (selectedItem != null && periodIdMap.containsKey(selectedItem)) {
@@ -836,6 +791,56 @@ public class FormInscriptionParticulier extends JFrame {
         }
         return null; 
     }
+    
+    /*private void fillPeriodComboBoxWithSpecificDates() {
+        System.out.println("Chargement des dates spécifiques...");
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+
+        LocalDate startDate = LocalDate.of(2024, 12, 6);
+        LocalDate endDate = LocalDate.of(2025, 5, 3);
+
+        // Parcours des dates par incréments journaliers
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            // Vérifiez si le jour est un samedi (DayOfWeek.SATURDAY)
+            if (currentDate.getDayOfWeek() != java.time.DayOfWeek.SATURDAY) {
+                model.addElement(currentDate.toString());
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+
+        comboPeriod.setModel(model);
+        System.out.println("Périodes chargées entre " + startDate + " et " + endDate + " sans les samedis");
+    }*/
+    private void fillPeriodComboBoxWithSpecificDates() {
+        System.out.println("Chargement des dates spécifiques...");
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+
+        // Date de début et date de fin
+        LocalDate startDate = LocalDate.of(2024, 12, 6);
+        LocalDate endDate = LocalDate.of(2025, 5, 3);
+
+        // Créer un formatter pour le format 'dd-MM-yyyy'
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+        // Parcours des dates par incréments journaliers
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            // Vérifiez si le jour est un samedi (DayOfWeek.SATURDAY)
+            if (currentDate.getDayOfWeek() != java.time.DayOfWeek.SATURDAY) {
+                // Formatage de la date dans le format 'dd-MM-yyyy'
+                String formattedDate = currentDate.format(formatter);
+                model.addElement(formattedDate);  // Ajouter la date formatée au comboBox
+            }
+            currentDate = currentDate.plusDays(1);  // Passer au jour suivant
+        }
+
+        // Mettre à jour le modèle du comboBox avec les dates formatées
+        comboPeriod.setModel(model);
+        System.out.println("Périodes chargées entre " + startDate + " et " + endDate + " sans les samedis");
+    }
+
+
     
 }
 

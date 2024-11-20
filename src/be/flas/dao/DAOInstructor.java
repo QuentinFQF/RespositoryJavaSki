@@ -595,7 +595,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
     }
     
     
-    public List<Instructor> getInstructorsWithAccreditationsAndLessonTypesByLessonTypeId(int lessonTypeId) {
+    /*public List<Instructor> getInstructorsWithAccreditationsAndLessonTypesByLessonTypeId(int lessonTypeId) {
         List<Instructor> instructors = new ArrayList<>();
         
         // Requête SQL pour récupérer les instructeurs, accréditations et types de leçons associés,
@@ -698,7 +698,112 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             System.err.println("Erreur de préparation de la requête SQL : " + ex.getMessage());
             return Collections.emptyList();
         }
+    }*/
+    public List<Instructor> getInstructorsWithAccreditationsAndLessonTypesByLessonTypeId(int lessonTypeId) {
+        List<Instructor> instructors = new ArrayList<>();
+        
+        // Requête SQL pour récupérer les instructeurs, accréditations et types de leçons associés,
+        // filtrée par le LessonTypeId
+        String sql = "SELECT i.InstructorId, i.Names, i.FirstName, i.Pseudo, i.DateOfBirth, " +
+                     "a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory, " +
+                     "lt.LessonTypeId, lt.Levels, lt.Price " +
+                     "FROM (Instructor i " +
+                     "INNER JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId) " +
+                     "INNER JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                     "INNER JOIN LessonType lt ON a.AccreditationId = lt.AccreditationId " +
+                     "WHERE lt.LessonTypeId = ?"; // Utilisation du paramètre pour filtrer par LessonTypeId
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, lessonTypeId); // Paramètre pour filtrer par LessonTypeId
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                // Map pour éviter de créer des instructeurs et accréditations en double
+                Map<Integer, Instructor> instructorMap = new HashMap<>();
+                Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+                while (rs.next()) {
+                    int instructorId = rs.getInt("InstructorId");
+                    int accreditationId = rs.getInt("AccreditationId");
+                    int currentLessonTypeId = rs.getInt("LessonTypeId");
+
+                    // Récupérer ou créer l'instructeur
+                    Instructor instructor;
+                    if (!instructorMap.containsKey(instructorId)) {
+                        // Créer la première accréditation
+                        Accreditation firstAccreditation = new Accreditation(
+                                accreditationId,
+                                rs.getString("AccreditationName"),
+                                null, // Le premier LessonType sera ajouté plus tard
+                                rs.getString("SportType"),
+                                rs.getString("AgeCategory")
+                        );
+
+                        // Créer le premier LessonType et l'ajouter à l'accréditation
+                        LessonType firstLessonType = new LessonType(
+                                currentLessonTypeId,
+                                rs.getString("Levels"),
+                                rs.getDouble("Price")
+                        );
+                        firstAccreditation.AddLessonType(firstLessonType);
+
+                        // Initialiser l'instructeur avec la première accréditation
+                        instructor = new Instructor(
+                                rs.getString("Names"),
+                                rs.getString("FirstName"),
+                                instructorId,
+                                rs.getDate("DateOfBirth").toLocalDate(),
+                                rs.getString("Pseudo"),
+                                firstAccreditation // On passe la première accréditation
+                        );
+                        instructorMap.put(instructorId, instructor);
+
+                        // Ajouter la première accréditation dans la map
+                        accreditationMap.put(accreditationId, firstAccreditation);
+                    } else {
+                        instructor = instructorMap.get(instructorId);
+                    }
+
+                    // Vérifier si l'accréditation existe déjà
+                    Accreditation accreditation;
+                    if (accreditationMap.containsKey(accreditationId)) {
+                        accreditation = accreditationMap.get(accreditationId);
+                    } else {
+                        // Créer une nouvelle accréditation si elle n'existe pas encore
+                        accreditation = new Accreditation(
+                                accreditationId,
+                                rs.getString("AccreditationName"),
+                                null, // Le `LessonType` sera ajouté après
+                                rs.getString("SportType"),
+                                rs.getString("AgeCategory")
+                        );
+                        instructor.AddAccreditation(accreditation);
+                        accreditationMap.put(accreditationId, accreditation);
+                    }
+
+                    // Ajouter le `LessonType` à l'accréditation
+                    LessonType lessonType = new LessonType(
+                            currentLessonTypeId,
+                            rs.getString("Levels"),
+                            rs.getDouble("Price")
+                    );
+                    if (!accreditation.getLessonTypes().contains(lessonType)) {
+                        accreditation.AddLessonType(lessonType);
+                    }
+                }
+
+                return new ArrayList<>(instructorMap.values());
+
+            } catch (SQLException ex) {
+                System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
+                return Collections.emptyList();
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erreur de préparation de la requête SQL : " + ex.getMessage());
+            return Collections.emptyList();
+        }
     }
+
+
 
     
     /*public Instructor getInstructorByPseudo(String pseudo) {

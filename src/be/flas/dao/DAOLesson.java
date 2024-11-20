@@ -113,6 +113,7 @@ public class DAOLesson extends DaoGeneric<Lesson>{
             }else {
                 // Récupérez l'ID de tarif particulier ici si nécessaire pour les leçons particulières.
                  // Cette méthode doit être définie pour retourner l'ID correct.
+            	System.out.println("ici c'est pâris ");
                 pstmt.setInt(6, l.getTarifId());
             }
 

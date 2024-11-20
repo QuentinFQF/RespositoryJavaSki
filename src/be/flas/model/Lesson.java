@@ -1,6 +1,7 @@
 package be.flas.model;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Lesson {
 	private int start;
 	private int end;
 	private int numberSkier;
+	private LocalDate date;
 	
 	
 	public int getTarifId() {
@@ -31,7 +33,7 @@ public class Lesson {
 	public void setTarifId(int tarifId) {
 		this.tarifId = tarifId;
 	}
-	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int id,int s,int e) {
+	/*public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int id,int s,int e,LocalDate d=?) {
 		this.minBookings=min;
 		this.maxBookings=max;
 		this.bookings=new ArrayList<>();
@@ -46,7 +48,27 @@ public class Lesson {
 		this.end=e;
 	
 		
+	}*/
+	public Lesson(int min, int max, Instructor ins, LessonType lt, String day, String course, int tId, int id, int s, int e, LocalDate d) {
+	    this.minBookings = min;
+	    this.maxBookings = max;
+	    this.bookings = new ArrayList<>();
+	    this.instructor = ins;
+	    this.lessonType = lt;
+	    this.dayPart = day;
+	    this.courseType = course;
+	    this.tarifId = tId;
+	    this.id = id;
+	    this.start = s;
+	    this.end = e;
+	    this.date = d; // Assign the date here
 	}
+
+	// Overloaded constructor with a default date
+	public Lesson(int min, int max, Instructor ins, LessonType lt, String day, String course, int tId, int id, int s, int e) {
+	    this(min, max, ins, lt, day, course, tId, id, s, e, LocalDate.now()); // Default to today's date
+	}
+
 	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int s,int e) {
 		this.minBookings=min;
 		this.maxBookings=max;

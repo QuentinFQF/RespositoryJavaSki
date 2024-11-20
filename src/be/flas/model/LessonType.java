@@ -3,6 +3,7 @@ package be.flas.model;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.dao.DAOLesson;
@@ -166,5 +167,20 @@ public class LessonType {
 	        return null;
 	    }
 	}
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    LessonType that = (LessonType) obj;
+	    return id == that.id &&
+	           Objects.equals(level, that.level) &&
+	           Objects.equals(price, that.price);
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(id, level, price);
+	}
+
 	
 }

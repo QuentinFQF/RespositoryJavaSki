@@ -231,5 +231,194 @@ public class Instructor extends Person {
 	    }
 	}
 	
+	public static Instructor find(int id) {
+	    try {
+	        // Récupération de la connexion
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        // Création de l'instance DAO pour l'enregistrement
+	        DAOInstructor daoInstructor = new DAOInstructor(connection);
+	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        return daoInstructor.find(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	public boolean isAvailableForDate(LocalDate date, String timeSlot) {
+	    // Vérifier les réservations associées à cet instructeur
+	    for (Booking booking : this.getBookings()) {
+	        // Vérifier si la réservation est associée à une leçon
+	        Lesson lesson = booking.getLesson();
+	        if (lesson != null) {
+	            // Vérification de la date et du créneau horaire
+	            if (lesson.getDate() != null && lesson.getDate().equals(date) 
+	                ) {
+	                // L'instructeur est déjà réservé pour cette date et ce créneau
+	                System.out.println("Réservation trouvée pour la date : " + lesson.getDate() + " et le créneau : " + timeSlot);
+	                return true; // L'instructeur n'est pas disponible
+	            }
+	        }
+	    }
+
+	    // Si aucune réservation n'est trouvée pour cette date et ce créneau, l'instructeur est disponible
+	    return false;
+	}
+
+
+
+	
+	
+	public boolean isAvailables(int periodId, String timeSlot) {
+	    // Vérifier les réservations générales de l'instructeur
+          for (Booking booking : bookings) {
+	        
+	        // Vérifier si la période de la réservation correspond
+	        if (booking.getPeriod() != null && booking.getPeriod().getId() == periodId) {
+	            
+	        	
+	            // Vérifier si la réservation est associée à une leçon et que le timeSlot correspond
+	            if (booking.getLesson() != null && booking.getLesson().getDayPart() != null && booking.getLesson().getDayPart().equals(timeSlot)) {
+	                
+	                // Vérifier si le skieur est inscrit
+	                
+	                    return true; // Le skieur est trouvé dans cette période et avec le bon créneau horaire
+	                
+	            }
+	        }
+	    }
+	    return false;
+	}
+
+	
+
+
+
+	
+	/*public Integer getLessonId(int selectedLessonTypeId, String timeSlot, String courseType, int minBookings, int maxBookings) {
+	    // Parcours de la liste des leçons de l'instructeur
+	    for (Lesson lesson : this.getLessons()) {
+	        // Vérifier si la leçon correspond aux critères donnés
+	        if (lesson.getLessonType().getId() == selectedLessonTypeId &&
+	            lesson.getDayPart().equals(timeSlot) &&
+	            lesson.getCourseType().equals(courseType) &&
+	            lesson.getMinBookings() == minBookings &&
+	            lesson.getMaxBookings() == maxBookings) {
+	            
+	            // Retourner l'ID de la leçon correspondante
+	            return lesson.getId();
+	        }
+	    }
+	    
+	    // Si aucune leçon ne correspond aux critères, retourner null ou une valeur indiquant que la leçon n'a pas été trouvée
+	    return -1;  // Ou vous pouvez retourner -1 si vous préférez une valeur numérique
+	}*/
+	public Integer getLessonIdForDate(int selectedLessonTypeId, String timeSlot, String courseType, int minBookings, int maxBookings, LocalDate selectedDate) {
+	    // Parcours de la liste des leçons de l'instructeur
+	    for (Lesson lesson : this.getLessons()) {
+	        // Vérifier si la leçon correspond aux critères généraux
+	        if (lesson.getLessonType().getId() == selectedLessonTypeId &&
+	            lesson.getDayPart().equals(timeSlot) &&
+	            lesson.getCourseType().equals(courseType) &&
+	            lesson.getMinBookings() == minBookings &&
+	            lesson.getMaxBookings() == maxBookings &&
+	            lesson.getDate().equals(selectedDate)) {
+	        	return lesson.getId();
+
+	            // Vérifier les réservations de cette leçon pour la date spécifique
+	            /*for (Booking booking : lesson.getBookings()) {
+	            	
+	                if (booking.getDateBooking().equals(selectedDate)) {
+	                    // Si une réservation correspond à la date donnée, retourner l'ID de la leçon
+	                    return lesson.getId();
+	                }
+	            }*/
+	        }
+	    }
+
+	    // Si aucune leçon ne correspond aux critères, retourner -1 pour indiquer qu'aucune leçon n'a été trouvée
+	    return -1;
+	}
+
+	public Integer getLessonId(int selectedLessonTypeId, String timeSlot, String courseType, int minBookings, int maxBookings, int selectedPeriodId) {
+	    // Parcours de la liste des leçons de l'instructeur
+	    for (Lesson lesson : this.getLessons()) {
+	        // Vérifier si la leçon correspond aux critères généraux
+	        if (lesson.getLessonType().getId() == selectedLessonTypeId &&
+	            lesson.getDayPart().equals(timeSlot) &&
+	            lesson.getCourseType().equals(courseType) &&
+	            lesson.getMinBookings() == minBookings &&
+	            lesson.getMaxBookings() == maxBookings) {
+
+	            // Vérifier les réservations de cette leçon pour le PeriodId
+	            for (Booking booking : lesson.getBookings()) {
+	                if (booking.getPeriod().getId() == selectedPeriodId) {
+	                    // Si une réservation correspond à la période donnée, retourner l'ID de la leçon
+	                    return lesson.getId();
+	                }
+	            }
+	        }
+	    }
+
+	    // Si aucune leçon ne correspond aux critères, retourner -1 pour indiquer qu'aucune leçon n'a été trouvée
+	    return -1;
+	}
+
+	
+	public boolean isSkierInLesson(int skierId, int lessonId) {
+	    for (Lesson lesson : this.getLessons()) {
+	        if (lesson.getId() == lessonId) { // Vérifier si c'est la bonne leçon
+	            List<Booking> bookings = lesson.getBookings();
+	            if (bookings != null) {
+	                for (Booking booking : bookings) {
+	                    if (booking.getSkier() != null && booking.getSkier().getPersonId() == skierId) {
+	                        return true; // Le skieur est trouvé dans cette leçon
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    return false; // Le skieur n'est pas trouvé dans cette leçon
+	}
+	/*public boolean isSkierInLesson(int skierId, int periodId) {
+	    for (Lesson lesson : this.getLessons()) {
+	        List<Booking> bookings = lesson.getBookings();
+	        if (bookings != null) {
+	            for (Booking booking : bookings) {
+	                // Vérifier si la période de la réservation correspond
+	                if (booking.getPeriod() != null && booking.getPeriod().getId() == periodId) {
+	                    // Vérifier si le skieur est inscrit
+	                    if (booking.getSkier() != null && booking.getSkier().getPersonId() == skierId) {
+	                        return true; // Le skieur est trouvé dans cette période
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    return false; // Le skieur n'est pas trouvé dans cette période
+	}*/
+
+
+	
+	
+	public boolean isLessonComplete(int lessonId) {
+	    for (Lesson lesson : this.getLessons()) {
+	    	
+	        if (lesson.getId() == lessonId) {  // Si l'ID de la leçon correspond à celui donné
+	            // Vérifiez si la leçon est complète
+	            if (lesson.getNumberSkier() >= lesson.getMaxBookings()) {
+	            	
+	                return true;  // Si la leçon est complète
+	            }
+	        }
+	    }
+	    return false;  // Si aucune leçon avec l'ID donné n'est trouvée ou la leçon n'est pas complète
+	}
+
+
+
+
+
+
+	
 	
 }

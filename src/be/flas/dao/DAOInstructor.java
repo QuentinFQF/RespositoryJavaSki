@@ -16,8 +16,11 @@ import java.util.Map;
 import be.flas.interfaces.DaoGeneric;
 import be.flas.interfaces.IDaoClasse;
 import be.flas.model.Accreditation;
+import be.flas.model.Booking;
 import be.flas.model.Instructor;
+import be.flas.model.Lesson;
 import be.flas.model.LessonType;
+import be.flas.model.Period;
 import be.flas.model.Skier;
 
 public class DAOInstructor extends DaoGeneric<Instructor> {
@@ -97,11 +100,687 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             return false;
         }
     }
+    
+    
+    /*@Override
+    public Instructor find(int id) {
+        Instructor instructor = null;
+
+        Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+        Map<Integer, Lesson> lessonMap = new HashMap<>();
+        Map<Integer, Booking> bookingMap = new HashMap<>();
+
+        try {
+            // Requête SQL mise à jour
+            String query = "SELECT " +
+                    "i.InstructorId AS InstructorId, " +
+                    "i.Names AS InstructorName, " +
+                    "i.FirstName AS InstructorFirstName, " +
+                    "i.Pseudo AS InstructorPseudo, " +
+                    "i.DateOfBirth AS InstructorDateOfBirth, " +
+                    "a.AccreditationId AS AccreditationId, " +
+                    "a.Names AS AccreditationName, " +
+                    "a.SportType AS AccreditationSportType, " +
+                    "a.AgeCategory AS AccreditationAgeCategory, " +
+                    "l.LessonId AS LessonId, " +
+                    "l.NumberSkier AS NumberSkier, " +
+                    "l.MinBookings AS LessonMinBookings, " +
+                    "l.MaxBookings AS LessonMaxBookings, " +
+                    "l.DayPart AS LessonDayPart, " +
+                    
+                    "l.CourseType AS LessonCourseType, " +
+                    "lt.LessonTypeId AS LessonTypeId, " +
+                    "lt.Levels AS LessonTypeLevel, " +
+                    "lt.Price AS LessonTypePrice, " +
+                    "lt.Sport AS LessonTypeSport, " +
+                    "lt.AgeCategory AS LessonTypeAgeCategory, " +
+                    "b.BookingId AS BookingId, " +
+                    "b.DateBooking AS BookingDateBooking, " +
+                    "b.DateParticulier AS LessonDateParticulier, " +
+                    "p.PeriodId AS PeriodId, " +
+                    "p.StartDate AS PeriodStartDate, " +
+                    "p.EndDate AS PeriodEndDate, " +
+                    "p.IsVacation AS PeriodIsVacation, " +
+                    "sk.SkierId AS SkierId, " +
+                    "sk.Names AS SkierName, " +
+                    "sk.FirstName AS SkierFirstName " +
+                    "FROM " +
+                    "Instructor i " +
+                    "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                    "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                    "LEFT JOIN Booking b ON b.InstructorId = i.InstructorId " +
+                    "LEFT JOIN Skier sk ON b.SkierId = sk.SkierId " +
+                    "LEFT JOIN Lesson l ON b.LessonId = l.LessonId " +
+                    "LEFT JOIN LessonType lt ON l.LessonTypeId = lt.LessonTypeId " +
+                    "LEFT JOIN Period p ON b.PeriodId = p.PeriodId " +
+                    "WHERE " +
+                    "i.InstructorId = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(rs.getInt("InstructorId"));
+                    instructor.setName(rs.getString("InstructorName"));
+                    instructor.setFirstName(rs.getString("InstructorFirstName"));
+                    instructor.setPseudo(rs.getString("InstructorPseudo"));
+
+                    java.sql.Date dob = rs.getDate("InstructorDateOfBirth");
+                    if (dob != null) {
+                        instructor.setDateOfBirth(dob.toLocalDate());
+                    }
+                }
+
+                int accreditationId = rs.getInt("AccreditationId");
+                if (!accreditationMap.containsKey(accreditationId) && accreditationId != 0) {
+                    Accreditation accreditation = new Accreditation();
+                    accreditation.setId(accreditationId);
+                    accreditation.setName(rs.getString("AccreditationName"));
+                    accreditation.setSport(rs.getString("AccreditationSportType"));
+                    accreditation.setAgeCategory(rs.getString("AccreditationAgeCategory"));
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                int lessonId = rs.getInt("LessonId");
+                Lesson lesson = lessonMap.get(lessonId);
+                if (lesson == null && lessonId != 0) {
+                    lesson = new Lesson();
+                    lesson.setId(lessonId);
+                    lesson.setMinBookings(rs.getInt("LessonMinBookings"));
+                    lesson.setMaxBookings(rs.getInt("LessonMaxBookings"));
+                    lesson.setDayPart(rs.getString("LessonDayPart"));
+                    lesson.setCourseType(rs.getString("LessonCourseType"));
+                    lesson.setNumberSkier(rs.getInt("NumberSkier"));
+                    java.sql.Date dob = rs.getDate("LessonDateParticulier");
+                    if (dob != null) {
+                        lesson.setDate(dob.toLocalDate());
+                    }
+
+                    LessonType lessonType = new LessonType();
+                    lessonType.setId(rs.getInt("LessonTypeId"));
+                    lessonType.setLevel(rs.getString("LessonTypeLevel"));
+                    lessonType.setPrice(rs.getDouble("LessonTypePrice"));
+                    lessonType.setSport(rs.getString("LessonTypeSport"));
+                    lessonType.setAgeCategory(rs.getString("LessonTypeAgeCategory"));
+                    lesson.setLessonType(lessonType);
+
+                    // Initialiser la liste des réservations
+                    lesson.setBookings(new ArrayList<>());
+
+                    lessonMap.put(lessonId, lesson);
+                }
+
+                int bookingId = rs.getInt("BookingId");
+                if (!bookingMap.containsKey(bookingId) && bookingId != 0) {
+                    Booking booking = new Booking();
+                    booking.setId(bookingId);
+
+                    java.sql.Date bookingDate = rs.getDate("BookingDateBooking");
+                    if (bookingDate != null) {
+                        booking.setDateBooking(bookingDate.toLocalDate());
+                    }
+
+                    Period period = new Period();
+                    period.setId(rs.getInt("PeriodId"));
+
+                    java.sql.Date periodStart = rs.getDate("PeriodStartDate");
+                    java.sql.Date periodEnd = rs.getDate("PeriodEndDate");
+                    if (periodStart != null) {
+                        period.setStartDate(periodStart.toLocalDate());
+                    }
+                    if (periodEnd != null) {
+                        period.setEndDate(periodEnd.toLocalDate());
+                    }
+
+                    period.setVacation(rs.getBoolean("PeriodIsVacation"));
+                    booking.setPeriod(period);
+
+                    // Récupération du skieur
+                    int skierId = rs.getInt("SkierId");
+                    if (skierId != 0) {
+                        Skier skier = new Skier();
+                        skier.setPersonId(skierId);
+                        skier.setName(rs.getString("SkierName"));
+                        skier.setFirstName(rs.getString("SkierFirstName"));
+                        booking.setSkier(skier);
+                    }
+
+                    // Associer cette réservation à la leçon correspondante
+                    if (lesson != null) {
+                        lesson.getBookings().add(booking);
+                    }
+
+                    bookingMap.put(bookingId, booking);
+                }
+            }
+
+            if (instructor != null) {
+                instructor.setAccreditations(new ArrayList<>(accreditationMap.values()));
+                instructor.setLessons(new ArrayList<>(lessonMap.values()));
+                instructor.setBookings(new ArrayList<>(bookingMap.values()));
+            }
+
+
+            if (instructor != null) {
+                instructor.setAccreditations(new ArrayList<>(accreditationMap.values()));
+                instructor.setLessons(new ArrayList<>(lessonMap.values()));
+                instructor.setBookings(new ArrayList<>(bookingMap.values()));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }*/
+    
+    /*@Override
+    public Instructor find(int id) {
+        Instructor instructor = null;
+
+        // Maps temporaires pour éviter les doublons
+        Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+        Map<Integer, Lesson> lessonMap = new HashMap<>();
+        Map<Integer, Booking> bookingMap = new HashMap<>();
+
+        try {
+            // Requête SQL mise à jour
+            String query = "SELECT " +
+                    "i.InstructorId AS InstructorId, " +
+                    "i.Names AS InstructorName, " +
+                    "i.FirstName AS InstructorFirstName, " +
+                    "i.Pseudo AS InstructorPseudo, " +
+                    "i.DateOfBirth AS InstructorDateOfBirth, " +
+                    "a.AccreditationId AS AccreditationId, " +
+                    "a.Names AS AccreditationName, " +
+                    "a.SportType AS AccreditationSportType, " +
+                    "a.AgeCategory AS AccreditationAgeCategory, " +
+                    "l.LessonId AS LessonId, " +
+                    "l.NumberSkier AS NumberSkier, " +
+                    "l.MinBookings AS LessonMinBookings, " +
+                    "l.MaxBookings AS LessonMaxBookings, " +
+                    "l.DayPart AS LessonDayPart, " +
+                    "l.CourseType AS LessonCourseType, " +
+                    "lt.LessonTypeId AS LessonTypeId, " +
+                    "lt.Levels AS LessonTypeLevel, " +
+                    "lt.Price AS LessonTypePrice, " +
+                    "lt.Sport AS LessonTypeSport, " +
+                    "lt.AgeCategory AS LessonTypeAgeCategory, " +
+                    "b.BookingId AS BookingId, " +
+                    "b.DateBooking AS BookingDateBooking, " +
+                    "b.DateParticulier AS LessonDateParticulier, " +
+                    "p.PeriodId AS PeriodId, " +
+                    "p.StartDate AS PeriodStartDate, " +
+                    "p.EndDate AS PeriodEndDate, " +
+                    "p.IsVacation AS PeriodIsVacation, " +
+                    "sk.SkierId AS SkierId, " +
+                    "sk.Names AS SkierName, " +
+                    "sk.FirstName AS SkierFirstName " +
+                    "FROM " +
+                    "Instructor i " +
+                    "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                    "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                    "LEFT JOIN Booking b ON b.InstructorId = i.InstructorId " +
+                    "LEFT JOIN Skier sk ON b.SkierId = sk.SkierId " +
+                    "LEFT JOIN Lesson l ON b.LessonId = l.LessonId " +
+                    "LEFT JOIN LessonType lt ON l.LessonTypeId = lt.LessonTypeId " +
+                    "LEFT JOIN Period p ON b.PeriodId = p.PeriodId " +
+                    "WHERE " +
+                    "i.InstructorId = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Initialisation de l'instructeur
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(rs.getInt("InstructorId"));
+                    instructor.setName(rs.getString("InstructorName"));
+                    instructor.setFirstName(rs.getString("InstructorFirstName"));
+                    instructor.setPseudo(rs.getString("InstructorPseudo"));
+
+                    java.sql.Date dob = rs.getDate("InstructorDateOfBirth");
+                    if (dob != null) {
+                        instructor.setDateOfBirth(dob.toLocalDate());
+                    }
+                }
+
+                // Récupération et ajout des accréditations
+                int accreditationId = rs.getInt("AccreditationId");
+                if (!accreditationMap.containsKey(accreditationId) && accreditationId != 0) {
+                    Accreditation accreditation = new Accreditation();
+                    accreditation.setId(accreditationId);
+                    accreditation.setName(rs.getString("AccreditationName"));
+                    accreditation.setSport(rs.getString("AccreditationSportType"));
+                    accreditation.setAgeCategory(rs.getString("AccreditationAgeCategory"));
+                    accreditationMap.put(accreditationId, accreditation);
+                    instructor.AddAccreditation(accreditation); // Utilisation de la méthode du modèle
+                }
+
+                // Récupération et ajout des leçons
+                int lessonId = rs.getInt("LessonId");
+                Lesson lesson = lessonMap.get(lessonId);
+                if (lesson == null && lessonId != 0) {
+                    lesson = new Lesson();
+                    lesson.setId(lessonId);
+                    lesson.setMinBookings(rs.getInt("LessonMinBookings"));
+                    lesson.setMaxBookings(rs.getInt("LessonMaxBookings"));
+                    lesson.setDayPart(rs.getString("LessonDayPart"));
+                    lesson.setCourseType(rs.getString("LessonCourseType"));
+                    lesson.setNumberSkier(rs.getInt("NumberSkier"));
+
+                    java.sql.Date lessonDate = rs.getDate("LessonDateParticulier");
+                    if (lessonDate != null) {
+                        lesson.setDate(lessonDate.toLocalDate());
+                    }
+
+                    LessonType lessonType = new LessonType();
+                    lessonType.setId(rs.getInt("LessonTypeId"));
+                    lessonType.setLevel(rs.getString("LessonTypeLevel"));
+                    lessonType.setPrice(rs.getDouble("LessonTypePrice"));
+                    lessonType.setSport(rs.getString("LessonTypeSport"));
+                    lessonType.setAgeCategory(rs.getString("LessonTypeAgeCategory"));
+                    lesson.setLessonType(lessonType);
+
+                    lessonMap.put(lessonId, lesson);
+                    instructor.AddLesson(lesson); // Utilisation de la méthode du modèle
+                }
+
+                // Récupération et ajout des réservations
+                int bookingId = rs.getInt("BookingId");
+                Booking booking = bookingMap.get(bookingId);
+                if (booking == null && bookingId != 0) {
+                    booking = new Booking();
+                    booking.setId(bookingId);
+
+                    java.sql.Date bookingDate = rs.getDate("BookingDateBooking");
+                    if (bookingDate != null) {
+                        booking.setDateBooking(bookingDate.toLocalDate());
+                    }
+
+                    Period period = new Period();
+                    period.setId(rs.getInt("PeriodId"));
+
+                    java.sql.Date periodStart = rs.getDate("PeriodStartDate");
+                    java.sql.Date periodEnd = rs.getDate("PeriodEndDate");
+                    if (periodStart != null) {
+                        period.setStartDate(periodStart.toLocalDate());
+                    }
+                    if (periodEnd != null) {
+                        period.setEndDate(periodEnd.toLocalDate());
+                    }
+                    period.setVacation(rs.getBoolean("PeriodIsVacation"));
+                    booking.setPeriod(period);
+
+                    int skierId = rs.getInt("SkierId");
+                    if (skierId != 0) {
+                        Skier skier = new Skier();
+                        skier.setPersonId(skierId);
+                        skier.setName(rs.getString("SkierName"));
+                        skier.setFirstName(rs.getString("SkierFirstName"));
+                        booking.setSkier(skier);
+                    }
+
+                    bookingMap.put(bookingId, booking);
+                    instructor.AddBooking(booking); // Utilisation de la méthode du modèle
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }*/
+    /*@Override
+    public Instructor find(int id) {
+        Instructor instructor = null;
+
+        // Maps temporaires pour éviter les doublons
+        Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+        Map<Integer, Lesson> lessonMap = new HashMap<>();
+        Map<Integer, Booking> bookingMap = new HashMap<>();
+
+        try {
+            // Requête SQL mise à jour
+            String query = "SELECT " +
+                    "i.InstructorId AS InstructorId, " +
+                    "i.Names AS InstructorName, " +
+                    "i.FirstName AS InstructorFirstName, " +
+                    "i.Pseudo AS InstructorPseudo, " +
+                    "i.DateOfBirth AS InstructorDateOfBirth, " +
+                    "a.AccreditationId AS AccreditationId, " +
+                    "a.Names AS AccreditationName, " +
+                    "a.SportType AS AccreditationSportType, " +
+                    "a.AgeCategory AS AccreditationAgeCategory, " +
+                    "l.LessonId AS LessonId, " +
+                    "l.NumberSkier AS NumberSkier, " +
+                    "l.MinBookings AS LessonMinBookings, " +
+                    "l.MaxBookings AS LessonMaxBookings, " +
+                    "l.DayPart AS LessonDayPart, " +
+                    "l.CourseType AS LessonCourseType, " +
+                    "lt.LessonTypeId AS LessonTypeId, " +
+                    "lt.Levels AS LessonTypeLevel, " +
+                    "lt.Price AS LessonTypePrice, " +
+                    "lt.Sport AS LessonTypeSport, " +
+                    "lt.AgeCategory AS LessonTypeAgeCategory, " +
+                    "b.BookingId AS BookingId, " +
+                    "b.DateBooking AS BookingDateBooking, " +
+                    "b.DateParticulier AS LessonDateParticulier, " +
+                    "p.PeriodId AS PeriodId, " +
+                    "p.StartDate AS PeriodStartDate, " +
+                    "p.EndDate AS PeriodEndDate, " +
+                    "p.IsVacation AS PeriodIsVacation, " +
+                    "sk.SkierId AS SkierId, " +
+                    "sk.Names AS SkierName, " +
+                    "sk.FirstName AS SkierFirstName " +
+                    "FROM " +
+                    "Instructor i " +
+                    "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                    "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                    "LEFT JOIN Booking b ON b.InstructorId = i.InstructorId " +
+                    "LEFT JOIN Skier sk ON b.SkierId = sk.SkierId " +
+                    "LEFT JOIN Lesson l ON b.LessonId = l.LessonId " +
+                    "LEFT JOIN LessonType lt ON l.LessonTypeId = lt.LessonTypeId " +
+                    "LEFT JOIN Period p ON b.PeriodId = p.PeriodId " +
+                    "WHERE " +
+                    "i.InstructorId = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Initialisation de l'instructeur
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(rs.getInt("InstructorId"));
+                    instructor.setName(rs.getString("InstructorName"));
+                    instructor.setFirstName(rs.getString("InstructorFirstName"));
+                    instructor.setPseudo(rs.getString("InstructorPseudo"));
+
+                    java.sql.Date dob = rs.getDate("InstructorDateOfBirth");
+                    if (dob != null) {
+                        instructor.setDateOfBirth(dob.toLocalDate());
+                    }
+                }
+
+                // Récupération et ajout des accréditations
+                int accreditationId = rs.getInt("AccreditationId");
+                if (!accreditationMap.containsKey(accreditationId) && accreditationId != 0) {
+                    Accreditation accreditation = new Accreditation();
+                    accreditation.setId(accreditationId);
+                    accreditation.setName(rs.getString("AccreditationName"));
+                    accreditation.setSport(rs.getString("AccreditationSportType"));
+                    accreditation.setAgeCategory(rs.getString("AccreditationAgeCategory"));
+                    accreditationMap.put(accreditationId, accreditation);
+                    instructor.AddAccreditation(accreditation);
+                }
+
+                // Récupération et ajout des leçons
+                int lessonId = rs.getInt("LessonId");
+                Lesson lesson = lessonMap.get(lessonId);
+                if (lesson == null && lessonId != 0) {
+                    lesson = new Lesson();
+                    lesson.setId(lessonId);
+                    lesson.setMinBookings(rs.getInt("LessonMinBookings"));
+                    lesson.setMaxBookings(rs.getInt("LessonMaxBookings"));
+                    lesson.setDayPart(rs.getString("LessonDayPart"));
+                    lesson.setCourseType(rs.getString("LessonCourseType"));
+                    lesson.setNumberSkier(rs.getInt("NumberSkier"));
+
+                    java.sql.Date lessonDate = rs.getDate("LessonDateParticulier");
+                    if (lessonDate != null) {
+                        lesson.setDate(lessonDate.toLocalDate());
+                    }
+
+                    LessonType lessonType = new LessonType();
+                    lessonType.setId(rs.getInt("LessonTypeId"));
+                    lessonType.setLevel(rs.getString("LessonTypeLevel"));
+                    lessonType.setPrice(rs.getDouble("LessonTypePrice"));
+                    lessonType.setSport(rs.getString("LessonTypeSport"));
+                    lessonType.setAgeCategory(rs.getString("LessonTypeAgeCategory"));
+                    lesson.setLessonType(lessonType);
+
+                    lessonMap.put(lessonId, lesson);
+                    instructor.AddLesson(lesson);
+                }
+
+                // Récupération et ajout des réservations
+                int bookingId = rs.getInt("BookingId");
+                Booking booking = bookingMap.get(bookingId);
+                if (booking == null && bookingId != 0) {
+                    booking = new Booking();
+                    booking.setId(bookingId);
+
+                    java.sql.Date bookingDate = rs.getDate("BookingDateBooking");
+                    if (bookingDate != null) {
+                        booking.setDateBooking(bookingDate.toLocalDate());
+                    }
+
+                    Period period = new Period();
+                    period.setId(rs.getInt("PeriodId"));
+
+                    java.sql.Date periodStart = rs.getDate("PeriodStartDate");
+                    java.sql.Date periodEnd = rs.getDate("PeriodEndDate");
+                    if (periodStart != null) {
+                        period.setStartDate(periodStart.toLocalDate());
+                    }
+                    if (periodEnd != null) {
+                        period.setEndDate(periodEnd.toLocalDate());
+                    }
+                    period.setVacation(rs.getBoolean("PeriodIsVacation"));
+                    booking.setPeriod(period);
+
+                    int skierId = rs.getInt("SkierId");
+                    if (skierId != 0) {
+                        Skier skier = new Skier();
+                        skier.setPersonId(skierId);
+                        skier.setName(rs.getString("SkierName"));
+                        skier.setFirstName(rs.getString("SkierFirstName"));
+                        booking.setSkier(skier);
+                    }
+
+                    // Lier la réservation à une leçon
+                    if (lesson != null) {
+                        booking.setLesson(lesson);
+                        lesson.AddBooking(booking); // Utilisation de la méthode du modèle Lesson
+                    }
+
+                    bookingMap.put(bookingId, booking);
+                    instructor.AddBooking(booking);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }*/
     @Override
-	public Instructor find(int id){
-    	Instructor s = new Instructor();
-		return s;
-	}
+    public Instructor find(int id) {
+        Instructor instructor = null;
+
+        // Maps temporaires pour éviter les doublons
+        Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+        Map<Integer, Lesson> lessonMap = new HashMap<>();
+        Map<Integer, Booking> bookingMap = new HashMap<>();
+
+        try {
+            // Requête SQL mise à jour
+            String query = "SELECT " +
+                    "i.InstructorId AS InstructorId, " +
+                    "i.Names AS InstructorName, " +
+                    "i.FirstName AS InstructorFirstName, " +
+                    "i.Pseudo AS InstructorPseudo, " +
+                    "i.DateOfBirth AS InstructorDateOfBirth, " +
+                    "a.AccreditationId AS AccreditationId, " +
+                    "a.Names AS AccreditationName, " +
+                    "a.SportType AS AccreditationSportType, " +
+                    "a.AgeCategory AS AccreditationAgeCategory, " +
+                    "l.LessonId AS LessonId, " +
+                    "l.NumberSkier AS NumberSkier, " +
+                    "l.MinBookings AS LessonMinBookings, " +
+                    "l.MaxBookings AS LessonMaxBookings, " +
+                    "l.DayPart AS LessonDayPart, " +
+                    "l.CourseType AS LessonCourseType, " +
+                    "lt.LessonTypeId AS LessonTypeId, " +
+                    "lt.Levels AS LessonTypeLevel, " +
+                    "lt.Price AS LessonTypePrice, " +
+                    "lt.Sport AS LessonTypeSport, " +
+                    "lt.AgeCategory AS LessonTypeAgeCategory, " +
+                    "b.BookingId AS BookingId, " +
+                    "b.DateBooking AS BookingDateBooking, " +
+                    "b.DateParticulier AS LessonDateParticulier, " +
+                    "p.PeriodId AS PeriodId, " +
+                    "p.StartDate AS PeriodStartDate, " +
+                    "p.EndDate AS PeriodEndDate, " +
+                    "p.IsVacation AS PeriodIsVacation, " +
+                    "sk.SkierId AS SkierId, " +
+                    "sk.Names AS SkierName, " +
+                    "sk.FirstName AS SkierFirstName " +
+                    "FROM " +
+                    "Instructor i " +
+                    "LEFT JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId " +
+                    "LEFT JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId " +
+                    "LEFT JOIN Booking b ON b.InstructorId = i.InstructorId " +
+                    "LEFT JOIN Skier sk ON b.SkierId = sk.SkierId " +
+                    "LEFT JOIN Lesson l ON b.LessonId = l.LessonId " +
+                    "LEFT JOIN LessonType lt ON l.LessonTypeId = lt.LessonTypeId " +
+                    "LEFT JOIN Period p ON b.PeriodId = p.PeriodId " +
+                    "WHERE " +
+                    "i.InstructorId = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Initialisation de l'instructeur
+                if (instructor == null) {
+                    instructor = new Instructor();
+                    instructor.setPersonId(rs.getInt("InstructorId"));
+                    instructor.setName(rs.getString("InstructorName"));
+                    instructor.setFirstName(rs.getString("InstructorFirstName"));
+                    instructor.setPseudo(rs.getString("InstructorPseudo"));
+
+                    java.sql.Date dob = rs.getDate("InstructorDateOfBirth");
+                    if (dob != null) {
+                        instructor.setDateOfBirth(dob.toLocalDate());
+                    }
+                }
+
+                // Récupération et ajout des accréditations
+                int accreditationId = rs.getInt("AccreditationId");
+                if (!accreditationMap.containsKey(accreditationId) && accreditationId != 0) {
+                    Accreditation accreditation = new Accreditation();
+                    accreditation.setId(accreditationId);
+                    accreditation.setName(rs.getString("AccreditationName"));
+                    accreditation.setSport(rs.getString("AccreditationSportType"));
+                    accreditation.setAgeCategory(rs.getString("AccreditationAgeCategory"));
+                    accreditationMap.put(accreditationId, accreditation);
+                    instructor.AddAccreditation(accreditation);
+                }
+
+                // Récupération et ajout des leçons (particulières et collectives)
+                int lessonId = rs.getInt("LessonId");
+                Lesson lesson = lessonMap.get(lessonId);
+                if (lesson == null && lessonId != 0) {
+                    lesson = new Lesson();
+                    lesson.setId(lessonId);
+                    lesson.setMinBookings(rs.getInt("LessonMinBookings"));
+                    lesson.setMaxBookings(rs.getInt("LessonMaxBookings"));
+                    lesson.setDayPart(rs.getString("LessonDayPart"));
+                    lesson.setCourseType(rs.getString("LessonCourseType"));
+                    lesson.setNumberSkier(rs.getInt("NumberSkier"));
+
+                    java.sql.Date lessonDate = rs.getDate("LessonDateParticulier");
+                    if (lessonDate != null) {
+                        lesson.setDate(lessonDate.toLocalDate());
+                    }
+
+                    LessonType lessonType = new LessonType();
+                    lessonType.setId(rs.getInt("LessonTypeId"));
+                    lessonType.setLevel(rs.getString("LessonTypeLevel"));
+                    lessonType.setPrice(rs.getDouble("LessonTypePrice"));
+                    lessonType.setSport(rs.getString("LessonTypeSport"));
+                    lessonType.setAgeCategory(rs.getString("LessonTypeAgeCategory"));
+                    lesson.setLessonType(lessonType);
+
+                    lessonMap.put(lessonId, lesson);
+                    instructor.AddLesson(lesson);
+                }
+
+                // Récupération et ajout des réservations
+                int bookingId = rs.getInt("BookingId");
+                Booking booking = bookingMap.get(bookingId);
+                if (booking == null && bookingId != 0) {
+                    booking = new Booking();
+                    booking.setId(bookingId);
+
+                    java.sql.Date bookingDate = rs.getDate("BookingDateBooking");
+                    if (bookingDate != null) {
+                        booking.setDateBooking(bookingDate.toLocalDate());
+                    }
+
+                    Period period = new Period();
+                    period.setId(rs.getInt("PeriodId"));
+
+                    java.sql.Date periodStart = rs.getDate("PeriodStartDate");
+                    java.sql.Date periodEnd = rs.getDate("PeriodEndDate");
+                    if (periodStart != null) {
+                        period.setStartDate(periodStart.toLocalDate());
+                    }
+                    if (periodEnd != null) {
+                        period.setEndDate(periodEnd.toLocalDate());
+                    }
+                    period.setVacation(rs.getBoolean("PeriodIsVacation"));
+                    booking.setPeriod(period);
+
+                    int skierId = rs.getInt("SkierId");
+                    if (skierId != 0) {
+                        Skier skier = new Skier();
+                        skier.setPersonId(skierId);
+                        skier.setName(rs.getString("SkierName"));
+                        skier.setFirstName(rs.getString("SkierFirstName"));
+                        booking.setSkier(skier);
+                    }
+
+                    // Lier la réservation à une leçon
+                    if (lesson != null) {
+                        booking.setLesson(lesson);
+                        lesson.AddBooking(booking); // Utilisation de la méthode du modèle Lesson
+                    }
+
+                    bookingMap.put(bookingId, booking);
+                    instructor.AddBooking(booking);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }
+
+
+
+
+    
+
+
+
 
     public boolean testConnection() {
         try {

@@ -90,8 +90,8 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	// Méthode pour créer la réservation dans la base de données
 	private boolean createBooking(Booking booking) {
 	    String sql = """
-	        INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,InstructorId) 
-	        VALUES (?, ?, ?, ?,?)
+	        INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,InstructorId,DateParticulier) 
+	        VALUES (?, ?, ?, ?,?,?)
 	    """;
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -100,6 +100,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	        pstmt.setInt(3, booking.getSkier().getPersonId());
 	        pstmt.setInt(4, booking.getPeriod().getId());
 	        pstmt.setInt(5, booking.getInstructor().getPersonId());
+	        pstmt.setDate(6, java.sql.Date.valueOf(booking.getLesson().getDate()));
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
@@ -127,7 +128,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	    // Obtenir la date du jour
 	    //LocalDate dateBooking = LocalDate.now();
 	    
-	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId) VALUES (?, ?, ?, ?)";
+	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,DateParticulier) VALUES (?, ?, ?, ?,?)";
 	    
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertBooking)) {
 	        pstmt.setDate(1, java.sql.Date.valueOf(b.getDateBooking())); // Convertit LocalDate en java.sql.Date
@@ -135,6 +136,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	        pstmt.setInt(3, b.getSkier().getPersonId());
 	        //pstmt.setInt(4, b.getInstructor().getPersonId());
 	        pstmt.setInt(4, b.getPeriod().getId());
+	        pstmt.setDate(5, java.sql.Date.valueOf(b.getLesson().getDate()));
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {

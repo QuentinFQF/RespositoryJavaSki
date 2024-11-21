@@ -97,7 +97,7 @@ public class Lesson {
 		this.id=id;
 	}
 	public Lesson() {
-		
+		this.bookings=new ArrayList<>();
 	}
 	public int getMinBookings() {
 		return minBookings;
@@ -116,6 +116,12 @@ public class Lesson {
 	}
 	
 
+	public LocalDate getDate() {
+		return date;
+	}
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
 	public Instructor getInstructor() {
 		return instructor;
 	}
@@ -318,6 +324,11 @@ public class Lesson {
 	        return false;
 	    }
 	}
+	
+	
+	
+	
+	
 	
 
 	

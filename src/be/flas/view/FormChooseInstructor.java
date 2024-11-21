@@ -258,49 +258,48 @@ public class FormChooseInstructor extends JFrame {
                 	System.out.println("min "+lesson2.getMinBookings());
                 	System.out.println("max "+lesson2.getMaxBookings());
                 	
-                 
+                	Instructor instructor = Instructor.find(selectedInstructorId);
+                	Skier skier = Skier.find(selectedSkierId);
+
                 	
-                	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Collectif",minMax[0],minMax[1]);
-                	System.out.println("id lesson : "+idLesson);
-                	
-                	System.out.println(i.isAvailable(selectedPeriodId, timeSlot));
-                	//Lesson ll=Lesson.getLesson(idLesson);
-                	
-                	
-                	boolean isAvailable = i.isAvailable(selectedPeriodId, timeSlot);
-                	if (isAvailable) {
-                	    System.out.println("L'instructeur est disponible pour ce créneau.");
-                	} else {
-                	    System.out.println("L'instructeur est déjà assigné pour ce créneau.");
+                	int idLesson = instructor.getLessonId(selectedLessonTypeId, timeSlot, "Collectif", minMax[0], minMax[1],selectedPeriodId);
+
+                    if (skier.isSkierInLesson(selectedSkierId,selectedPeriodId,timeSlot)) {
+                    	JOptionPane.showMessageDialog(null, "Le skieur est déjà inscrit à cette period", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
                 	}
+                    if (instructor.isLessonComplete(idLesson)) {
+        	            JOptionPane.showMessageDialog(null, "La leçon est complète. Pour choisir cette leçon, veuillez prendre un autre moniteur.", "Leçon pleine", JOptionPane.WARNING_MESSAGE);
+        	            return;
+        	        }
+                    if (instructor.isAvailables(selectedPeriodId, timeSlot)){
+                    	JOptionPane.showMessageDialog(null, "L'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                    }
+                    
                 	
-                	
-                	if(Lesson.isComplete(idLesson)==true) {
-                		JOptionPane.showMessageDialog(null, "lesson pleine pour choisir cette lesson veuillez prendre un autre moniteur");
-                	}else if(idLesson==-1 && i.isAvailable(selectedPeriodId, timeSlot)==true) {
-                		//create
-                		
-                		
-                		Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
+                	           
+    	            if (idLesson == -1) {
+    	        
+    	            	Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
                 		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
-                	
-                		booking.save();
+
+                		//booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
-                		
-                	}else {
-                		
-            			//update
-                		Lesson l=new Lesson(idLesson);
-                		l.update();
+    	            } else {
+    	                
+    	                Lesson existingLesson = new Lesson(idLesson);
+    	                //existingLesson.update();
+    	                JOptionPane.showMessageDialog(null, "Leçon mise à jour!", "Mise à jour", JOptionPane.INFORMATION_MESSAGE);
+    	            }
+                	        
+                	    
                 	
-                		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
-                		
-                		
-                	}
+
                 	
                     
-                } else {
-                    System.err.println("Impossible de créer la leçon ou la réservation, certains IDs sont invalides.");
+                }else {
+                	JOptionPane.showMessageDialog(null, "Instructeur indisponible", "Disponibilité", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });

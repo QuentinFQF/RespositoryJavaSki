@@ -623,13 +623,14 @@ public class FormInscriptionParticulier extends JFrame {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                System.out.println("timesslot "+timeSlot);
+             
 
+                
                 
 
                
 
-                // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
+       
                 if (selectedSkierId != -1 && selectedLessonTypeId != -1 && dateChoose != null) {
                     
                 	Lesson lesson=new Lesson();
@@ -639,8 +640,7 @@ public class FormInscriptionParticulier extends JFrame {
                 	System.out.println("age lt : "+lessonType.getAccreditation().getAgeCategory());
                 	
                 	minMax = lesson.getMinAndMaxBooking(lessonType.getAccreditation().getAgeCategory(), timeSlot);
-                	//int[] timeRange = lesson.getStartAndEndTime(timeSlot);
-                	//System.out.println("time : "+timeRange[0]+timeRange[1]);
+                	
                 	System.out.println(minMax[0]+ " "+minMax[1]);
                 	System.out.println(lessonType.getAccreditation().getAgeCategory());
                   
@@ -658,15 +658,39 @@ public class FormInscriptionParticulier extends JFrame {
                  
                 	
                 	
-                	int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Particulier",minMax[0],minMax[1]);
-                	System.out.println("id lesson : "+idLesson);
+                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            		// Convertir la chaîne en LocalDate en utilisant le formatter
+            		LocalDate parsedDate = LocalDate.parse(dateChoose, formatter);
                 	
-                	if(idLesson == -1) {
-                		
-                		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                	//int idLesson=Lesson.getLessonId(selectedInstructorId,selectedLessonTypeId,timeSlot,"Particulier",minMax[0],minMax[1]);
+                	//System.out.println("id lesson : "+idLesson);
+                	Instructor instructor = Instructor.find(selectedInstructorId);
+                	Skier skier = Skier.find(selectedSkierId);
+
+                	int idLesson = instructor.getLessonIdForDate(selectedLessonTypeId, timeSlot, "Particulier", minMax[0], minMax[1],parsedDate);
+                	
+                	if (skier.isSkierInLesson(selectedSkierId,parsedDate)) {
+                    	JOptionPane.showMessageDialog(null, "Le skieur est déjà inscrit à cette period", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                	}
+                    if (instructor.isLessonComplete(idLesson)) {
+        	            JOptionPane.showMessageDialog(null, "La leçon est complète. Pour choisir cette leçon, veuillez prendre un autre moniteur.", "Leçon pleine", JOptionPane.WARNING_MESSAGE);
+        	            return;
+        	        }
+                    if (instructor.isAvailableForDate(parsedDate, timeSlot)){
+                    	JOptionPane.showMessageDialog(null, "L'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                    }
+
+                	
+                	           
+    	            if (idLesson == -1) {
+    	        
+    	            	//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                 		// Convertir la chaîne en LocalDate en utilisant le formatter
-                		LocalDate parsedDate = LocalDate.parse(dateChoose, formatter);
+                		//LocalDate parsedDate = LocalDate.parse(dateChoose, formatter);
 
                 		int tarifId=lesson.getDurationInHours(timeSlot);
                 		// Vous pouvez maintenant utiliser parsedDate dans la création de votre Lesson
@@ -676,23 +700,26 @@ public class FormInscriptionParticulier extends JFrame {
                 		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
                 		booking.save();
                 		JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
-                		
-                	}else {
-                		
-            			//update
+    	            } else {
+    	                
+    	            	//update
                 		Lesson l=new Lesson(idLesson);
-                		l.update();
+                		//l.update();
                 	
                 		JOptionPane.showMessageDialog(null, "lesson mit à jour!");
-                		
-                		
+    	            }
+                	        
+                	    
+                	} else {
+             
+                	    JOptionPane.showMessageDialog(null, "L'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
                 	}
                 	
+                	
+                	
                     
-                } else {
-                    System.err.println("Impossible de créer la leçon ou la réservation, certains IDs sont invalides.");
-                }
             }
+            
         });
     }
         

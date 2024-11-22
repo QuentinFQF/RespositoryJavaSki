@@ -222,6 +222,27 @@ public class Skier extends Person{
 	    }
 	    return false; // Le skieur n'est pas inscrit à un cours particulier pour cette date
 	}
+	
+	public boolean hasMorningAndAfternoonBookings(Period period,String timeSlot) {
+	    boolean hasMorning = false;
+	    boolean hasAfternoon = false;
+
+	    System.out.println("avant b : ");
+	    for (Booking booking : this.getBookings()) {
+	        // Vérifier si la réservation appartient à la période donnée
+	    	System.out.println("apres b : ");
+	        if (booking.getPeriod().getId() == period.getId()) {
+	            
+	            if (!booking.getLesson().getDayPart().equalsIgnoreCase(timeSlot)) {
+	                return true;
+	            }
+
+	        }
+	    }
+
+	    return false;
+	}
+
 
 
 

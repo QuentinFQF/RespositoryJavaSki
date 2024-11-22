@@ -547,6 +547,14 @@ public class FormInscriptionParticulier extends JFrame {
         comboPeriod = new JComboBox();
         comboPeriod.setBounds(32, 32, 329, 21);
         panel.add(comboPeriod);
+        JLabel labelPrix = new JLabel("Prix total : ");
+        labelPrix.setFont(new Font("Arial", Font.BOLD, 14));
+        labelPrix.setBounds(32, 370, 400, 21); 
+        panel.add(labelPrix);
+
+        JButton btnCalculPrix = new JButton("Calculer le Prix");
+        btnCalculPrix.setBounds(32, 400, 150, 21);
+        panel.add(btnCalculPrix);
 
         //fillPeriodComboBox();
         fillPeriodComboBoxWithSpecificDates();
@@ -720,6 +728,79 @@ public class FormInscriptionParticulier extends JFrame {
                     
             }
             
+        });
+        
+        btnCalculPrix.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                	//boolean isChecked = ckAssurance.isSelected();
+                	Integer selectedSkierId = getSelectedSkierId();
+                    Integer selectedLessonTypeId = getSelectedLessonTypeId();
+                    Integer selectedInstructorId = getSelectedInstructorId();
+                    Integer selectedPeriodId = getSelectedPeriodId();
+                    String dateChoose = (String) comboPeriod.getSelectedItem();
+                	String timeSlot = null;
+                	int[] tabTime = new int[2]; 
+                    if (RadioButton1.isSelected()) {
+                        timeSlot = "1 heure";
+                        tabTime[0]=12;
+                        tabTime[1]=13;
+                    } else if (RadioButton2.isSelected()) {
+                        timeSlot = "2 heures";
+                        tabTime[0]=12;
+                        tabTime[1]=14;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                	
+                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            		// Convertir la chaîne en LocalDate en utilisant le formatter
+            		LocalDate parsedDate = LocalDate.parse(dateChoose, formatter);
+                	
+                	if (selectedSkierId == null || selectedLessonTypeId == null || selectedInstructorId == null) {
+                        JOptionPane.showMessageDialog(FormInscriptionParticulier.this, 
+                            "Veuillez remplir tous les champs obligatoires.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                	Lesson lesson=new Lesson();
+                    
+                	LessonType lessonType=LessonType.getLesson(selectedLessonTypeId);
+                	int[] minMax;
+                	//System.out.println("age lt : "+lessonType.getAccreditation().getAgeCategory());
+                	
+                	minMax = lesson.getMinAndMaxBooking(lessonType.getAccreditation().getAgeCategory(), timeSlot);
+                	//int[] timeRange = lesson.getStartAndEndTime(timeSlot);
+                	
+                	LocalDate dateBooking = LocalDate.now();
+                	
+                	Skier s=new Skier(selectedSkierId);
+                	Period p=new Period(22);
+                	Instructor i=new Instructor(selectedInstructorId);
+                	LessonType lt=new LessonType(selectedLessonTypeId);
+                	Instructor instructor = Instructor.find(selectedInstructorId);
+                	int idLesson = instructor.getLessonIdForDate(selectedLessonTypeId, timeSlot, "Particulier", minMax[0], minMax[1],parsedDate);
+                	
+                	int tarifId=lesson.getDurationInHours(timeSlot);
+            		
+            		Lesson lesson3 = new Lesson(minMax[0], minMax[1], i, lt, timeSlot, "Particulier", tarifId, idLesson, tabTime[0], tabTime[1], parsedDate);
+
+            		
+            		Booking booking = new Booking(dateBooking, s,p, lesson3, i);
+                	
+            		System.out.println(booking.getLesson().getTarifId());
+                	
+                    double prixTotal = booking.calculatePrice(null,null);
+
+                    labelPrix.setText("Prix total : " + prixTotal + " €");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(FormInscriptionParticulier.this, 
+                        "Erreur lors du calcul du prix : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
     }
         

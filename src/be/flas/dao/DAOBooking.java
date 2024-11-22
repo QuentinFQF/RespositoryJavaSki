@@ -89,22 +89,44 @@ public class DAOBooking extends DaoGeneric<Booking>{
 
 	// Méthode pour créer la réservation dans la base de données
 	private boolean createBooking(Booking booking) {
-	    String sql = """
-	        INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,InstructorId,DateParticulier) 
-	        VALUES (?, ?, ?, ?,?,?)
-	    """;
+	    // Obtenez la date actuelle
+	    LocalDate currentDate = LocalDate.now();
+
+	    // Vérifiez si la date est spécifique ou correspond à la date actuelle
+	    boolean includeDateParticulier = !booking.getLesson().getDate().equals(currentDate);
+
+	    // Construire la requête SQL dynamiquement
+	    String sqlBase = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId, InstructorId, Assurance";
+	    String sqlValues = " VALUES (?, ?, ?, ?, ?, ?";
+
+	    if (includeDateParticulier) {
+	        sqlBase += ", DateParticulier"; // Ajouter la colonne si nécessaire
+	        sqlValues += ", ?";             // Ajouter le placeholder
+	    }
+
+	    sqlBase += ")";
+	    sqlValues += ")";
+
+	    String sql = sqlBase + sqlValues;
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	        // Paramètres obligatoires
 	        pstmt.setDate(1, java.sql.Date.valueOf(booking.getDateBooking()));
 	        pstmt.setInt(2, booking.getLesson().getId());
 	        pstmt.setInt(3, booking.getSkier().getPersonId());
 	        pstmt.setInt(4, booking.getPeriod().getId());
 	        pstmt.setInt(5, booking.getInstructor().getPersonId());
-	        pstmt.setDate(6, java.sql.Date.valueOf(booking.getLesson().getDate()));
+	        pstmt.setBoolean(6, booking.isAssurance());
 
+	        // Ajouter DateParticulier si elle ne correspond pas à la date actuelle
+	        if (includeDateParticulier) {
+	            pstmt.setDate(7, java.sql.Date.valueOf(booking.getLesson().getDate()));
+	        }
+
+	        // Exécuter la requête
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
-	            System.out.println("Réservation créée avec succès pour la leçon ID : " + booking.getLesson().getLessonId());
+	            System.out.println("Réservation créée avec succès pour la leçon ID : " + booking.getLesson().getId());
 	            return true;
 	        }
 	    } catch (SQLException e) {
@@ -112,6 +134,9 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	    }
 	    return false;
 	}
+
+
+
 
    
     @Override
@@ -165,7 +190,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
         // Requête SQL avec filtres pour rechercher par ID du skieur ou de l'instructeur
         String sql = """
             SELECT 
-                b.BookingId, b.DateBooking,
+                b.BookingId, b.DateBooking,b.Assurance
                 s.SkierId, s.Names AS SkierName, s.FirstName AS SkierFirstName, s.Pseudo AS SkierPseudo,
                 i.InstructorId, i.Names AS InstructorName, i.FirstName AS InstructorFirstName, i.Pseudo AS InstructorPseudo,
                 l.LessonId, l.MinBookings, l.MaxBookings, l.DayPart, l.CourseType, l.TariffId,l.StartTime,l.EndTime
@@ -196,6 +221,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                     // Récupération de la date de réservation
                     LocalDate dateBooking = rs.getDate("DateBooking").toLocalDate();
                     int id=rs.getInt("BookingId");
+                    boolean a=rs.getBoolean("Assurance");
                     
                     // Création de l'objet Skier
                     Skier skier = new Skier(
@@ -244,7 +270,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                     );
 
                     // Création et ajout de l'objet Booking à la liste
-                    Booking booking = new Booking(id,dateBooking, skier, period, lesson, instructor);
+                    Booking booking = new Booking(id,dateBooking, skier, period, lesson, instructor,a);
                     bookings.add(booking);
                 }
             }

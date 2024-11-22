@@ -131,7 +131,21 @@ public class FormChooseInstructor extends JFrame {
         comboPeriod = new JComboBox();
         comboPeriod.setBounds(32, 32, 329, 21);
         panel.add(comboPeriod);
+        
+        JCheckBox ckAssurance = new JCheckBox("Assurance");
+        ckAssurance.setBounds(142, 252, 93, 21);
+        panel.add(ckAssurance);
 
+        
+        JLabel labelPrix = new JLabel("Prix total : ");
+        labelPrix.setFont(new Font("Arial", Font.BOLD, 14));
+        labelPrix.setBounds(32, 370, 400, 21); 
+        panel.add(labelPrix);
+
+        JButton btnCalculPrix = new JButton("Calculer le Prix");
+        btnCalculPrix.setBounds(32, 400, 150, 21);
+        panel.add(btnCalculPrix);
+        
         fillPeriodComboBox();
         fillSkierComboBox();
         fillLessonTypeComboBox();
@@ -166,14 +180,15 @@ public class FormChooseInstructor extends JFrame {
                 Integer selectedLessonTypeId = getSelectedLessonTypeId();
                 Integer selectedInstructorId = getSelectedInstructorId();
                 Integer selectedPeriodId = getSelectedPeriodId();
+                boolean isChecked = ckAssurance.isSelected();
 
                 System.out.println("skier id "+selectedSkierId);
                 System.out.println("lessontype id "+selectedLessonTypeId);
                 System.out.println("ins id "+selectedInstructorId);
                 System.out.println("period id "+selectedPeriodId);
+                System.out.println("assurance "+isChecked);
 
-                //String timeSlot = RadioButton1.isSelected() ? "Matin" : "Après-midi";
-             // Vérification de la validité des sélections
+               
                 if (selectedPeriodId == null ) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner une période valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -282,7 +297,7 @@ public class FormChooseInstructor extends JFrame {
     	            if (idLesson == -1) {
     	        
     	            	Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
-                		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
+                		Booking booking = new Booking(dateBooking, s, p, lesson3, i,isChecked);
 
                 		//booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
@@ -303,6 +318,68 @@ public class FormChooseInstructor extends JFrame {
                 }
             }
         });
+        
+        btnCalculPrix.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                	boolean isChecked = ckAssurance.isSelected();
+                	Integer selectedSkierId = getSelectedSkierId();
+                    Integer selectedLessonTypeId = getSelectedLessonTypeId();
+                    Integer selectedInstructorId = getSelectedInstructorId();
+                    Integer selectedPeriodId = getSelectedPeriodId();
+                	String timeSlot = null;
+                	
+                	if (selectedSkierId == null || selectedLessonTypeId == null || selectedInstructorId == null || selectedPeriodId == null) {
+                        JOptionPane.showMessageDialog(FormChooseInstructor.this, 
+                            "Veuillez remplir tous les champs obligatoires.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    int[] tabTime = new int[2]; 
+                    if (RadioButton1.isSelected()) {
+                        timeSlot = "Matin";
+                        tabTime[0]=9;
+                        tabTime[1]=12;
+                    } else if (RadioButton2.isSelected()) {
+                        timeSlot = "Après-midi";
+                        tabTime[0]=14;
+                        tabTime[1]=17;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Veuillez sélectionner un créneau horaire (Matin ou Après-midi).", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                	Lesson lesson=new Lesson();
+                    
+                	LessonType lessonType=LessonType.getLesson(selectedLessonTypeId);
+                	int[] minMax;
+                	System.out.println("age lt : "+lessonType.getAccreditation().getAgeCategory());
+                	
+                	minMax = lesson.getMinAndMaxBooking(lessonType.getAccreditation().getAgeCategory(), timeSlot);
+                	int[] timeRange = lesson.getStartAndEndTime(timeSlot);
+                	
+                	LocalDate dateBooking = LocalDate.now();
+                	Period p=new Period(selectedPeriodId);
+                	Skier s=new Skier(selectedSkierId);
+                	Instructor i=new Instructor(selectedInstructorId);
+                	LessonType lt=new LessonType(selectedLessonTypeId);
+                	Instructor instructor = Instructor.find(selectedInstructorId);
+                	int idLesson = instructor.getLessonId(selectedLessonTypeId, timeSlot, "Collectif", minMax[0], minMax[1],selectedPeriodId);
+                	Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lessonType,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
+                	Skier ss=Skier.find(selectedSkierId);
+            		Booking booking = new Booking(dateBooking, ss, p, lesson3, i,isChecked);
+                	
+            		System.out.println(booking.getLesson().getLessonType().getPrice());
+                	
+                    double prixTotal = booking.calculatePrice(p,timeSlot);
+
+                    labelPrix.setText("Prix total : " + prixTotal + " €");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(FormChooseInstructor.this, 
+                        "Erreur lors du calcul du prix : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
     }
         
 
@@ -421,6 +498,7 @@ public class FormChooseInstructor extends JFrame {
         return null; 
     }
     
+
 }
 
 

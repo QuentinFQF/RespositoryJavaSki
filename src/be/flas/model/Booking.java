@@ -17,22 +17,38 @@ public class Booking {
 	private Lesson lesson;
 	private Instructor instructor;
 	private int id;
+	private boolean assurance;
 	
-	public Booking(LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor) {
+	/*public Booking(LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor,Boolean a) {
 		this.dateBooking=dateBooking;
 		this.instructor=instructor;
 		this.lesson=lesson;
 		this.period=period;
 		this.skier=skier;
+		this.assurance=a;
 
-	}
-	public Booking(int id,LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor) {
+	}*/
+	 public Booking(LocalDate dateBooking, Skier skier, Period period, Lesson lesson, Instructor instructor, Boolean assurance) {
+	        this.dateBooking = dateBooking;
+	        this.skier = skier;
+	        this.period = period;
+	        this.lesson = lesson;
+	        this.instructor = instructor;
+	        this.assurance = assurance;
+	    }
+
+	    // Constructeur surchargé sans le paramètre `assurance`
+	    public Booking(LocalDate dateBooking, Skier skier, Period period, Lesson lesson, Instructor instructor) {
+	        this(dateBooking, skier, period, lesson, instructor, false); // Valeur par défaut pour `assurance`
+	    }
+	public Booking(int id,LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor,boolean a) {
 		this.dateBooking=dateBooking;
 		this.instructor=instructor;
 		this.lesson=lesson;
 		this.period=period;
 		this.skier=skier;
 		this.id=id;
+		this.assurance=a;
 	}
     public Booking(int id) {
 		this.id=id;
@@ -41,6 +57,13 @@ public class Booking {
 		
 	}
 	
+	
+	public boolean isAssurance() {
+		return assurance;
+	}
+	public void setAssurance(boolean assurance) {
+		this.assurance = assurance;
+	}
 	public int getId() {
 		return id;
 	}
@@ -125,5 +148,76 @@ public class Booking {
 	        return false;
 	    }
 	}
+	
+	/*public double calculatePrice() {
+	    double basePrice = 0.0;
+
+	    
+	    if (this.getLesson() != null && this.getLesson().getLessonType() != null) {
+	       
+	        basePrice = this.getLesson().getLessonType().getPrice();
+	     
+	        if (this.getLesson().getCourseType().equalsIgnoreCase("Particulier")) {
+	           
+	        	return (this.getLesson().getTarifId() == 1) ? 60 : 90;
+	             
+	        } else if (this.getLesson().getCourseType().equalsIgnoreCase("Collectif")) {
+	        
+	            if(this.isAssurance()) {
+	            	return basePrice * 0.8;
+	            }else {
+	            	return basePrice;
+	            }
+	            
+	        }
+	    }
+
+	  
+	    return 0.0;
+	}*/
+	public double calculatePrice(Period period,String timeSlot) {
+	    double basePrice = 0.0;
+
+	    // Vérifier que les données nécessaires existent
+	    if (this.getLesson() != null && this.getLesson().getLessonType() != null) {
+	        // Récupérer le prix de base depuis le type de leçon
+	        basePrice = this.getLesson().getLessonType().getPrice();
+
+	        // Calcul pour les cours particuliers
+	        if (this.getLesson().getCourseType().equalsIgnoreCase("Particulier")) {
+	            basePrice = (this.getLesson().getTarifId() == 1) ? 60 : 90;
+	        } 
+	        // Calcul pour les cours collectifs
+	        else if (this.getLesson().getCourseType().equalsIgnoreCase("Collectif")) {
+	            // Si assurance est activée, appliquer une réduction de 20 %
+	            if (this.isAssurance()) {
+	                basePrice *= 0.8;
+	            }
+	            System.out.println("cal : "+this.getSkier().getPersonId());
+		        // Vérifier si le skieur a des réservations matin et après-midi dans la même période
+		        if (this.getSkier() != null 
+		            && this.getPeriod() != null 
+		            && this.getLesson() != null 
+		            && this.getLesson().getDayPart() != null) {
+		            boolean hasBothSlots = this.getSkier().hasMorningAndAfternoonBookings(
+		                period,timeSlot
+		            );
+		            // Si oui, appliquer une réduction de 15 %
+		            if (hasBothSlots) {
+		                basePrice *= 0.85;
+		            }
+		        }
+		        
+	        }
+	        return basePrice;
+
+	        
+	    }
+
+	    // Retourner 0 si les données nécessaires ne sont pas disponibles
+	    return 0.0;
+	}
+
+
 	
 }

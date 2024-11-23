@@ -65,42 +65,42 @@ public class FormDeleteSkier extends JFrame {
 		panel.add(tfDeleteSkier);
 		tfDeleteSkier.setColumns(10);
 
-		// Ajouter une barre de défilement et une table
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 250, 381, 150);
 		panel.add(scrollPane);
 
-		// Initialiser le modèle de la table avec les colonnes
+		
 		tableModel = new DefaultTableModel(new Object[][] {}, new String[] { "ID", "Nom", "Prénom", "Pseudo", "Date Naissance" });
 		tableSkier = new JTable(tableModel);
 		scrollPane.setViewportView(tableSkier);
 		
 		JButton btnDeleteButton = new JButton("supprimer");
-		// ActionListener pour le bouton Supprimer
+		
 		btnDeleteButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        // Vérifier qu'une ligne est sélectionnée
+		       
 		        int selectedRow = tableSkier.getSelectedRow();
 
-		        if (selectedRow == -1) { // Aucune ligne n'est sélectionnée
+		        if (selectedRow == -1) { 
 		            JOptionPane.showMessageDialog(contentPane, "Veuillez sélectionner un skieur dans le tableau pour le supprimer.", "Erreur", JOptionPane.ERROR_MESSAGE);
 		            return;
 		        }
 
-		        // Récupérer l'ID du skieur sélectionné dans la table
+		       
 		        int skierId = (int) tableModel.getValueAt(selectedRow, 0);
 
-		        // Afficher une confirmation avant la suppression
+		        
 		        int confirm = JOptionPane.showConfirmDialog(contentPane, "Êtes-vous sûr de vouloir supprimer ce skieur ?", "Confirmation", JOptionPane.YES_NO_OPTION);
 		        
 		        if (confirm == JOptionPane.YES_OPTION) {
-		            // Appel à la méthode de suppression (à implémenter)
+		           
 		        	Skier s=new Skier(skierId);
 		            boolean isDeleted = s.delete();
 
 		            if (isDeleted) {
 		                JOptionPane.showMessageDialog(contentPane, "Le skieur a été supprimé avec succès.", "Succès", JOptionPane.INFORMATION_MESSAGE);
-		                // Supprimer la ligne du tableau
+		               
 		                tableModel.removeRow(selectedRow);
 		            } else {
 		                JOptionPane.showMessageDialog(contentPane, "Erreur lors de la suppression du skieur.", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -112,7 +112,7 @@ public class FormDeleteSkier extends JFrame {
 		btnDeleteButton.setBounds(334, 442, 85, 21);
 		panel.add(btnDeleteButton);
 
-		// ActionListener pour le bouton Rechercher
+		
 		btnSearchSkier.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String pseudo = tfDeleteSkier.getText().trim();
@@ -122,14 +122,14 @@ public class FormDeleteSkier extends JFrame {
 					return;
 				}
 
-				// Recherche du skieur par pseudo
+				
 				Skier skier = Skier.getSkierByPseudo(pseudo);
 
-				// Nettoyer les anciennes données du modèle de table
+				
 				tableModel.setRowCount(0);
 
 				if (skier != null) {
-					// Ajouter le skieur trouvé dans le tableau
+					
 					tableModel.addRow(new Object[] {
 						skier.getPersonId(),
 						skier.getName(),

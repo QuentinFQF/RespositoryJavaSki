@@ -39,7 +39,7 @@ public class FormSkier extends JFrame {
 	private JTextField Pseudo;
 	private DAOSkier daoSkier;
     private Connection sharedConnection;
-	//private DAOSkier daoSkier = new DAOSkier();
+	
 	
 	private JDateChooser dateChooser;
 
@@ -148,11 +148,10 @@ public class FormSkier extends JFrame {
 		        String nom = Nom.getText().trim();
 		        String prenom = Prenom.getText().trim();
 		        String pseudo = Pseudo.getText().trim();
-		        //LocalDate dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
 		        boolean assuranceSelected = Assurance.isSelected();
 
-		        // Vérification que nom, prénom et pseudo ne contiennent que des lettres et ont une longueur maximale de 50 caractères
-		     // Vérification que les champs ne sont pas null ou vides
+		      
 		        if (nom.isEmpty()) {
 		            System.out.println("Erreur : le champ 'Nom' ne peut pas être vide.");
 		            JOptionPane.showMessageDialog(null, "Erreur : le champ 'Nom' ne peut pas être vide.");
@@ -169,7 +168,7 @@ public class FormSkier extends JFrame {
 		            return;
 		        }
 
-		        // Vérification que les champs contiennent uniquement des lettres et ont une longueur maximum de 50 caractères
+		        
 		        if (!nom.matches("[a-zA-Z]{1,50}")) {
 		            System.out.println("Erreur : le nom doit contenir uniquement des lettres et être de 50 caractères maximum.");
 		            JOptionPane.showMessageDialog(null, "Erreur : le nom doit contenir uniquement des lettres et être de 50 caractères maximum.");
@@ -186,7 +185,7 @@ public class FormSkier extends JFrame {
 		            return;
 		        }
 
-		        // Vérification de la validité de la date de naissance (doit être dans le passé)
+		   
 		        Date date = dateChooser.getDate();
 		        if (date == null) {
 		            System.out.println("Erreur : la date de naissance ne peut pas être vide.");
@@ -196,7 +195,7 @@ public class FormSkier extends JFrame {
 
 		        LocalDate dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-		        // Vérification que la date est dans le passé
+		       
 		        if (dob.isAfter(LocalDate.now())) {
 		            System.out.println("Erreur : la date de naissance doit être dans le passé.");
 		            JOptionPane.showMessageDialog(null, "Erreur : la date de naissance doit être dans le passé.");
@@ -204,12 +203,11 @@ public class FormSkier extends JFrame {
 		        }
 
 
-		        // Créer un objet Skier et l'ajouter à la base de données
-		        Skier i = new Skier(nom, prenom, dob, pseudo/*, assuranceSelected*/);
+		      
+		        Skier i = new Skier(nom, prenom, dob, pseudo);
 		        System.out.print(i.toString());
 
-		        //boolean success = daoSkier.create(i);
-		     // Appel de la méthode d'instance save()
+		       
 		        boolean success = i.save();
 
 		        if (success) {
@@ -221,21 +219,7 @@ public class FormSkier extends JFrame {
 		        }
 
 		        
-		        /*boolean success = Skier.save(i);
-
-		        if (success) {
-		            System.out.println("Skieur ajouté avec succès !");
-		            JOptionPane.showMessageDialog(null, "Skieur ajouté avec succès !");
-		        } else {
-		            System.out.println("Erreur lors de l'ajout du skieur.");
-		            JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du skieur.");
-		        }*/
-
-		        /*if (success) {
-		            System.out.println("Skieur ajouté avec succès !");
-		        } else {
-		            System.out.println("Erreur lors de l'ajout du skieur.");
-		        }*/
+		        
 		    }
 		});
 		btnNewButton.setBounds(288, 294, 85, 21);

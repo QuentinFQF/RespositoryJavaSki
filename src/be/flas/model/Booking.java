@@ -37,9 +37,9 @@ public class Booking {
 	        this.assurance = assurance;
 	    }
 
-	    // Constructeur surchargé sans le paramètre `assurance`
+	    
 	    public Booking(LocalDate dateBooking, Skier skier, Period period, Lesson lesson, Instructor instructor) {
-	        this(dateBooking, skier, period, lesson, instructor, false); // Valeur par défaut pour `assurance`
+	        this(dateBooking, skier, period, lesson, instructor, false); 
 	    }
 	public Booking(int id,LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor,boolean a) {
 		this.dateBooking=dateBooking;
@@ -112,12 +112,11 @@ public class Booking {
 	
 	public boolean save() {
 	    try {
-	        // Récupération de la connexion
+	       
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	        
 	        DAOBooking daoBooking = new DAOBooking(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
-	        //return daoBooking.create(this);
+	        
 	        return daoBooking.createWithLesson(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -125,11 +124,11 @@ public class Booking {
 	    }
 	}
 	public static List<Booking> getBookingsBySkierOrInstructorId(String skierP,String insP) {
-        // Récupération de la connexion
+        
         Connection connection = DatabaseConnection.getInstance().getConnection();
         DAOBooking daoBooking = new DAOBooking(connection);
 
-        // Appel à la méthode DAO pour obtenir les réservations
+        
         List<Booking> bookings = daoBooking.getBookingsBySkierOrInstructorId(skierP,insP);
 
         return bookings;
@@ -137,11 +136,11 @@ public class Booking {
 	
 	public boolean delete() {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	       
 	        DAOBooking daoBooking = new DAOBooking(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	        
 	        return daoBooking.delete(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -149,32 +148,7 @@ public class Booking {
 	    }
 	}
 	
-	/*public double calculatePrice() {
-	    double basePrice = 0.0;
-
-	    
-	    if (this.getLesson() != null && this.getLesson().getLessonType() != null) {
-	       
-	        basePrice = this.getLesson().getLessonType().getPrice();
-	     
-	        if (this.getLesson().getCourseType().equalsIgnoreCase("Particulier")) {
-	           
-	        	return (this.getLesson().getTarifId() == 1) ? 60 : 90;
-	             
-	        } else if (this.getLesson().getCourseType().equalsIgnoreCase("Collectif")) {
-	        
-	            if(this.isAssurance()) {
-	            	return basePrice * 0.8;
-	            }else {
-	            	return basePrice;
-	            }
-	            
-	        }
-	    }
-
-	  
-	    return 0.0;
-	}*/
+	
 	public double calculatePrice(Period period,String timeSlot) {
 	    double basePrice = 0.0;
 
@@ -219,7 +193,7 @@ public class Booking {
 	}
 	
     public boolean isDateBeforeToday() {
-    	LocalDate today = /*LocalDate.now()*/LocalDate.of(2024, 12, 12);
+    	LocalDate today = LocalDate.of(2024, 12, 12);
 		if(this.getLesson().getCourseType().equals("Particulier")) {
 			return this.getLesson().getDate().isBefore(today);
 		}else {

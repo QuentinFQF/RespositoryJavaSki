@@ -134,11 +134,11 @@ public class Accreditation {
 	}
 	public static int selectId(String names) {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	      
 	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	     
 	        return daoAccreditation.selectId(names);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -148,11 +148,11 @@ public class Accreditation {
 	
 	public static List<Accreditation> selectAccDiffIns(int id) {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	       
 	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	    
 	        return daoAccreditation.selectAccreditationsNotIns(id);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -161,11 +161,11 @@ public class Accreditation {
 	}
 	public static List<Accreditation> getAll() {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	      
 	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	       
 	        return daoAccreditation.getAll();
 	    } catch (Exception e) {
 	        e.printStackTrace();

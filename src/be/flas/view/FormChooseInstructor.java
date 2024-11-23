@@ -149,9 +149,9 @@ public class FormChooseInstructor extends JFrame {
         fillPeriodComboBox();
         fillSkierComboBox();
         fillLessonTypeComboBox();
-        //fillSemaineComboBox();  // Appeler pour remplir le JComboBox avec les semaines
+        
 
-        // Ajout d'un ActionListener pour comboLessonType
+        
         comboLessonType.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -209,7 +209,7 @@ public class FormChooseInstructor extends JFrame {
                     return;
                 }
 
-                // Vérification de la sélection des boutons radio pour le créneau horaire
+      
                 String timeSlot = null;
                 int[] tabTime = new int[2]; 
                 if (RadioButton1.isSelected()) {
@@ -226,7 +226,7 @@ public class FormChooseInstructor extends JFrame {
                 }
                 System.out.println("timesslot "+timeSlot);
 
-                // Récupération des dates de la période choisie
+               
                 LocalDate startDate = null;
                 LocalDate endDate = null;
                 if (semaineChoisie != null) {
@@ -247,7 +247,7 @@ public class FormChooseInstructor extends JFrame {
 
                
 
-                // Vérifier si les IDs sont valides avant de créer la leçon ou la réservation
+              
                 if (selectedSkierId != -1 && selectedLessonTypeId != -1 && startDate != null && endDate != null && selectedPeriodId != -1) {
                     
                 	Lesson lesson=new Lesson();
@@ -304,12 +304,12 @@ public class FormChooseInstructor extends JFrame {
                 			JOptionPane.showMessageDialog(null, "vous ne pouvez pas reserver pour une date expiré");
                 			return;
                 		}
-                		//booking.save();
+                		booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
     	            } else {
     	                
     	                Lesson existingLesson = new Lesson(idLesson);
-    	                //existingLesson.update();
+    	                existingLesson.update();
     	                JOptionPane.showMessageDialog(null, "Leçon mise à jour!", "Mise à jour", JOptionPane.INFORMATION_MESSAGE);
     	            }
                 	        

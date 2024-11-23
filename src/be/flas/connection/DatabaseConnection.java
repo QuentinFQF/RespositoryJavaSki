@@ -12,10 +12,10 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
 
-    // Remplacez le chemin par le chemin de votre base de données Access
+    
     private static final String DATABASE_URL = "jdbc:ucanaccess://./DB_Flas.accdb";
 
-    // Constructeur privé
+    
     private DatabaseConnection() {
         try {
             Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
@@ -28,7 +28,7 @@ public class DatabaseConnection {
         }
     }
 
-    // Méthode pour obtenir l'instance de la connexion
+    
     public static DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();
@@ -36,18 +36,18 @@ public class DatabaseConnection {
         return instance;
     }
 
-    // Méthode pour obtenir la connexion
+    
     public Connection getConnection() {
         return connection;
     }
 
-    // Méthode pour exécuter une requête
+  
     public ResultSet executeQuery(String query) throws SQLException {
         Statement stmt = connection.createStatement();
         return stmt.executeQuery(query);
     }
 
-    // Méthode pour fermer la connexion
+    
     public void closeConnection() {
         if (connection != null) {
             try {

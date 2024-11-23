@@ -57,7 +57,7 @@ public class FormChooseTypeCourse extends JFrame {
 			public void actionPerformed(ActionEvent e) {
                try {
                     
-                    FormInscriptionCollectif frame = new FormInscriptionCollectif();
+                    FormChooseInstructor frame = new FormChooseInstructor();
                     frame.setVisible(true);
                 } catch (Exception ee) {
                     ee.printStackTrace();

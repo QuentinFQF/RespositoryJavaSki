@@ -92,13 +92,13 @@ public class FormUpdatePerson extends JFrame {
         btnUpdatePerson.setBounds(400, 140, 150, 20);
         panel.add(btnUpdatePerson);
 
-        // Création de JDateChooser pour la date de naissance (pour les Skier et Instructor)
+      
         JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setBounds(220, 181, 150, 20); // Positionner le JDateChooser
+        dateChooser.setBounds(220, 181, 150, 20); 
         panel.add(dateChooser);
-        //dateChooser.setVisible(false); // Masquer le composant par défaut
+        
 
-        // ActionListener pour le bouton "Rechercher"
+        
         btnSearchPerson.addActionListener(e -> {
             String input = tfSearchPerson.getText().trim();
             if (input.isEmpty()) {
@@ -113,42 +113,38 @@ public class FormUpdatePerson extends JFrame {
                 tfPseudo.setText(skier.getPseudo());
                 tfFirstName.setText(skier.getFirstName());
                 tfLastName.setText(skier.getName());
-                //dateChooser.setVisible(true); 
+               
                 LocalDate dateSkier = skier.getDateOfBirth();
 
                 if (dateSkier != null) {
-                    // Convertir LocalDate en java.util.Date
+                 
                     Date date = Date.from(dateSkier.atStartOfDay(ZoneId.systemDefault()).toInstant());
                     
-                    // Passer la date au JDateChooser
+                   
                     dateChooser.setDate(date);
                 }
-                instructor = null; // On s'assure qu'il ne s'agit pas d'un instructeur
+                instructor = null; 
             } else if (instructor != null) {
                 tfPseudo.setText(instructor.getPseudo());
                 tfFirstName.setText(instructor.getFirstName());
                 tfLastName.setText(instructor.getName());
-               // dateChooser.setVisible(true); // Afficher la date pour l'instructeur
-                // Si une date existe déjà, la remplir dans le JDateChooser
-                /*if (instructor.getDateOfBirth() != null) {
-                    dateChooser.setDate(instructor.getDateOfBirth());
-                }*/
+               
                 LocalDate dateInstructor = instructor.getDateOfBirth();
 
                 if (dateInstructor != null) {
-                    // Convertir LocalDate en java.util.Date
+                    
                     Date date = Date.from(dateInstructor.atStartOfDay(ZoneId.systemDefault()).toInstant());
                     
-                    // Passer la date au JDateChooser
+                   
                     dateChooser.setDate(date);
                 }
-                skier = null; // On s'assure qu'il ne s'agit pas d'un skieur
+                skier = null; 
             } else {
                 JOptionPane.showMessageDialog(contentPane, "Aucun skieur ou instructeur trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        // ActionListener pour le bouton "Modifier"
+      
         btnUpdatePerson.addActionListener(e -> {
             if (skier == null && instructor == null) {
                 JOptionPane.showMessageDialog(contentPane, "Aucun skieur ou instructeur sélectionné.", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -159,7 +155,7 @@ public class FormUpdatePerson extends JFrame {
             String firstName = tfFirstName.getText().trim();
             String lastName = tfLastName.getText().trim();
 
-            // Vérifications des champs vides et des formats
+           
             if (pseudo.isEmpty()) {
                 JOptionPane.showMessageDialog(contentPane, "Erreur : le champ 'Pseudo' ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -173,7 +169,7 @@ public class FormUpdatePerson extends JFrame {
                 return;
             }
 
-            // Vérifications des formats des champs
+            
             if (!pseudo.matches("[a-zA-Z]{1,50}")) {
                 JOptionPane.showMessageDialog(contentPane, "Erreur : le pseudo doit contenir uniquement des lettres et être de 50 caractères maximum.", "Erreur", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -187,30 +183,30 @@ public class FormUpdatePerson extends JFrame {
                 return;
             }
 
-            // Récupérer la date sélectionnée
+           
             java.util.Date selectedDate = dateChooser.getDate();
 
-            // Vérification si la date est valide
+           
             if (selectedDate == null) {
                 JOptionPane.showMessageDialog(contentPane, "Erreur : la date de naissance doit être sélectionnée.", "Erreur", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Vérification que la date n'est pas dans le futur
+           
             java.util.Date currentDate = new java.util.Date();
             if (selectedDate.after(currentDate)) {
                 JOptionPane.showMessageDialog(contentPane, "Erreur : la date de naissance ne peut pas être dans le futur.", "Erreur", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Conversion de la date en java.sql.Date pour la base de données
+         
             java.sql.Date birthDate = new java.sql.Date(selectedDate.getTime());
 
             if (skier != null) {
                 skier.setPseudo(pseudo);
                 skier.setFirstName(firstName);
                 skier.setName(lastName);
-                skier.setDateOfBirth(birthDate.toLocalDate()); // Mettre à jour la date de naissance
+                skier.setDateOfBirth(birthDate.toLocalDate()); 
 
                 if (skier.update()) {
                     JOptionPane.showMessageDialog(contentPane, "Le skieur a été modifié avec succès.", "Succès", JOptionPane.INFORMATION_MESSAGE);
@@ -221,7 +217,7 @@ public class FormUpdatePerson extends JFrame {
                 instructor.setPseudo(pseudo);
                 instructor.setFirstName(firstName);
                 instructor.setName(lastName);
-                instructor.setDateOfBirth(birthDate.toLocalDate()); // Mettre à jour la date de naissance
+                instructor.setDateOfBirth(birthDate.toLocalDate()); 
 
                 if (instructor.update()) {
                     JOptionPane.showMessageDialog(contentPane, "L'instructeur a été modifié avec succès.", "Succès", JOptionPane.INFORMATION_MESSAGE);

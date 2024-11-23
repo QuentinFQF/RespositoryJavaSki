@@ -24,26 +24,26 @@ public class DAOBooking extends DaoGeneric<Booking>{
     	super(conn);
     }
 	public boolean createWithLesson(Booking booking) {
-	    // Récupérer les informations nécessaires depuis l'objet Booking
+	    
 	    Lesson lesson = booking.getLesson();
 
-	    // Étape 1 : Créer la leçon et récupérer l'ID généré
+	    
 	    int lessonId = createLesson(lesson);
 
-	    // Vérifier si l'insertion de la leçon a échoué
+	  
 	    if (lessonId == -1) {
 	        System.err.println("Erreur lors de la création de la leçon.");
 	        return false;
 	    }
 
-	    // Associer l'ID de la leçon créée à l'objet Lesson
+	   
 	    lesson.setLessonId(lessonId);
 
-	    // Étape 2 : Créer le booking avec la leçon nouvellement créée
+	    
 	    return createBooking(booking);
 	}
 
-	// Méthode pour créer la leçon dans la base de données
+	
 	private int createLesson(Lesson lesson) {
 	    String sql = """
 	        INSERT INTO Lesson (LessonTypeId, MinBookings, MaxBookings, DayPart, CourseType, TariffId, NumberSkier,StartTime,EndTime) 
@@ -59,7 +59,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	        pstmt.setInt(8, lesson.getStart());
 	        pstmt.setInt(9, lesson.getEnd());
 
-	        // Si la leçon est de type "Collectif", on ne met pas de tarif
+	        
 	        if (lesson.getCourseType().equalsIgnoreCase("Collectif")) {
 	            pstmt.setNull(6, java.sql.Types.INTEGER);
 	        } else {
@@ -67,41 +67,41 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	            pstmt.setInt(6, lesson.getTarifId());
 	        }
 
-	        // Initialiser NumberSkier à 1
+	    
 	        pstmt.setInt(7, 1);
 
-	        // Exécution de la requête
+	        
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
-	            // Récupérer l'ID généré de la leçon
+	            
 	            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 	                if (generatedKeys.next()) {
-	                    return generatedKeys.getInt(1); // Retourne l'ID de la leçon
+	                    return generatedKeys.getInt(1); 
 	                }
 	            }
 	        }
 	    } catch (SQLException e) {
 	        System.err.println("Erreur lors de la création de la leçon : " + e.getMessage());
 	    }
-	    return -1; // Retourne -1 en cas d'échec
+	    return -1; 
 	}
 
 
-	// Méthode pour créer la réservation dans la base de données
+	
 	private boolean createBooking(Booking booking) {
-	    // Obtenez la date actuelle
+	    
 	    LocalDate currentDate = LocalDate.now();
 
-	    // Vérifiez si la date est spécifique ou correspond à la date actuelle
+	    
 	    boolean includeDateParticulier = !booking.getLesson().getDate().equals(currentDate);
 
-	    // Construire la requête SQL dynamiquement
+	    
 	    String sqlBase = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId, InstructorId, Assurance";
 	    String sqlValues = " VALUES (?, ?, ?, ?, ?, ?";
 
 	    if (includeDateParticulier) {
-	        sqlBase += ", DateParticulier"; // Ajouter la colonne si nécessaire
-	        sqlValues += ", ?";             // Ajouter le placeholder
+	        sqlBase += ", DateParticulier"; 
+	        sqlValues += ", ?";             
 	    }
 
 	    sqlBase += ")";
@@ -110,7 +110,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	    String sql = sqlBase + sqlValues;
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-	        // Paramètres obligatoires
+	        
 	        pstmt.setDate(1, java.sql.Date.valueOf(booking.getDateBooking()));
 	        pstmt.setInt(2, booking.getLesson().getId());
 	        pstmt.setInt(3, booking.getSkier().getPersonId());
@@ -118,12 +118,12 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	        pstmt.setInt(5, booking.getInstructor().getPersonId());
 	        pstmt.setBoolean(6, booking.isAssurance());
 
-	        // Ajouter DateParticulier si elle ne correspond pas à la date actuelle
+	        
 	        if (includeDateParticulier) {
 	            pstmt.setDate(7, java.sql.Date.valueOf(booking.getLesson().getDate()));
 	        }
 
-	        // Exécuter la requête
+	        
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
 	            System.out.println("Réservation créée avec succès pour la leçon ID : " + booking.getLesson().getId());
@@ -150,28 +150,27 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	}
     @Override
     public boolean create(Booking b) {
-	    // Obtenir la date du jour
-	    //LocalDate dateBooking = LocalDate.now();
+	    
 	    
 	    String sqlInsertBooking = "INSERT INTO Booking (DateBooking, LessonId, SkierId, PeriodId,DateParticulier) VALUES (?, ?, ?, ?,?)";
 	    
 	    try (PreparedStatement pstmt = connection.prepareStatement(sqlInsertBooking)) {
-	        pstmt.setDate(1, java.sql.Date.valueOf(b.getDateBooking())); // Convertit LocalDate en java.sql.Date
+	        pstmt.setDate(1, java.sql.Date.valueOf(b.getDateBooking())); 
 	        pstmt.setInt(2, b.getLesson().getId());
 	        pstmt.setInt(3, b.getSkier().getPersonId());
-	        //pstmt.setInt(4, b.getInstructor().getPersonId());
+	        
 	        pstmt.setInt(4, b.getPeriod().getId());
 	        pstmt.setDate(5, java.sql.Date.valueOf(b.getLesson().getDate()));
 
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
 	            System.out.println("Réservation créée avec succès pour la leçon ID : " + b.getLesson().getLessonId());
-	            return true; // Réservation créée avec succès
+	            return true; 
 	        }
 	    } catch (SQLException e) {
 	        System.err.println("Erreur lors de la création de la réservation : " + e.getMessage());
 	    }
-	    return false; // Échec de la création de la réservation
+	    return false; 
 	}
 	
 	
@@ -180,14 +179,14 @@ public class DAOBooking extends DaoGeneric<Booking>{
         List<Booking> bookings = new ArrayList<>();
         
         if (skierP == null) {
-            skierP = "";  // Remplacez par une chaîne vide si skierP est null
+            skierP = "";  
         }
 
         if (insP == null) {
-            insP = "";  // Remplacez par une chaîne vide si insP est null
+            insP = "";  
         }
 
-        // Requête SQL avec filtres pour rechercher par ID du skieur ou de l'instructeur
+        
         String sql = """
             SELECT 
                 b.BookingId, b.DateBooking,b.Assurance
@@ -209,21 +208,21 @@ public class DAOBooking extends DaoGeneric<Booking>{
             """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            // Définir les paramètres pour skierId et instructorId
+            
             pstmt.setObject(1, skierP);
             pstmt.setObject(2, skierP);
             pstmt.setObject(3, insP);
             pstmt.setObject(4, insP);
             
             try (ResultSet rs = pstmt.executeQuery()) {
-                // Parcourir les résultats et construire les objets Booking
+                
                 while (rs.next()) {
-                    // Récupération de la date de réservation
+                    
                     LocalDate dateBooking = rs.getDate("DateBooking").toLocalDate();
                     int id=rs.getInt("BookingId");
                     boolean a=rs.getBoolean("Assurance");
                     
-                    // Création de l'objet Skier
+                    
                     Skier skier = new Skier(
                         rs.getInt("SkierId"), 
                         rs.getString("SkierName"), 
@@ -231,7 +230,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                         rs.getString("SkierPseudo")
                     );
                     
-                    // Création de l'objet Instructor
+                   
                     Instructor instructor = new Instructor(
                         rs.getString("InstructorName"), 
                         rs.getString("InstructorFirstName"), 
@@ -239,7 +238,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                         rs.getString("InstructorPseudo")
                     );
                     
-                    // Création de l'objet LessonType
+                    
                     LessonType lessonType = new LessonType(
                         rs.getInt("LessonTypeId"), 
                         rs.getString("Levels"), 
@@ -248,7 +247,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                         rs.getString("AgeCategory")
                     );
                     
-                    // Création de l'objet Lesson
+                  
                     Lesson lesson = new Lesson(
                         rs.getInt("MinBookings"), 
                         rs.getInt("MaxBookings"),
@@ -261,7 +260,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                         rs.getInt("EndTime")
                     );
 
-                    // Création de l'objet Period
+                    
                     Period period = new Period(
                         rs.getInt("PeriodId"),
                         rs.getDate("StartDate").toLocalDate(),
@@ -269,7 +268,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
                         rs.getBoolean("IsVacation")
                     );
 
-                    // Création et ajout de l'objet Booking à la liste
+                    
                     Booking booking = new Booking(id,dateBooking, skier, period, lesson, instructor,a);
                     bookings.add(booking);
                 }
@@ -283,17 +282,17 @@ public class DAOBooking extends DaoGeneric<Booking>{
     
     @Override
     public boolean delete(Booking b) {
-        // Définir la requête SQL pour supprimer un booking
+        
         String deleteBookingSql = "DELETE FROM Booking WHERE BookingId = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(deleteBookingSql)) {
-            // Paramétrer la requête avec l'ID du booking
+           
             pstmt.setInt(1, b.getId());
 
-            // Exécuter la requête de suppression
+          
             int affectedRows = pstmt.executeUpdate();
 
-            // Si l'ID du booking a été trouvé et supprimé, affectedRows sera > 0
+           
             return affectedRows > 0;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression du booking : " + e.getMessage());

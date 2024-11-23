@@ -142,11 +142,11 @@ public class LessonType {
 	
 	public static List<LessonType> getAll() {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	        
 	        DAOLessonType daoLessonType = new DAOLessonType(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	      
 	        return daoLessonType.selectLessonTypes();
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -156,11 +156,11 @@ public class LessonType {
 	
 	public static LessonType getLesson(int id){
 		try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	       
 	        DAOLessonType daoLessonType  = new DAOLessonType (connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	       
 	        return daoLessonType.find(id);
 	    } catch (Exception e) {
 	        e.printStackTrace();

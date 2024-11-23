@@ -62,17 +62,17 @@ public class FormInstructor extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 799, 546);
         
-        // Création de la connexion partagée
+        
         
             sharedConnection = DatabaseConnection.getInstance().getConnection();
             sharedConnection2 = DatabaseConnection.getInstance().getConnection();
         
 
-        // Initialisation des DAO avec la connexion partagée
+        
         daoInstructor = new DAOInstructor(sharedConnection);
         daoAccreditation = new DAOAccreditation(sharedConnection);
         daoInstructor2 = new DAOInstructor(sharedConnection2);
-        //daoSkier = new DAOSkier(sharedConnection);
+       
 
         contentPane = new JPanel();
         contentPane.setBorder(new TitledBorder(null, "Inscription moniteur", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -122,14 +122,7 @@ public class FormInstructor extends JFrame {
                     return;
                 }
                 
-                // Vérifiez si la date choisie est valide
-                /*LocalDate dob = null;
-                if (dateChooser.getDate() != null) {
-                    dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                } else {
-                    JOptionPane.showMessageDialog(FormInstructor.this, "Veuillez sélectionner une date de naissance valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }*/
+                
                 Date date = dateChooser.getDate();
 		        if (date == null) {
 		            System.out.println("Erreur : la date de naissance ne peut pas être vide.");
@@ -139,7 +132,7 @@ public class FormInstructor extends JFrame {
 
 		        LocalDate dob = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-		        // Vérification que la date est dans le passé
+		        
 		        if (dob.isAfter(LocalDate.now())) {
 		            System.out.println("Erreur : la date de naissance doit être dans le passé.");
 		            JOptionPane.showMessageDialog(null, "Erreur : la date de naissance doit être dans le passé.");
@@ -147,7 +140,7 @@ public class FormInstructor extends JFrame {
 		        }
 		        
 
-                //String selectedAccreditation = (String) comboAccreditation.getSelectedItem();
+               
                 Accreditation selected = (Accreditation) comboAccreditation.getSelectedItem();
                 if (selected == null) 
                 { 
@@ -162,15 +155,9 @@ public class FormInstructor extends JFrame {
                 System.out.println("Accréditation sélectionnée: " + selected);
                 System.out.println(instructor.toString());
                 
-                //boolean success = daoInstructor.create(instructor);
-                //int success = daoInstructor.insertInstructor(instructor);
+                
                 boolean success = instructor.save();
-                //int id=daoAccreditation.selectId(selectedAccreditation);
-                //int id=Accreditation.selectId(selectedAccreditation);
-                //boolean success2=daoInstructor.insertAcc_Instructor(success,id);
-                //boolean success2=instructor.saveAccIns(success,id);
-                //daoInstructor.testConnection();
-                //System.out.println("id acc :"+id);
+                
                 if (success) {
                 	JOptionPane.showMessageDialog(null, "ins et acc réussi !");
                 } else {
@@ -229,32 +216,22 @@ public class FormInstructor extends JFrame {
         contentPane.add(lblNewLabel_4);
     }
 
-    /*private void fillAccreditationComboBox() {
-        System.out.println("Début du remplissage du JComboBox avec les accréditations.");
-        try {
-            List<String> accreditationNames = daoAccreditation.selectNames();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(accreditationNames.toArray(new String[0]));
-            comboAccreditation.setModel(model);
-            System.out.println("Accréditations chargées : " + accreditationNames);
-        } catch (Exception e) {
-            System.err.println("Erreur lors du remplissage du JComboBox : " + e.getMessage());
-        }
-    }*/
+    
     private void fillAccreditationComboBox() {
         System.out.println("Début du remplissage du JComboBox avec les accréditations.");
         try {
-            // Récupérer la liste des accréditations depuis la DAO
+           
             List<Accreditation> accreditations = Accreditation.getAll();
 
-            // Créer un modèle pour le JComboBox
+            
             DefaultComboBoxModel<Accreditation> model = new DefaultComboBoxModel<>();
 
-            // Ajouter chaque accréditation au modèle
+            
             for (Accreditation accreditation : accreditations) {
                 model.addElement(accreditation);
             }
 
-            // Mettre à jour le JComboBox avec le nouveau modèle
+            
             comboAccreditation.setModel(model);
             
             System.out.println("Accréditations chargées avec succès : " + accreditations);

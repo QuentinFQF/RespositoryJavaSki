@@ -61,12 +61,12 @@ public class Lesson {
 	    this.id = id;
 	    this.start = s;
 	    this.end = e;
-	    this.date = d; // Assign the date here
+	    this.date = d;
 	}
 
-	// Overloaded constructor with a default date
+	
 	public Lesson(int min, int max, Instructor ins, LessonType lt, String day, String course, int tId, int id, int s, int e) {
-	    this(min, max, ins, lt, day, course, tId, id, s, e, LocalDate.now()); // Default to today's date
+	    this(min, max, ins, lt, day, course, tId, id, s, e, LocalDate.now()); 
 	}
 
 	public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int s,int e) {
@@ -234,7 +234,7 @@ public class Lesson {
 	    int startHour;
 	    int endHour;
 
-	    // Déterminer les heures de début et de fin selon le créneau horaire
+	   
 	    if ("Matin".equalsIgnoreCase(timeSlot)) {
 	        startHour = 9;
 	        endHour = 12;
@@ -245,7 +245,7 @@ public class Lesson {
 	        throw new IllegalArgumentException("Créneau horaire non reconnu : " + timeSlot);
 	    }
 
-	    // Retourner un tableau avec les valeurs de startHour et endHour
+	   
 	    return new int[]{startHour, endHour};
 	}
 	public int getDurationInHours(String timeSlot) {
@@ -261,11 +261,11 @@ public class Lesson {
 	
 	public static Lesson getLesson(int id){
 		try {
-	        // Récupération de la connexion
+	       
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	      
 	        DAOLesson daoLesson  = new DAOLesson (connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	
 	        return daoLesson.find(id);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -274,11 +274,11 @@ public class Lesson {
 	}
 	public static int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings){
 		try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	        
 	        DAOLesson daoLesson  = new DAOLesson (connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	       
 	        return daoLesson.getLessonId(instructorId,lessonTypeId,dayPart,courseType,minBookings,maxBookings);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -287,11 +287,11 @@ public class Lesson {
 	}
 	public static boolean isComplete(int id){
 		try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	        
 	        DAOLesson daoLesson  = new DAOLesson (connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	     
 	        return daoLesson.isLessonComplete(id);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -300,11 +300,11 @@ public class Lesson {
 	}
 	public boolean save() {
 	    try {
-	        // Récupération de la connexion
+	        
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	       
 	        DAOLesson daoLesson = new DAOLesson(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	     
 	        return daoLesson.create(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -313,11 +313,11 @@ public class Lesson {
 	}
 	public boolean update() {
 	    try {
-	        // Récupération de la connexion
+	       
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	        
 	        DAOLesson daoLesson = new DAOLesson(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	       
 	        return daoLesson.update(this);
 	    } catch (Exception e) {
 	        e.printStackTrace();

@@ -33,21 +33,21 @@ public class DAOPeriod extends DaoGeneric<Period>{
     public Period find(int id) {
         Period period = null;
 
-        // Requête SQL pour récupérer une période
+        
         String sql = "SELECT PeriodId, StartDate, EndDate, IsVacation " +
                      "FROM Period " +
                      "WHERE PeriodId = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id); // Définir le paramètre ID
+            stmt.setInt(1, id); 
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Création de l'objet `Period`
+                    
                     period = new Period(
                         rs.getInt("PeriodId"),
-                        rs.getDate("StartDate").toLocalDate(), // Conversion de Date SQL à LocalDate
-                        rs.getDate("EndDate").toLocalDate(),   // Conversion de Date SQL à LocalDate
+                        rs.getDate("StartDate").toLocalDate(), 
+                        rs.getDate("EndDate").toLocalDate(),   
                         rs.getBoolean("IsVacation")
                     );
                 }
@@ -63,33 +63,13 @@ public class DAOPeriod extends DaoGeneric<Period>{
     public boolean create(Period obj){
     	return false;
     }
-    /*public List<Period> getAllPeriods() {
-        List<Period> periods = new ArrayList<>();
-        String sql = "SELECT PeriodId, StartDate, EndDate, IsVacation FROM Period";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-
-            while (resultSet.next()) {
-                int periodId = resultSet.getInt("PeriodId");
-                LocalDate startDate = resultSet.getDate("StartDate").toLocalDate();
-                LocalDate endDate = resultSet.getDate("EndDate").toLocalDate();
-                boolean isVacation = resultSet.getBoolean("IsVacation");
-
-                periods.add(new Period(periodId, startDate, endDate, isVacation));
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des périodes : " + e.getMessage());
-        }
-
-        return periods;
-    }*/
+    
     
     public List<Period> getAllPeriods() {
         List<Period> periods = new ArrayList<>();
         String sql = "SELECT PeriodId,StartDate, EndDate, IsVacation FROM Period";
 
-        // Format de la date à ajuster selon le format de votre base de données
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
         try (Statement statement = connection.createStatement();
@@ -101,7 +81,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
                 boolean isVacation = resultSet.getBoolean("IsVacation");
                 int id=resultSet.getInt("PeriodId");
 
-                // Parsing des dates
+                
                 String startDateString = resultSet.getString("StartDate");
                 String endDateString = resultSet.getString("EndDate");
 
@@ -121,7 +101,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
                     }
                 }
 
-                // Création de l'objet Period
+                
                 Period period = new Period(id,startDate, endDate, isVacation);
                 periods.add(period);
             }
@@ -132,10 +112,10 @@ public class DAOPeriod extends DaoGeneric<Period>{
     }
     
     public int getPeriodIdBy(LocalDate sd, LocalDate ed) {
-        String sql = "SELECT PeriodId FROM Period WHERE StartDate = ? AND EndDate = ?"; // Assurez-vous que les noms des colonnes sont corrects
+        String sql = "SELECT PeriodId FROM Period WHERE StartDate = ? AND EndDate = ?"; 
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            // Convertir LocalDate en java.sql.Date pour l'utilisation dans la base de données
+           
             preparedStatement.setDate(1, java.sql.Date.valueOf(sd));
             preparedStatement.setDate(2, java.sql.Date.valueOf(ed));
             
@@ -148,7 +128,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
             System.err.println("Erreur lors de la récupération de l'ID de la période : " + e.getMessage());
         }
 
-        // Retourne -1 si aucune période correspondante n'est trouvée ou en cas d'erreur
+        
         return -1;
     }
 
@@ -158,7 +138,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             
-            stmt.setDate(1, java.sql.Date.valueOf(dateToCheck)); // Convertir LocalDate en java.sql.Date
+            stmt.setDate(1, java.sql.Date.valueOf(dateToCheck)); 
             
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -169,7 +149,7 @@ public class DAOPeriod extends DaoGeneric<Period>{
             e.printStackTrace();
         }
         
-        // Si la date ne correspond à aucune période, retourner false
+        
         return false;
     }
 

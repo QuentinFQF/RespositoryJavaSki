@@ -297,8 +297,13 @@ public class FormChooseInstructor extends JFrame {
     	            if (idLesson == -1) {
     	        
     	            	Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
-                		Booking booking = new Booking(dateBooking, s, p, lesson3, i,isChecked);
+    	            	Period period=Period.find(selectedPeriodId);
+                		Booking booking = new Booking(dateBooking, s, period, lesson3, i,isChecked);
 
+                		if(booking.isDateBeforeToday()) {
+                			JOptionPane.showMessageDialog(null, "vous ne pouvez pas reserver pour une date expiré");
+                			return;
+                		}
                 		//booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
     	            } else {
@@ -385,14 +390,14 @@ public class FormChooseInstructor extends JFrame {
 
 
     private void updateInstructorsForLessonType(int id) {
-        //System.out.println("Mise à jour des instructeurs pour le LessonType : " + category + ", " + targetAudience);
+        
         try {
-            //List<Instructor> instructors = daoInstructor.getInstructorsByLessonType(category, targetAudience);
+       
         	List<Instructor> instructors = Instructor.getAllInstructorsWithAAndLTWithId(id);
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Instructor instructor : instructors) {
-                //String displayText = instructor.getName() + " " + instructor.getFirstName();
+        
                 String displayText = instructor.getName() + " " + instructor.getFirstName() + " (" + instructor.getPseudo() + ")";
 
                 model.addElement(displayText);
@@ -416,11 +421,11 @@ public class FormChooseInstructor extends JFrame {
     private void fillLessonTypeComboBox() {
         System.out.println("Début du remplissage du JComboBox avec les LessonTypes.");
         try {
-            //List<String> lessonTypes = daoLessonType.selectLessonType();
+        
         	List<LessonType> lessonTypes = LessonType.getAll();
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
             for (LessonType lessonType : lessonTypes) {
-                //String displayText = instructor.getName() + " " + instructor.getFirstName();
+        
                 String displayText = lessonType.getLevel() + " " + lessonType.getPrice() + " " + lessonType.getAccreditation().getSport() + " "+lessonType.getAccreditation().getAgeCategory() ;
 
                 model.addElement(displayText);
@@ -477,11 +482,18 @@ public class FormChooseInstructor extends JFrame {
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
 
             for (Period period : periods) {
-             
-                String displayText = period.getStartDate() + " " + period.getEndDate() + " (" + period.isVacation() + ")";
+            
+            	if(period.getStartDate() != null) {
+            		String displayText = period.getStartDate() + " " + period.getEndDate() + " (" 
+                            + (period.isVacation() ? "vacance" : "hors congé") + ")";
 
-                model.addElement(displayText);
-                periodIdMap.put(displayText, period.getId());
+            		model.addElement(displayText);
+                    periodIdMap.put(displayText, period.getId());
+            	}
+             
+                
+
+                
             }
 
             comboPeriod.setModel(model);

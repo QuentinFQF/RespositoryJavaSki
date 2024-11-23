@@ -178,23 +178,23 @@ public class Booking {
 	public double calculatePrice(Period period,String timeSlot) {
 	    double basePrice = 0.0;
 
-	    // Vérifier que les données nécessaires existent
+	    
 	    if (this.getLesson() != null && this.getLesson().getLessonType() != null) {
-	        // Récupérer le prix de base depuis le type de leçon
+	        
 	        basePrice = this.getLesson().getLessonType().getPrice();
 
-	        // Calcul pour les cours particuliers
+	        
 	        if (this.getLesson().getCourseType().equalsIgnoreCase("Particulier")) {
 	            basePrice = (this.getLesson().getTarifId() == 1) ? 60 : 90;
 	        } 
-	        // Calcul pour les cours collectifs
+	       
 	        else if (this.getLesson().getCourseType().equalsIgnoreCase("Collectif")) {
-	            // Si assurance est activée, appliquer une réduction de 20 %
+	            
 	            if (this.isAssurance()) {
 	                basePrice *= 0.8;
 	            }
 	            System.out.println("cal : "+this.getSkier().getPersonId());
-		        // Vérifier si le skieur a des réservations matin et après-midi dans la même période
+		        
 		        if (this.getSkier() != null 
 		            && this.getPeriod() != null 
 		            && this.getLesson() != null 
@@ -202,7 +202,7 @@ public class Booking {
 		            boolean hasBothSlots = this.getSkier().hasMorningAndAfternoonBookings(
 		                period,timeSlot
 		            );
-		            // Si oui, appliquer une réduction de 15 %
+		            
 		            if (hasBothSlots) {
 		                basePrice *= 0.85;
 		            }
@@ -214,9 +214,21 @@ public class Booking {
 	        
 	    }
 
-	    // Retourner 0 si les données nécessaires ne sont pas disponibles
+	    
 	    return 0.0;
 	}
+	
+    public boolean isDateBeforeToday() {
+    	LocalDate today = /*LocalDate.now()*/LocalDate.of(2024, 12, 12);
+		if(this.getLesson().getCourseType().equals("Particulier")) {
+			return this.getLesson().getDate().isBefore(today);
+		}else {
+			return this.getPeriod().getStartDate().isBefore(today);
+		}
+	}
+	
+	
+	
 
 
 	

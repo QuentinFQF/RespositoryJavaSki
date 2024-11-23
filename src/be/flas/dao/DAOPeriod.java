@@ -152,5 +152,26 @@ public class DAOPeriod extends DaoGeneric<Period>{
         return -1;
     }
 
+    
+    public boolean isDateInVacationPeriod(LocalDate dateToCheck) {
+        String sql = "SELECT IsVacation FROM Period WHERE ? BETWEEN StartDate AND EndDate";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            
+            stmt.setDate(1, java.sql.Date.valueOf(dateToCheck)); // Convertir LocalDate en java.sql.Date
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean("IsVacation");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        // Si la date ne correspond à aucune période, retourner false
+        return false;
+    }
+
 
 }

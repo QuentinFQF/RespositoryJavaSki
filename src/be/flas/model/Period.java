@@ -92,17 +92,68 @@ public class Period {
 	
 	public static List<Period> getAll() {
 	    try {
-	        // Récupération de la connexion
+	      
 	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        // Création de l'instance DAO pour l'enregistrement
+	      
 	        DAOPeriod daoPeriod = new DAOPeriod(connection);
-	        // Utilisation de 'this' pour passer l'objet courant à la méthode create
+	
 	        return daoPeriod.getAllPeriods();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return new ArrayList<>();
 	    }
 	}
+	
+	public boolean isDateInVacationPeriod(LocalDate d) {
+	    try {
+	      
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	      
+	        DAOPeriod daoPeriod = new DAOPeriod(connection);
+	  
+	        return daoPeriod.isDateInVacationPeriod(d);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	
+	public boolean isBookingAllowed(LocalDate bookingDate, LocalDate today, boolean isVacation) {
+	    LocalDate allowedBookingDate;
+
+	    if (isVacation) {
+	       
+	        allowedBookingDate = today.plusWeeks(1);
+	    } else {
+	       
+	        allowedBookingDate = today.plusMonths(1);
+	    }
+
+	    return !bookingDate.isAfter(allowedBookingDate) && !bookingDate.isBefore(today);
+	}
+	
+	
+	public static Period find(int id) {
+	    try {
+	      
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	      
+	        DAOPeriod daoPeriod = new DAOPeriod(connection);
+	
+	        return daoPeriod.find(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	
+
+
+
+
+	
+	
+
 	
 
 }

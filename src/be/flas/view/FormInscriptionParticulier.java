@@ -676,7 +676,24 @@ public class FormInscriptionParticulier extends JFrame {
                 	Instructor instructor = Instructor.find(selectedInstructorId);
                 	Skier skier = Skier.find(selectedSkierId);
 
+                	
+                	
+                	
                 	int idLesson = instructor.getLessonIdForDate(selectedLessonTypeId, timeSlot, "Particulier", minMax[0], minMax[1],parsedDate);
+                	
+                	boolean b= p.isDateInVacationPeriod(parsedDate);
+                	System.out.println("vac "+b);
+                	System.out.println(" pda "+parsedDate+" db "+ dateBooking);
+                	LocalDate today = LocalDate.of(2024, 12, 17);
+                	boolean dateIsOk=p.isBookingAllowed(parsedDate, today/*dateBooking*/,b);
+                	System.out.println("ok ? "+dateIsOk);
+                	
+                	
+                	//System.out.println(p.isBookingAllowed(bookingDate, today, isVacation));
+                	/*if(!dateIsOk) {
+                		JOptionPane.showMessageDialog(null, "impossible de faire la reservation maintenant", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                	}*/
                 	
                 	if (skier.isSkierInLesson(selectedSkierId,parsedDate)) {
                     	JOptionPane.showMessageDialog(null, "Le skieur est déjà inscrit à cette period", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
@@ -706,7 +723,12 @@ public class FormInscriptionParticulier extends JFrame {
 
                 		// Créer la réservation
                 		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
-                		booking.save();
+                		//booking.save();
+                		if(booking.isDateBeforeToday()) {
+                			JOptionPane.showMessageDialog(null, "vous ne pouvez pas reserver pour une date expiré");
+                			return;
+                		}
+                		
                 		JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
     	            } else {
     	                

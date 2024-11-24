@@ -115,17 +115,6 @@ public class FormSkier extends JFrame {
 		lblNewLabel_3.setBounds(73, 159, 45, 13);
 		panel.add(lblNewLabel_3);
 		
-		
-		
-		
-		JCheckBox Assurance = new JCheckBox("");
-		Assurance.setBounds(191, 191, 27, 21);
-		panel.add(Assurance);
-		
-		JLabel lblNewLabel_4 = new JLabel("Assurance");
-		lblNewLabel_4.setBounds(73, 195, 45, 13);
-		panel.add(lblNewLabel_4);
-		
 		JButton btnNewButton_1 = new JButton("Retour");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -149,7 +138,7 @@ public class FormSkier extends JFrame {
 		        String prenom = Prenom.getText().trim();
 		        String pseudo = Pseudo.getText().trim();
 		
-		        boolean assuranceSelected = Assurance.isSelected();
+		        
 
 		      
 		        if (nom.isEmpty()) {

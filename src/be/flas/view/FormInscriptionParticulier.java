@@ -97,6 +97,22 @@ public class FormInscriptionParticulier extends JFrame {
         panel.setBounds(213, 10, 462, 474);
         contentPane.add(panel);
         panel.setLayout(null);
+        
+        JButton btnNewButton_1 = new JButton("Retour");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			
+                try {
+                    
+                    FormStart frame = new FormStart();
+                    frame.setVisible(true);
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
+			}
+		});
+		btnNewButton_1.setBounds(20, 442, 85, 21);
+		panel.add(btnNewButton_1);
 
         comboInstructor = new JComboBox<>();
         comboInstructor.setBounds(149, 200, 161, 21);

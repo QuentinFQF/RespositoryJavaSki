@@ -43,6 +43,7 @@ public class FromAddAccInstructor extends JFrame {
    
     private Map<String, Integer> instructorIdMap = new HashMap<>();
     private Map<String, Integer> accreditationIdMap = new HashMap<>();
+    private JButton btnNewButton;
 
     /**
      * Launch the application.
@@ -86,9 +87,29 @@ public class FromAddAccInstructor extends JFrame {
         comboAccreditation.setBounds(41, 227, 283, 21);
         panel.add(comboAccreditation);
         
+        
+        
+        
         JButton AddAccIns = new JButton("ajouter accréditation");
         AddAccIns.setBounds(161, 341, 163, 21);
         panel.add(AddAccIns);
+        
+        btnNewButton = new JButton("Retour");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			
+                try {
+                    
+                    FormStart frame = new FormStart();
+                    frame.setVisible(true);
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
+			}
+		});
+		
+        btnNewButton.setBounds(40, 341, 85, 21);
+        panel.add(btnNewButton);
 
        
         listInstructors();

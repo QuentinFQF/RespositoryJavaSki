@@ -2,6 +2,7 @@ package be.flas.dao;
 
 import be.flas.connection.DatabaseConnection;
 
+
 import be.flas.interfaces.DaoGeneric;
 
 import be.flas.model.Booking;
@@ -365,6 +366,40 @@ public class DAOSkier extends DaoGeneric<Skier> {
         }
         return null; 
     }
+    
+    public boolean isPseudoExists(String pseudo) {
+        String skierQuery = "SELECT Pseudo FROM Skier WHERE Pseudo = ?";
+        String instructorQuery = "SELECT Pseudo FROM Instructor WHERE Pseudo = ?";
+
+        try (
+            PreparedStatement skierStmt = connection.prepareStatement(skierQuery);
+            PreparedStatement instructorStmt = connection.prepareStatement(instructorQuery)
+        ) {
+            
+            skierStmt.setString(1, pseudo);
+            try (ResultSet rs = skierStmt.executeQuery()) {
+                if (rs.next()) {
+                    return true; 
+                }
+            }
+
+            
+            instructorStmt.setString(1, pseudo);
+            try (ResultSet rs = instructorStmt.executeQuery()) {
+                if (rs.next()) {
+                    return true; 
+                }
+            }
+
+            
+            return false;
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la vérification du pseudo : " + ex.getMessage());
+            return false; 
+        }
+    }
+
 
     
 }

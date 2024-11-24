@@ -1,13 +1,14 @@
 package be.flas.model;
 
 import java.sql.Connection;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOSkier;
+
 
 public class Instructor extends Person {
 	

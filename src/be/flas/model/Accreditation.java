@@ -1,12 +1,13 @@
 package be.flas.model;
 
 import java.sql.Connection;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.dao.DAOAccreditation;
-import be.flas.dao.DAOInstructor;
+
 
 public class Accreditation {
 
@@ -107,7 +108,7 @@ public class Accreditation {
 		}
 	}
 	public void AddInstructor(Instructor i) {
-		if(i != null && !lessonTypes.contains(i)) {
+		if(i != null && !instructors.contains(i)) {
 			instructors.add(i);
 		}else{
 			throw new IllegalArgumentException("Invalid LessonType: cannot be null or already present.");

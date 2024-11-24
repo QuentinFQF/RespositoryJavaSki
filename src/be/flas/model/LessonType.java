@@ -1,14 +1,15 @@
 package be.flas.model;
 
 import java.sql.Connection;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOLesson;
+
 import be.flas.dao.DAOLessonType;
-import be.flas.dao.DAOSkier;
+
 
 public class LessonType {
 

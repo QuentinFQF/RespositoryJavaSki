@@ -170,6 +170,11 @@ public class FormSkier extends JFrame {
 		            JOptionPane.showMessageDialog(null, "Erreur : le pseudo doit contenir uniquement des lettres et être de 50 caractères maximum.");
 		            return;
 		        }
+		        
+		        if(Skier.isPseudoExists(pseudo)) {
+		        	JOptionPane.showMessageDialog(null, "Erreur : le pseudo existe déja.");
+		            return;
+		        }
 
 		   
 		        Date date = dateChooser.getDate();

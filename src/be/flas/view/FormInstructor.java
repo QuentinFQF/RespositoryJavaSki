@@ -26,6 +26,7 @@ import java.util.List;
 
 import be.flas.model.Accreditation;
 import be.flas.model.Instructor;
+import be.flas.model.Skier;
 
 public class FormInstructor extends JFrame {
 
@@ -113,6 +114,11 @@ public class FormInstructor extends JFrame {
                     JOptionPane.showMessageDialog(FormInstructor.this, "Erreur : le pseudo doit contenir uniquement des lettres et être de 50 caractères maximum.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
+                if(Skier.isPseudoExists(pseudo)) {
+		        	JOptionPane.showMessageDialog(null, "Erreur : le pseudo existe déja.");
+		            return;
+		        }
                 
                 
                 Date date = dateChooser.getDate();

@@ -1,13 +1,13 @@
 package be.flas.model;
 
 import java.sql.Connection;
+
 import java.time.LocalDate;
 import java.util.List;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.dao.DAOBooking;
-import be.flas.dao.DAOLesson;
-import be.flas.dao.DAOSkier;
+
 
 public class Booking {
 

@@ -199,8 +199,7 @@ public class Skier extends Person{
 	}
 	
 	public boolean hasMorningAndAfternoonBookings(Period period,String timeSlot) {
-	    boolean hasMorning = false;
-	    boolean hasAfternoon = false;
+	    
 
 	   
 	    for (Booking booking : this.getBookings()) {
@@ -216,6 +215,20 @@ public class Skier extends Person{
 	    }
 
 	    return false;
+	}
+	
+	public static boolean isPseudoExists(String pseudo) {
+	    try {
+	        
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	      
+	        DAOSkier daoSkier = new DAOSkier(connection);
+	
+	        return daoSkier.isPseudoExists(pseudo);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
 

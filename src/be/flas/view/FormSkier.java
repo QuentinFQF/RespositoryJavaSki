@@ -4,28 +4,25 @@ import java.awt.EventQueue;
 
 
 
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOAccreditation;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOLessonType;
-import be.flas.dao.DAOSkier;
+
 import be.flas.model.Skier;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -37,8 +34,8 @@ public class FormSkier extends JFrame {
 	private JTextField Prenom;
 	private JTextField Nom;
 	private JTextField Pseudo;
-	private DAOSkier daoSkier;
-    private Connection sharedConnection;
+
+    
 	
 	
 	private JDateChooser dateChooser;
@@ -63,8 +60,8 @@ public class FormSkier extends JFrame {
 	 * Create the frame.
 	 */
 	public FormSkier() {
-		sharedConnection = DatabaseConnection.getInstance().getConnection();
-        daoSkier = new DAOSkier(sharedConnection);
+		
+        
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 795, 539);
 		contentPane = new JPanel();

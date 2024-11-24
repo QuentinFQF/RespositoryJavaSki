@@ -1,6 +1,7 @@
 package be.flas.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoPeriod;
-import be.flas.model.Accreditation;
-import be.flas.model.Instructor;
+
+
 import be.flas.model.Period;
 
 public class DAOPeriod extends DaoGeneric<Period>{

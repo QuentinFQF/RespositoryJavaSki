@@ -2,6 +2,7 @@ package be.flas.dao;
 
 import java.sql.Connection;
 
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +10,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoLesson;
+
 import be.flas.model.Accreditation;
 import be.flas.model.Booking;
 import be.flas.model.Instructor;

@@ -1,9 +1,9 @@
 package be.flas.dao;
 
 import be.flas.connection.DatabaseConnection;
+
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoClasse;
-import be.flas.interfaces.IDaoSkier;
+
 import be.flas.model.Booking;
 import be.flas.model.Lesson;
 import be.flas.model.LessonType;

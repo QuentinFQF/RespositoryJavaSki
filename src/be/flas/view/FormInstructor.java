@@ -1,6 +1,7 @@
 package be.flas.view;
 
 import java.awt.EventQueue;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import javax.swing.JFrame;
@@ -17,14 +18,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.Date;
 import java.util.List;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOSkier;
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOAccreditation;
+
+
+
 import be.flas.model.Accreditation;
 import be.flas.model.Instructor;
 
@@ -37,12 +36,9 @@ public class FormInstructor extends JFrame {
     private JTextField txPseudo;
     private JComboBox<Accreditation> comboAccreditation;
     
-    private Connection sharedConnection;
-    private DAOInstructor daoInstructor;
-    private DAOAccreditation daoAccreditation;
-    private DAOSkier daoSkier;
-    private DAOInstructor daoInstructor2;
-    private Connection sharedConnection2;
+    
+  
+    
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -64,14 +60,10 @@ public class FormInstructor extends JFrame {
         
         
         
-            sharedConnection = DatabaseConnection.getInstance().getConnection();
-            sharedConnection2 = DatabaseConnection.getInstance().getConnection();
         
 
         
-        daoInstructor = new DAOInstructor(sharedConnection);
-        daoAccreditation = new DAOAccreditation(sharedConnection);
-        daoInstructor2 = new DAOInstructor(sharedConnection2);
+        
        
 
         contentPane = new JPanel();
@@ -249,15 +241,5 @@ public class FormInstructor extends JFrame {
     
 
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        try {
-            if (sharedConnection != null) {
-                sharedConnection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }

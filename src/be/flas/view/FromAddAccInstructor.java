@@ -6,6 +6,7 @@
 package be.flas.view;
 
 import java.awt.EventQueue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +20,12 @@ import javax.swing.border.EmptyBorder;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+
 
 import be.flas.model.Accreditation;
-import be.flas.model.Booking;
+
 import be.flas.model.Instructor;
-import be.flas.model.Lesson;
-import be.flas.model.LessonType;
-import be.flas.model.Period;
-import be.flas.model.Skier;
+
 
 import java.awt.Color;
 import javax.swing.JButton;

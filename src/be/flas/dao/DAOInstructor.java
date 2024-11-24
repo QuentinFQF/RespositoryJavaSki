@@ -1,6 +1,7 @@
 package be.flas.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoClasse;
+
 import be.flas.model.Accreditation;
 import be.flas.model.Booking;
 import be.flas.model.Instructor;

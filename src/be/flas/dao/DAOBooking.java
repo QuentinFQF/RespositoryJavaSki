@@ -1,6 +1,7 @@
 package be.flas.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoBooking;
+
 import be.flas.model.Booking;
 import be.flas.model.Instructor;
 import be.flas.model.Lesson;

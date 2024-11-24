@@ -41,22 +41,15 @@ public class FormInscriptionParticulier extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
-    private DAOInstructor daoInstructor;
-    private DAOLessonType daoLessonType;
-    private DAOSkier daoSkier;
-    private DAOLesson daoLesson;
-    private DAOPeriod daoPeriod;
+   
     
-    private DAOBooking daoBooking;
-    private Connection sharedConnection;
     private JComboBox<String> comboInstructor;
     private JComboBox<String> comboLessonType;
-    private JComboBox<String> comboSemaine; 
+    
     private JComboBox<String> comboSkier;
     private JComboBox<String> comboPeriod;
     private ButtonGroup buttonGroup; // Sélecteur de semaine
-    private JComboBox comboBox;
-    private JComboBox comboBox_1;
+    
     private Map<String, Integer> lessonTypeIdMap = new HashMap<>();
     private Map<String, Integer> skierIdMap = new HashMap<>();
     private Map<String, Integer> instructorIdMap = new HashMap<>();
@@ -76,13 +69,8 @@ public class FormInscriptionParticulier extends JFrame {
     }
 
     public FormInscriptionParticulier() {
-        sharedConnection = DatabaseConnection.getInstance().getConnection();
-        daoInstructor = new DAOInstructor(sharedConnection);
-        daoLessonType = new DAOLessonType(sharedConnection);
-        daoSkier = new DAOSkier(sharedConnection);
-        daoLesson = new DAOLesson(sharedConnection);
-        daoPeriod = new DAOPeriod(sharedConnection);
-        daoBooking = new DAOBooking(sharedConnection);
+        
+        
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 757, 550);

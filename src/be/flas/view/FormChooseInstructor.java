@@ -6,9 +6,10 @@ import java.awt.*;
 
 
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
@@ -19,13 +20,7 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOBooking;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOLesson;
-import be.flas.dao.DAOLessonType;
-import be.flas.dao.DAOPeriod;
-import be.flas.dao.DAOSkier;
+
 import be.flas.model.Booking;
 import be.flas.model.Instructor;
 import be.flas.model.Lesson;
@@ -39,14 +34,9 @@ public class FormChooseInstructor extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
-    private DAOInstructor daoInstructor;
-    private DAOLessonType daoLessonType;
-    private DAOSkier daoSkier;
-    private DAOLesson daoLesson;
-    private DAOPeriod daoPeriod;
     
-    private DAOBooking daoBooking;
-    private Connection sharedConnection;
+    
+    
     private JComboBox<String> comboInstructor;
     private JComboBox<String> comboLessonType;
     private JComboBox<String> comboSemaine; 
@@ -74,13 +64,9 @@ public class FormChooseInstructor extends JFrame {
     }
 
     public FormChooseInstructor() {
-        sharedConnection = DatabaseConnection.getInstance().getConnection();
-        daoInstructor = new DAOInstructor(sharedConnection);
-        daoLessonType = new DAOLessonType(sharedConnection);
-        daoSkier = new DAOSkier(sharedConnection);
-        daoLesson = new DAOLesson(sharedConnection);
-        daoPeriod = new DAOPeriod(sharedConnection);
-        daoBooking = new DAOBooking(sharedConnection);
+        
+        
+       
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 757, 550);

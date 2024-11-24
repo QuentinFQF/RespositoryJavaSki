@@ -3,6 +3,7 @@ package be.flas.dao;
 import java.sql.Connection;
 
 
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,11 +15,10 @@ import java.util.Map;
 
 import be.flas.connection.DatabaseConnection;
 import be.flas.interfaces.DaoGeneric;
-import be.flas.interfaces.IDaoAccreditation;
-import be.flas.interfaces.IDaoClasse;
+
 import be.flas.model.Accreditation;
 import be.flas.model.LessonType;
-import be.flas.model.Skier;
+
 
 
 public class DAOAccreditation extends DaoGeneric<Accreditation> {

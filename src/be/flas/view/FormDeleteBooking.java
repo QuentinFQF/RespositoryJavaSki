@@ -1,6 +1,7 @@
 package be.flas.view;
 
 import java.awt.EventQueue;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import be.flas.model.Booking;
-import be.flas.model.Skier;
-import be.flas.model.Instructor;
+
 
 public class FormDeleteBooking extends JFrame {
 

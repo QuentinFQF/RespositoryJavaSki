@@ -1,6 +1,7 @@
 package be.flas.view;
 
 import java.awt.Color;
+
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +11,7 @@ import java.util.Date;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
+
 
 import be.flas.model.Skier;
 import be.flas.model.Instructor;
@@ -18,11 +19,10 @@ import com.toedter.calendar.JDateChooser;
 
 public class FormUpdatePerson extends JFrame {
 
+	private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField tfSearchPerson, tfPseudo, tfFirstName, tfLastName;
-    private JTable tablePerson;
-    private DefaultTableModel tableModel;
-    private JButton btnUpdatePerson;
+    
     private Skier skier = null;
     private Instructor instructor = null;
 

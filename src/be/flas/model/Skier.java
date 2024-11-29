@@ -19,10 +19,12 @@ public class Skier extends Person{
 		this.bookings=new ArrayList<>();
 		
 	}
+	//peut sup^priemr
 	public Skier(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo,boolean assurance) {
 		super(name,firstName,personId,dateOfBirth,pseudo);
 		this.assurance=assurance;
 	}
+	//peut supprimer
 	public Skier(String name,String firstName,LocalDate dateOfBirth,String pseudo,boolean assurance) {
 		super(name,firstName,dateOfBirth,pseudo);
 		this.assurance=assurance;

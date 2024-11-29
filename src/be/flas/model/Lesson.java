@@ -259,7 +259,7 @@ public class Lesson {
 	    }
 	}
 
-	
+	//utiliser null part
 	public static Lesson getLesson(int id){
 		try {
 	       
@@ -273,6 +273,7 @@ public class Lesson {
 	        return null;
 	    }
 	}
+	//utiliser null part
 	public static int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings){
 		try {
 	        
@@ -286,6 +287,7 @@ public class Lesson {
 	        return -1;
 	    }
 	}
+	//utiliser null part
 	public static boolean isComplete(int id){
 		try {
 	        
@@ -299,6 +301,7 @@ public class Lesson {
 	        return false;
 	    }
 	}
+	//utiliser null part
 	public boolean save() {
 	    try {
 	        

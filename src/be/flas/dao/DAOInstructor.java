@@ -363,7 +363,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             }
         }
     }
-
+//verifier si peut suppirmer
     public int insertInstructor(Instructor i) {
         String query = "INSERT INTO Instructor (Names, FirstName, Pseudo, DateOfBirth) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -391,7 +391,7 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             return -1;
         }
     }
-    
+    //pet supprimer
     public List<Instructor> getAllInstructor() {
         List<Instructor> instructors = new ArrayList<>();
         String sql = "SELECT Names, FirstName,Pseudo,DateOfBirth FROM Instructor"; 
@@ -431,8 +431,8 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
         }
         return instructors;
     }
-    
-    public List<Instructor> getInstructorsByLessonType(String category, String targetAudience) {
+    //ici modifier
+    /*public List<Instructor> getInstructorsByLessonType(String category, String targetAudience) {
         List<Instructor> instructors = new ArrayList<>();
         String sql = "SELECT DISTINCT i.Names, i.FirstName, i.DateOfBirth, i.Pseudo " +
                      "FROM Instructor i " +
@@ -462,7 +462,41 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             System.err.println("Erreur lors de la récupération des instructeurs : " + e.getMessage());
         }
         return instructors;
-    }
+    }*/
+    /*public List<Instructor> getInstructorsByLessonType(String category, String targetAudience) {
+        List<Instructor> instructors = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT i.Names, i.FirstName, i.DateOfBirth, i.Pseudo
+            FROM Instructor i
+            JOIN Ins_Accreditation ins_acc ON i.InstructorId = ins_acc.InstructorId
+            JOIN Accreditation acc ON ins_acc.AccreditationId = acc.AccreditationId
+            JOIN LessonType lt ON acc.AccreditationId = lt.AccreditationId
+            WHERE lt.AgeCategory = ? AND lt.SportType = ?
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            // Remplir les paramètres de la requête
+            statement.setString(1, targetAudience);
+            statement.setString(2, category);
+
+            // Exécuter la requête et traiter les résultats
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Instructor instructor = new Instructor(
+                        resultSet.getString("Names"),
+                        resultSet.getString("FirstName"),
+                        resultSet.getDate("DateOfBirth").toLocalDate(),
+                        resultSet.getString("Pseudo")
+                    );
+                    instructors.add(instructor);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des instructeurs : " + e.getMessage());
+        }
+        return instructors;
+    }*/
+
     
    
     public int getInstructorIdByName(String name){
@@ -513,8 +547,8 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
     
     
     
-    
-    public List<Instructor> getAllInstructorsWithAccreditationsAndLessonTypes() {
+    //ici
+    /*public List<Instructor> getAllInstructorsWithAccreditationsAndLessonTypes() {
         List<Instructor> instructors = new ArrayList<>();
         
     
@@ -610,7 +644,86 @@ public class DAOInstructor extends DaoGeneric<Instructor> {
             System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
             return Collections.emptyList();
         }
+    }*/
+    public List<Instructor> getAllInstructorsWithAccreditationsAndLessonTypes() {
+        List<Instructor> instructors = new ArrayList<>();
+
+        String sql = """
+            SELECT 
+                i.InstructorId, i.Names AS InstructorName, i.FirstName, i.Pseudo, i.DateOfBirth,
+                a.AccreditationId, a.Names AS AccreditationName, a.SportType, a.AgeCategory,
+                lt.LessonTypeId, lt.Levels, lt.Price
+            FROM Instructor i
+            JOIN Ins_Accreditation ia ON i.InstructorId = ia.InstructorId
+            JOIN Accreditation a ON ia.AccreditationId = a.AccreditationId
+            LEFT JOIN LessonType lt ON a.AccreditationId = lt.AccreditationId
+        """;
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+           
+            Map<Integer, Instructor> instructorMap = new HashMap<>();
+            Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+            while (rs.next()) {
+                int instructorId = rs.getInt("InstructorId");
+                int accreditationId = rs.getInt("AccreditationId");
+                int lessonTypeId = rs.getInt("LessonTypeId");
+
+               
+                Instructor instructor;
+                if (!instructorMap.containsKey(instructorId)) {
+                    instructor = new Instructor(
+                            rs.getString("InstructorName"),
+                            rs.getString("FirstName"),
+                            instructorId,
+                            rs.getDate("DateOfBirth").toLocalDate(),
+                            rs.getString("Pseudo")
+                    );
+                    instructorMap.put(instructorId, instructor);
+                } else {
+                    instructor = instructorMap.get(instructorId);
+                }
+
+               
+                Accreditation accreditation;
+                if (accreditationMap.containsKey(accreditationId)) {
+                    accreditation = accreditationMap.get(accreditationId);
+                } else {
+                    accreditation = new Accreditation(
+                            accreditationId,
+                            rs.getString("AccreditationName"),
+                            null, 
+                            rs.getString("SportType"),
+                            rs.getString("AgeCategory")
+                    );
+                    instructor.AddAccreditation(accreditation);
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+              
+                if (lessonTypeId != 0) {
+                    LessonType lessonType = new LessonType(
+                            lessonTypeId,
+                            rs.getString("Levels"),
+                            rs.getDouble("Price")
+                    );
+
+                    if (!accreditation.getLessonTypes().contains(lessonType)) {
+                        accreditation.AddLessonType(lessonType);
+                    }
+                }
+            }
+
+            return new ArrayList<>(instructorMap.values());
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des instructeurs et de leurs accréditations : " + ex.getMessage());
+            return Collections.emptyList();
+        }
     }
+
     
    
     public List<Instructor> getInstructorsWithAccreditationsAndLessonTypesByLessonTypeId(int lessonTypeId) {

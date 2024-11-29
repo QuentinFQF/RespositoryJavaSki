@@ -16,6 +16,14 @@ public class Instructor extends Person {
 	private List<Lesson> lessons;
 	private List<Booking> bookings;
 	
+	public Instructor(String name,String firstName,int personId,LocalDate dateOfBirth,String pseudo) {
+		super(name,firstName,personId,dateOfBirth,pseudo);
+		this.accreditations=new ArrayList<>();
+		this.bookings=new ArrayList<>();
+		this.lessons=new ArrayList<>();
+	
+		
+	}
 
 	public Instructor(String name,String firstName,int personId,String pseudo) {
 		super(name,firstName,personId,pseudo);
@@ -138,6 +146,7 @@ public class Instructor extends Person {
 	        return false;
 	    }
 	}
+	//utiliser null part
 	public static List<Instructor> getAllInstructors(){
 		try {
 	        
@@ -177,6 +186,7 @@ public class Instructor extends Person {
 	        return new ArrayList<>();
 	    }
 	}
+	//utiliser null part
 	public boolean isAvailable(int periodId, String timeSlot){
 		try {
 	        
@@ -339,7 +349,7 @@ public class Instructor extends Person {
 	    return -1;
 	}
 
-	
+	//utiliser nul part
 	public boolean isSkierInLesson(int skierId, int lessonId) {
 	    for (Lesson lesson : this.getLessons()) {
 	        if (lesson.getId() == lessonId) { 

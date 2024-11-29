@@ -308,7 +308,7 @@ public class DAOSkier extends DaoGeneric<Skier> {
    
     public List<Skier> getAllSkiers() {
         List<Skier> skiers = new ArrayList<>();
-        String sql = "SELECT SkierId,Names, FirstName, Pseudo FROM Skier"; // Adaptation nécessaire selon la structure de votre base de données
+        String sql = "SELECT SkierId,Names, FirstName, Pseudo FROM Skier"; 
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {

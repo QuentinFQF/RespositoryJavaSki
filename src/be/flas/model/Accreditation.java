@@ -133,6 +133,7 @@ public class Accreditation {
 	public void setAgeCategory(String ageCategory) {
 		this.ageCategory = ageCategory;
 	}
+	//utiliser nul part
 	public static int selectId(String names) {
 	    try {
 	        

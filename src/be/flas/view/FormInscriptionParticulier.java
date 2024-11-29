@@ -7,13 +7,14 @@ import java.awt.*;
 
 
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Calendar;
+
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +22,7 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import be.flas.connection.DatabaseConnection;
-import be.flas.dao.DAOBooking;
-import be.flas.dao.DAOInstructor;
-import be.flas.dao.DAOLesson;
-import be.flas.dao.DAOLessonType;
-import be.flas.dao.DAOPeriod;
-import be.flas.dao.DAOSkier;
+
 import be.flas.model.Booking;
 import be.flas.model.Instructor;
 import be.flas.model.Lesson;
@@ -272,7 +267,7 @@ public class FormInscriptionParticulier extends JFrame {
                 	System.out.println("vac "+b);
                 	System.out.println(" pda "+parsedDate+" db "+ dateBooking);
                 	LocalDate today = LocalDate.of(2024, 12, 17);
-                	boolean dateIsOk=p.isBookingAllowed(parsedDate, today/*dateBooking*/,b);
+                	boolean dateIsOk=p.isBookingAllowed(parsedDate, today,b);
                 	System.out.println("ok ? "+dateIsOk);
                 	
                 	

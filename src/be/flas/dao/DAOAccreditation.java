@@ -1,3 +1,4 @@
+
 package be.flas.dao;
 
 import java.sql.Connection;
@@ -97,7 +98,7 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
 
 
 
-    
+    //utiliser null aprt
     public int selectId(String names) {
         String query = "SELECT AccreditationId FROM Accreditation WHERE Names=?"; 
 
@@ -135,11 +136,11 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
     }
     
     
-    
-    public List<Accreditation> selectAccreditationsNotIns(int instructorId) {
+    //ici modifier
+    /*public List<Accreditation> selectAccreditationsNotIns(int instructorId) {
         List<Accreditation> accreditations = new ArrayList<>();
         
-        // Requête SQL pour récupérer les accréditations non associées à l'instructeur donné
+       
         String query = """
             SELECT 
                 a.AccreditationId, a.Names, a.AgeCategory, a.SportType,
@@ -197,7 +198,72 @@ public class DAOAccreditation extends DaoGeneric<Accreditation> {
         }
 
         return accreditations;
+    }*/
+    
+    public List<Accreditation> selectAccreditationsNotIns(int instructorId) {
+        List<Accreditation> accreditations = new ArrayList<>();
+
+        String query = """
+            SELECT 
+                a.AccreditationId, a.Names, a.AgeCategory, a.SportType,
+                lt.LessonTypeId, lt.Levels, lt.Price
+            FROM Accreditation a
+            LEFT JOIN LessonType lt ON a.AccreditationId = lt.AccreditationId
+            WHERE a.AccreditationId NOT IN (
+                SELECT ia.AccreditationId
+                FROM Ins_Accreditation ia
+                WHERE ia.InstructorId = ?
+            )
+            ORDER BY a.AccreditationId;
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            // Bind the instructor ID parameter
+            pstmt.setInt(1, instructorId);
+
+            try (ResultSet res = pstmt.executeQuery()) {
+                // Map to avoid duplicate accreditations
+                Map<Integer, Accreditation> accreditationMap = new HashMap<>();
+
+                while (res.next()) {
+                    // Fetch accreditation details
+                    int accreditationId = res.getInt("AccreditationId");
+                    String accreditationName = res.getString("Names");
+                    String ageCategory = res.getString("AgeCategory");
+                    String sportType = res.getString("SportType");
+
+                    // Fetch lesson type details (if present)
+                    int lessonTypeId = res.getInt("LessonTypeId");
+                    String levels = res.getString("Levels");
+                    double price = res.getDouble("Price");
+
+                    // Check if the accreditation already exists in the map
+                    Accreditation accreditation = accreditationMap.getOrDefault(
+                            accreditationId,
+                            new Accreditation(accreditationId, accreditationName, null, sportType, ageCategory)
+                    );
+
+                    // Add lesson type to the accreditation if it exists
+                    if (lessonTypeId != 0) {
+                        LessonType lessonType = new LessonType(lessonTypeId, levels, price);
+                        accreditation.AddLessonType(lessonType);
+                    }
+
+                    // Update the map
+                    accreditationMap.put(accreditationId, accreditation);
+                }
+
+                // Collect all values from the map into the result list
+                accreditations.addAll(accreditationMap.values());
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des accréditations : " + ex.getMessage());
+        }
+
+        return accreditations;
     }
+
    
 
 

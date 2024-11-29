@@ -138,6 +138,7 @@ public class FromAddAccInstructor extends JFrame {
             	System.out.println(selectedAccreditationId);
             	if (selectedInstructorId != null && selectedAccreditationId != null) {
        	    	 Instructor i=new Instructor();
+       	    	 i.saveAccIns(selectedInstructorId, selectedAccreditationId);
                     
                     System.out.println("ajoute avec success");
        	        

@@ -149,6 +149,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
     	Booking s = new Booking();
 		return s;
 	}
+    // pas utiliser
     @Override
     public boolean create(Booking b) {
 	    
@@ -175,7 +176,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 	}
 	
 	
-    
+    //pt supprimer
     public List<Booking> getBookingsBySkierOrInstructorId(String skierP,String insP) {
         List<Booking> bookings = new ArrayList<>();
         
@@ -280,7 +281,7 @@ public class DAOBooking extends DaoGeneric<Booking>{
 
         return bookings;
     }
-    
+    //peut etre supprimer
     @Override
     public boolean delete(Booking b) {
         

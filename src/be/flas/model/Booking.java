@@ -123,6 +123,7 @@ public class Booking {
 	        return false;
 	    }
 	}
+	//peut etre supprimer si utilise aps delete booking
 	public static List<Booking> getBookingsBySkierOrInstructorId(String skierP,String insP) {
         
         Connection connection = DatabaseConnection.getInstance().getConnection();
@@ -133,7 +134,7 @@ public class Booking {
 
         return bookings;
     }
-	
+	//peut etre supprimer si utilise aps delete booking
 	public boolean delete() {
 	    try {
 	        

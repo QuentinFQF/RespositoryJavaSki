@@ -43,7 +43,7 @@ public class FormChooseInstructor extends JFrame {
     private JComboBox<String> comboSemaine; 
     private JComboBox<String> comboSkier;
     private JComboBox<String> comboPeriod;
-    private ButtonGroup buttonGroup; // Sélecteur de semaine
+    private ButtonGroup buttonGroup; 
     private JComboBox comboBox;
     private JComboBox comboBox_1;
     private Map<String, Integer> lessonTypeIdMap = new HashMap<>();

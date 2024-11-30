@@ -49,16 +49,16 @@ public class DAOBooking extends DaoGeneric<Booking>{
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 	        
-	        pstmt.setDate(1, java.sql.Date.valueOf(booking.getDateBooking())); // Date de la réservation
-	        pstmt.setInt(2, lessonId);                                        // Utiliser l'ID de la leçon passé en paramètre
-	        pstmt.setInt(3, booking.getSkier().getPersonId());                  // ID du skieur
-	        pstmt.setInt(4, booking.getPeriod().getId());                       // ID de la période
-	        pstmt.setInt(5, booking.getInstructor().getPersonId());            // ID de l'instructeur
-	        pstmt.setBoolean(6, booking.isAssurance());                        // Assurance (true/false)
+	        pstmt.setDate(1, java.sql.Date.valueOf(booking.getDateBooking()));
+	        pstmt.setInt(2, lessonId);                                     
+	        pstmt.setInt(3, booking.getSkier().getPersonId());                
+	        pstmt.setInt(4, booking.getPeriod().getId());                      
+	        pstmt.setInt(5, booking.getInstructor().getPersonId());            
+	        pstmt.setBoolean(6, booking.isAssurance());                        
 
 	      
 	        if (includeDateParticulier) {
-	            pstmt.setDate(7, java.sql.Date.valueOf(booking.getLesson().getDate())); // Date particulière
+	            pstmt.setDate(7, java.sql.Date.valueOf(booking.getLesson().getDate())); 
 	        }
 
 	        

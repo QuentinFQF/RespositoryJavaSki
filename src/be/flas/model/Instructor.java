@@ -228,53 +228,7 @@ public class Instructor extends Person {
 	        return null;
 	    }
 	}
-	/*public boolean isAvailableForDate(LocalDate date, String timeSlot) {
-	   
-	    for (Booking booking : this.getBookings()) {
-	        
-	        Lesson lesson = booking.getLesson();
-	        if (lesson != null) {
-	           
-	            if (lesson.getDate() != null && lesson.getDate().equals(date) 
-	                ) {
-	             
-	                System.out.println("Réservation trouvée pour la date : " + lesson.getDate() + " et le créneau : " + timeSlot);
-	                return true; 
-	            }
-	        }
-	    }
-
-	   
-	    return false;
-	}*/
 	
-	//CORRECT 
-	/*
-	public boolean isAvailableForDate(LocalDate date, String timeSlot) {
-	    for (Booking booking : this.getBookings()) {
-	        Lesson lesson = booking.getLesson();
-	        
-	        if (lesson != null) {
-	            // Vérifier si la date et le créneau horaire correspondent
-	            if (lesson.getDate() != null && lesson.getDate().equals(date) 
-	                && lesson.getDayPart() != null && lesson.getDayPart().equals(timeSlot)) {
-	                
-	                // Vérifier si le nombre de skieurs est inférieur au maximum autorisé
-	                if (lesson.getNumberSkier() < lesson.getMaxBookings()) {
-	                    System.out.println("Réservation possible, mais encore des places disponibles.");
-	                    return false; // Indiquer que la réservation ne doit pas être autorisée
-	                } else {
-	                    System.out.println("Capacité maximale atteinte pour la date : " + lesson.getDate() + 
-	                                       " et le créneau : " + timeSlot);
-	                }
-	            }
-	        }
-	    }
-
-	    // Aucun conflit trouvé, la réservation est possible
-	    System.out.println("Aucune réservation trouvée pour la date : " + date + " et le créneau : " + timeSlot);
-	    return true;
-	}*/
 	public boolean isAvailableForDate(LocalDate date, String timeSlot) {
 
 	    for (Booking booking : this.getBookings()) {
@@ -311,70 +265,6 @@ public class Instructor extends Person {
 	    return true;
 	}
 
-	/*
-	public boolean isAvailableForDate(LocalDate date, String timeSlot) {
-
-	    for (Booking booking : this.getBookings()) {
-	        Lesson lesson = booking.getLesson();
-
-	        if (lesson != null) {
-	            // Vérifier si la date et le créneau horaire correspondent
-	            if (lesson.getDate() != null && lesson.getDate().equals(date) 
-	                && lesson.getDayPart() != null && lesson.getDayPart().equals(timeSlot)) {
-	                
-	                // Vérifier si le nombre de skieurs est inférieur au maximum autorisé
-	                if (lesson.getNumberSkier() < lesson.getMaxBookings()) {
-	                    System.out.println("Réservation possible, des places sont encore disponibles.");
-	                    return true; // La réservation est possible
-	                } else {
-	                    System.out.println("Capacité maximale atteinte pour la date : " + lesson.getDate() + 
-	                                       " et le créneau : " + timeSlot);
-	                    return false; // La réservation est impossible
-	                }
-	            }
-	        }
-	    }
-
-	    // Aucun conflit trouvé, la réservation est possible
-	    System.out.println("Aucune réservation trouvée pour la date : " + date + " et le créneau : " + timeSlot);
-	    return true;
-	}*/
-
-
-	/*
-	public boolean isAvailableForDate(LocalDate date, String timeSlot) {
-	    for (Booking booking : this.getBookings()) {
-	        Lesson lesson = booking.getLesson();
-	        
-	        if (lesson != null) {
-	            // Vérifier si la date et le créneau horaire correspondent
-	            if (lesson.getDate() != null && lesson.getDate().equals(date) 
-	                && lesson.getDayPart() != null && lesson.getDayPart().equals(timeSlot)) {
-	                
-	                // Vérifier si le nombre de skieurs est inférieur au maximum autorisé
-	                if (lesson.getNumberSkier() < lesson.getMaxBookings()) {
-	                    System.out.println("Réservation possible pour la date : " + lesson.getDate() + 
-	                                       " et le créneau : " + timeSlot);
-	                    return true; 
-	                } else {
-	                    System.out.println("Capacité maximale atteinte pour la date : " + lesson.getDate() + 
-	                                       " et le créneau : " + timeSlot);
-	                    return false;
-	                }
-	            }
-	        }
-	    }
-
-	    // Aucune réservation existante ou capacité disponible
-	    System.out.println("Aucune réservation existante pour la date : " + date + " et le créneau : " + timeSlot);
-	    return true;
-	}*/
-
-
-
-
-	
-	
 	public boolean isAvailables(int periodId, String timeSlot) {
 	    
           for (Booking booking : bookings) {
@@ -399,38 +289,6 @@ public class Instructor extends Person {
 	    }
 	    return false;
 	}
-	/*public boolean isAvailables(int periodId, String timeSlot) {
-	    
-	    for (Booking booking : bookings) {
-	        
-	        
-	        if (booking.getPeriod() != null && booking.getPeriod().getId() == periodId) {
-	            
-	  
-	            if (booking.getLesson() != null && booking.getLesson().getDayPart() != null 
-	                && booking.getLesson().getDayPart().equals(timeSlot)) {
-	                
-	            
-	                if (booking.getLesson().getNumberSkier() < booking.getLesson().getMaxBookings()) {
-	        
-	                    return true;
-	                } else {
-	               
-	                    return false;
-	                }
-	            }
-	        }
-	    }
-	    
-	    
-	    return true;
-	}*/
-
-
-	
-
-
-
 	
 	
 	public Integer getLessonIdForDate(int selectedLessonTypeId, String timeSlot, String courseType, int minBookings, int maxBookings, LocalDate selectedDate) {
@@ -494,7 +352,7 @@ public class Instructor extends Person {
 	}
 
 
-	//permet de verifier si meme period avec lessonType different
+	
 	public boolean isLessonTypeOnSameDate(LocalDate date, int lessonTypeId) {
 	    for (Booking booking : this.getBookings()) {
 	        Lesson lesson = booking.getLesson();

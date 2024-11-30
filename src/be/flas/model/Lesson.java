@@ -34,22 +34,7 @@ public class Lesson {
 	public void setTarifId(int tarifId) {
 		this.tarifId = tarifId;
 	}
-	/*public Lesson(int min,int max,Instructor ins,LessonType lt,String day,String course,int tId,int id,int s,int e,LocalDate d=?) {
-		this.minBookings=min;
-		this.maxBookings=max;
-		this.bookings=new ArrayList<>();
-		this.instructor=ins;
-		this.lessonType=lt;
-		this.dayPart=day;
-		this.courseType=course;
-		this.tarifId=tId;
-		
-		this.id=id;
-		this.start=s;
-		this.end=e;
 	
-		
-	}*/
 	public Lesson(int min, int max, Instructor ins, LessonType lt, String day, String course, int tId, int id, int s, int e, LocalDate d) {
 	    this.minBookings = min;
 	    this.maxBookings = max;
@@ -259,62 +244,7 @@ public class Lesson {
 	    }
 	}
 
-	//utiliser null part
-	public static Lesson getLesson(int id){
-		try {
-	       
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	      
-	        DAOLesson daoLesson  = new DAOLesson (connection);
 	
-	        return daoLesson.find(id);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
-	//utiliser null part
-	public static int getLessonId(int instructorId, int lessonTypeId, String dayPart, String courseType, int minBookings, int maxBookings){
-		try {
-	        
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        
-	        DAOLesson daoLesson  = new DAOLesson (connection);
-	       
-	        return daoLesson.getLessonId(instructorId,lessonTypeId,dayPart,courseType,minBookings,maxBookings);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return -1;
-	    }
-	}
-	//utiliser null part
-	public static boolean isComplete(int id){
-		try {
-	        
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	        
-	        DAOLesson daoLesson  = new DAOLesson (connection);
-	     
-	        return daoLesson.isLessonComplete(id);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
-	//utiliser null part
-	public boolean save() {
-	    try {
-	        
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	       
-	        DAOLesson daoLesson = new DAOLesson(connection);
-	     
-	        return daoLesson.create(this);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
 	public boolean update() {
 	    try {
 	       

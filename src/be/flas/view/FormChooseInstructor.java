@@ -281,6 +281,10 @@ public class FormChooseInstructor extends JFrame {
 
                 	
                 	int idLesson = instructor.getLessonId(selectedLessonTypeId, timeSlot, "Collectif", minMax[0], minMax[1],selectedPeriodId);
+                	if(instructor.isLessonTypeOnSamePeriodAndTimeSlot(p,timeSlot,selectedLessonTypeId)) {
+                		JOptionPane.showMessageDialog(null, "erreur ins deja prit", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                	}
 
                     if (skier.isSkierInLesson(selectedSkierId,selectedPeriodId,timeSlot)) {
                     	JOptionPane.showMessageDialog(null, "Le skieur est déjà inscrit à cette period", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
@@ -295,13 +299,13 @@ public class FormChooseInstructor extends JFrame {
                     	return;
                     }
                     
-                	
+                    Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
+	            	Period period=Period.find(selectedPeriodId);
+            		Booking booking = new Booking(dateBooking, s, period, lesson3, i,isChecked);
                 	           
     	            if (idLesson == -1) {
     	        
-    	            	Lesson lesson3=new Lesson(minMax[0],minMax[1],i,lt,timeSlot,"Collectif",0,idLesson,timeRange[0],timeRange[1]);
-    	            	Period period=Period.find(selectedPeriodId);
-                		Booking booking = new Booking(dateBooking, s, period, lesson3, i,isChecked);
+    	            	
 
                 		if(booking.isDateBeforeToday()) {
                 			JOptionPane.showMessageDialog(null, "vous ne pouvez pas reserver pour une date expiré");
@@ -310,7 +314,8 @@ public class FormChooseInstructor extends JFrame {
                 		booking.save();
                     	JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
     	            } else {
-    	                
+    	            	//Booking booking = new Booking(dateBooking, s, period, lesson3, i,isChecked);
+    	            	booking.saveBooking(idLesson);
     	                Lesson existingLesson = new Lesson(idLesson);
     	                existingLesson.update();
     	                JOptionPane.showMessageDialog(null, "Leçon mise à jour!", "Mise à jour", JOptionPane.INFORMATION_MESSAGE);

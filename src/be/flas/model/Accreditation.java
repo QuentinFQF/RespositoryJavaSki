@@ -133,20 +133,7 @@ public class Accreditation {
 	public void setAgeCategory(String ageCategory) {
 		this.ageCategory = ageCategory;
 	}
-	//utiliser nul part
-	public static int selectId(String names) {
-	    try {
-	        
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	      
-	        DAOAccreditation daoAccreditation = new DAOAccreditation(connection);
-	     
-	        return daoAccreditation.selectId(names);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return -1;
-	    }
-	}
+	
 	
 	public static List<Accreditation> selectAccDiffIns(int id) {
 	    try {

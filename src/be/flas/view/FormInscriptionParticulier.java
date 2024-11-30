@@ -43,7 +43,7 @@ public class FormInscriptionParticulier extends JFrame {
     
     private JComboBox<String> comboSkier;
     private JComboBox<String> comboPeriod;
-    private ButtonGroup buttonGroup; // Sélecteur de semaine
+    private ButtonGroup buttonGroup; 
     
     private Map<String, Integer> lessonTypeIdMap = new HashMap<>();
     private Map<String, Integer> skierIdMap = new HashMap<>();
@@ -266,11 +266,19 @@ public class FormInscriptionParticulier extends JFrame {
                 	boolean b= p.isDateInVacationPeriod(parsedDate);
                 	System.out.println("vac "+b);
                 	System.out.println(" pda "+parsedDate+" db "+ dateBooking);
-                	LocalDate today = LocalDate.of(2024, 12, 17);
+                	LocalDate today = LocalDate.now();
                 	boolean dateIsOk=p.isBookingAllowed(parsedDate, today,b);
                 	System.out.println("ok ? "+dateIsOk);
                 	
+                	if(!p.isBookingAllowed(parsedDate, today,b)) {
+                		JOptionPane.showMessageDialog(null, "1 semaine pour vacance/ 1 mois hors vacance", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                	}
                 	
+                	if(instructor.isLessonTypeOnSameDate(parsedDate,selectedLessonTypeId)) {
+                		JOptionPane.showMessageDialog(null, "ins deja prit a cette date", "Erreur d'inscription", JOptionPane.ERROR_MESSAGE);
+                    	return;
+                	}
                 	
                 	
                 	if (skier.isSkierInLesson(selectedSkierId,parsedDate)) {
@@ -281,25 +289,21 @@ public class FormInscriptionParticulier extends JFrame {
         	            JOptionPane.showMessageDialog(null, "La leçon est complète. Pour choisir cette leçon, veuillez prendre un autre moniteur.", "Leçon pleine", JOptionPane.WARNING_MESSAGE);
         	            return;
         	        }
-                    if (instructor.isAvailableForDate(parsedDate, timeSlot)){
+                    if (!instructor.isAvailableForDate(parsedDate, timeSlot)){
                     	JOptionPane.showMessageDialog(null, "L'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
                     	return;
                     }
 
+                    int tarifId=lesson.getDurationInHours(timeSlot);
                 	
+            		Lesson lesson3 = new Lesson(minMax[0], minMax[1], i, lt, timeSlot, "Particulier", tarifId, idLesson, tabTime[0], tabTime[1], parsedDate);
+
+            		
+            		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
                 	           
     	            if (idLesson == -1) {
     	        
-    	          
-
                 		
-
-                		int tarifId=lesson.getDurationInHours(timeSlot);
-                	
-                		Lesson lesson3 = new Lesson(minMax[0], minMax[1], i, lt, timeSlot, "Particulier", tarifId, idLesson, tabTime[0], tabTime[1], parsedDate);
-
-                		
-                		Booking booking = new Booking(dateBooking, s, p, lesson3, i);
                 		
                 		if(booking.isDateBeforeToday()) {
                 			JOptionPane.showMessageDialog(null, "vous ne pouvez pas reserver pour une date expiré");
@@ -310,7 +314,7 @@ public class FormInscriptionParticulier extends JFrame {
                 		JOptionPane.showMessageDialog(null, "Réservation créée avec succès!");
     	            } else {
     	                
-    	            	
+    	            	booking.saveBooking(idLesson);
                 		Lesson l=new Lesson(idLesson);
                 		l.update();
                 	
@@ -320,7 +324,7 @@ public class FormInscriptionParticulier extends JFrame {
                 	    
                 	} else {
              
-                	    JOptionPane.showMessageDialog(null, "L'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
+                	    JOptionPane.showMessageDialog(null, "LL'instructeur n'est pas disponible à ce créneau horaire.", "Indisponibilité", JOptionPane.ERROR_MESSAGE);
                 	}
                 	
                 	

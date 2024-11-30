@@ -21,7 +21,7 @@ public class LessonType {
 	private List<Lesson> lessons;
 	private int id;
 	private String ageCategory;
-	// a supprimer
+	
 	public LessonType(int id,String level,String sport,double price,String age) {
 		this.level=level;
 		this.price=price;

@@ -2,6 +2,7 @@ package be.flas.model;
 
 import java.sql.Connection;
 
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,15 +20,7 @@ public class Booking {
 	private int id;
 	private boolean assurance;
 	
-	/*public Booking(LocalDate dateBooking,Skier skier,Period period, Lesson lesson,Instructor instructor,Boolean a) {
-		this.dateBooking=dateBooking;
-		this.instructor=instructor;
-		this.lesson=lesson;
-		this.period=period;
-		this.skier=skier;
-		this.assurance=a;
-
-	}*/
+	
 	 public Booking(LocalDate dateBooking, Skier skier, Period period, Lesson lesson, Instructor instructor, Boolean assurance) {
 	        this.dateBooking = dateBooking;
 	        this.skier = skier;
@@ -109,7 +102,19 @@ public class Booking {
 	public String toString() {
 		return "Booking [dateBooking=" + dateBooking + "]";
 	}
-	
+	public boolean saveBooking(int id) {
+	    try {
+	       
+	        Connection connection = DatabaseConnection.getInstance().getConnection();
+	        
+	        DAOBooking daoBooking = new DAOBooking(connection);
+	        
+	        return daoBooking.createBooking(this,id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 	public boolean save() {
 	    try {
 	       
@@ -123,31 +128,7 @@ public class Booking {
 	        return false;
 	    }
 	}
-	//peut etre supprimer si utilise aps delete booking
-	public static List<Booking> getBookingsBySkierOrInstructorId(String skierP,String insP) {
-        
-        Connection connection = DatabaseConnection.getInstance().getConnection();
-        DAOBooking daoBooking = new DAOBooking(connection);
-
-        
-        List<Booking> bookings = daoBooking.getBookingsBySkierOrInstructorId(skierP,insP);
-
-        return bookings;
-    }
-	//peut etre supprimer si utilise aps delete booking
-	public boolean delete() {
-	    try {
-	        
-	        Connection connection = DatabaseConnection.getInstance().getConnection();
-	       
-	        DAOBooking daoBooking = new DAOBooking(connection);
-	        
-	        return daoBooking.delete(this);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
+	
 	
 	
 	public double calculatePrice(Period period,String timeSlot) {
@@ -166,7 +147,7 @@ public class Booking {
 	        else if (this.getLesson().getCourseType().equalsIgnoreCase("Collectif")) {
 	            
 	            if (this.isAssurance()) {
-	                basePrice *= 0.8;
+	                basePrice = basePrice-20;
 	            }
 	            System.out.println("cal : "+this.getSkier().getPersonId());
 		        
@@ -194,7 +175,7 @@ public class Booking {
 	}
 	
     public boolean isDateBeforeToday() {
-    	LocalDate today = LocalDate.of(2024, 12, 12);
+    	LocalDate today = LocalDate.now();
 		if(this.getLesson().getCourseType().equals("Particulier")) {
 			return this.getLesson().getDate().isBefore(today);
 		}else {

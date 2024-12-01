@@ -29,6 +29,7 @@ import be.flas.model.Instructor;
 
 import java.awt.Color;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 public class FromAddAccInstructor extends JFrame {
 
@@ -107,6 +108,14 @@ public class FromAddAccInstructor extends JFrame {
 		
         btnNewButton.setBounds(40, 341, 85, 21);
         panel.add(btnNewButton);
+        
+        JLabel lblNewLabel = new JLabel("Moniteurs");
+        lblNewLabel.setBounds(38, 110, 72, 13);
+        panel.add(lblNewLabel);
+        
+        JLabel lblNewLabel_1 = new JLabel("Accréditations");
+        lblNewLabel_1.setBounds(38, 206, 87, 13);
+        panel.add(lblNewLabel_1);
 
        
         listInstructors();
@@ -233,7 +242,6 @@ public class FromAddAccInstructor extends JFrame {
             System.err.println("Erreur lors de la mise à jour des accréditations : " + e.getMessage());
         }
     }
-
 }
 
 

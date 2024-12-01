@@ -126,7 +126,7 @@ public class FormInscriptionParticulier extends JFrame {
         
         
         comboSkier = new JComboBox<>();
-        comboSkier.setBounds(32, 63, 286, 21);
+        comboSkier.setBounds(32, 85, 286, 21);
         panel.add(comboSkier);
         
         comboPeriod = new JComboBox();
@@ -140,6 +140,22 @@ public class FormInscriptionParticulier extends JFrame {
         JButton btnCalculPrix = new JButton("Calculer le Prix");
         btnCalculPrix.setBounds(32, 400, 150, 21);
         panel.add(btnCalculPrix);
+        
+        JLabel lblNewLabel = new JLabel("Dates");
+        lblNewLabel.setBounds(32, 9, 45, 13);
+        panel.add(lblNewLabel);
+        
+        JLabel lblNewLabel_1 = new JLabel("Skiers");
+        lblNewLabel_1.setBounds(20, 62, 45, 13);
+        panel.add(lblNewLabel_1);
+        
+        JLabel lblNewLabel_2 = new JLabel("Leçon types");
+        lblNewLabel_2.setBounds(32, 127, 96, 13);
+        panel.add(lblNewLabel_2);
+        
+        JLabel lblNewLabel_3 = new JLabel("Moniteurs");
+        lblNewLabel_3.setBounds(137, 181, 74, 13);
+        panel.add(lblNewLabel_3);
 
      
         fillPeriodComboBoxWithSpecificDates();

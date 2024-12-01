@@ -128,7 +128,7 @@ public class FormChooseInstructor extends JFrame {
         
         
         comboSkier = new JComboBox<>();
-        comboSkier.setBounds(32, 63, 286, 21);
+        comboSkier.setBounds(32, 93, 286, 21);
         panel.add(comboSkier);
         
         comboPeriod = new JComboBox();
@@ -148,6 +148,22 @@ public class FormChooseInstructor extends JFrame {
         JButton btnCalculPrix = new JButton("Calculer le Prix");
         btnCalculPrix.setBounds(32, 400, 150, 21);
         panel.add(btnCalculPrix);
+        
+        JLabel lblNewLabel = new JLabel("Périodes");
+        lblNewLabel.setBounds(32, 10, 85, 13);
+        panel.add(lblNewLabel);
+        
+        JLabel lblNewLabel_1 = new JLabel("Skiers");
+        lblNewLabel_1.setBounds(32, 70, 45, 13);
+        panel.add(lblNewLabel_1);
+        
+        JLabel lblNewLabel_2 = new JLabel("Leçon types");
+        lblNewLabel_2.setBounds(32, 127, 85, 13);
+        panel.add(lblNewLabel_2);
+        
+        JLabel lblNewLabel_3 = new JLabel("Moniteurs");
+        lblNewLabel_3.setBounds(119, 181, 85, 13);
+        panel.add(lblNewLabel_3);
         
         fillPeriodComboBox();
         fillSkierComboBox();
